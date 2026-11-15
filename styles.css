@@ -169,7 +169,7 @@ img.ph::before{content:none}
 .info dt{font:500 10px/1.6 Inter,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--brass-ink)}
 .info dd{margin:0;font-size:.98rem}
 .info a{text-decoration:none;border-bottom:1px solid var(--line)}
-.info a:hover{color:var(--brass);border-color:var(--brass)}
+.info a:hover{color:var(--brass-ink);border-color:var(--brass-ink)}
 .form{background:var(--bone-2);padding:clamp(26px,3.4vw,46px);display:grid;gap:18px}
 .form h3{font-size:1.5rem}
 .form__note{margin:0;font-size:.85rem;color:var(--mute);text-align:left}
@@ -253,12 +253,12 @@ img.ph::before{content:none}
 .map{width:100%;aspect-ratio:4/3;margin-top:34px;border:1px solid var(--line);display:block}
 .phead--tall{min-height:72svh;display:flex;align-items:center}
 .phead--tall .btn{margin-top:14px}
-.form__note a{color:var(--brass)}
+.form__note a{color:var(--brass-ink)}
 @media (max-width:860px){.map{aspect-ratio:3/2}}
 
 /* enquiry form status + email typo suggestion */
 .form__status{margin:0;min-height:1.4em;font-size:.88rem;color:var(--mute);text-align:left}
-.form__suggestion{font:inherit;color:var(--brass);background:none;border:0;border-bottom:1px solid currentColor;padding:0;cursor:pointer}
+.form__suggestion{font:inherit;color:var(--brass-ink);background:none;border:0;border-bottom:1px solid currentColor;padding:0;cursor:pointer}
 .form button[disabled]{opacity:.55;cursor:progress}
 
 /* 404 */
