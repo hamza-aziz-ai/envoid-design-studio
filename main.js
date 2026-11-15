@@ -29,9 +29,9 @@ document.querySelectorAll('.r').forEach((el, i) => {
 });
 
 // enquiry form -> WhatsApp (no backend)
-const form = document.getElementById('form');
+const form = document.getElementById('form');          // absent on projects.html
 const err = document.getElementById('err');
-form.addEventListener('submit', e => {
+form?.addEventListener('submit', e => {
   e.preventDefault();
   const f = Object.fromEntries(new FormData(form));
   const name = f.name.trim(), phone = f.phone.trim();
@@ -41,4 +41,4 @@ form.addEventListener('submit', e => {
   open(`https://wa.me/919560769743?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
 });
 
-document.getElementById('yr').textContent = new Date().getFullYear();
+document.getElementById('yr').textContent = String(new Date().getFullYear());

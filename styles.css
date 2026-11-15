@@ -215,3 +215,22 @@ img.ph::before{content:none}
   .info dd{margin-bottom:12px}
   .foot__inner{grid-template-columns:1fr}
 }
+
+/* --- projects page --- */
+.phead{background:var(--ink);color:var(--bone);padding:clamp(130px,17vh,180px) 0 clamp(48px,7vh,74px)}
+.phead h1{font-size:clamp(2.6rem,6vw,4.6rem)}
+.phead__sub{max-width:52ch;margin:22px 0 0;color:rgba(246,243,238,.72)}
+.gal{padding:clamp(56px,8vw,104px) 0}
+.gal+.gal{padding-top:0}
+.gal__head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:10px 24px;padding-bottom:18px;margin-bottom:clamp(22px,3vw,34px);border-bottom:1px solid var(--line)}
+.gal__head h2{font-size:clamp(1.6rem,2.6vw,2.4rem)}
+.gal__head p{margin:0;color:var(--mute);font:400 12px/1.5 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.gal__grid{columns:3;column-gap:clamp(16px,2vw,28px)}
+.shot{display:block;break-inside:avoid;margin:0 0 clamp(16px,2vw,28px);overflow:hidden;background:var(--bone-2)}
+.shot img{width:100%;height:auto;display:block;transition:transform .6s var(--ease)}
+.shot:hover img,.shot:focus-visible img{transform:scale(1.03)}
+.work__all{margin:clamp(28px,4vw,44px) 0 0}
+@media (max-width:1040px){.gal__grid{columns:2}}
+@media (max-width:640px){.gal__grid{columns:1}}
+@media (prefers-reduced-motion:reduce){.shot:hover img,.shot:focus-visible img{transform:none}}
+.gal__grid:has(> :only-child){columns:1}
