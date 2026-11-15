@@ -20,7 +20,7 @@ contact.html      Studio details, map, enquiry form
 thanks.html       Form landing page (noindex)
 404.html          Custom not-found page (noindex, carries its own <base href>)
 styles.css        Every page's styles
-main.js           Nav, scroll reveal, footer year
+main.js           Nav, scroll reveal, footer year, gallery lightbox
 contact.js        Enquiry form: validation and EmailJS delivery
 assets/           Photography, logo, favicons, and generated width variants
 tools/            Checks and the deploy staging script, not published

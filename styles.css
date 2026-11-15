@@ -268,3 +268,18 @@ img.ph::before{content:none}
 .lost a:hover{background:var(--brass);color:#fff}
 .lost a:hover span{color:#fff}
 @media (max-width:760px){.lost{grid-template-columns:repeat(2,1fr)}}
+
+/* gallery lightbox — a native <dialog>, so focus trapping, Escape and the
+   inert background come from the platform rather than from script */
+.lb{border:0;padding:0;background:transparent;max-width:min(94vw,1400px);max-height:94vh;overflow:visible;color:var(--bone)}
+.lb::backdrop{background:rgba(12,12,12,.93)}
+.lb__fig{margin:0;display:grid;gap:16px;justify-items:center}
+.lb__fig img{max-width:min(94vw,1400px);max-height:80vh;width:auto;height:auto;display:block;background:var(--ink-2)}
+.lb__cap{font:400 12px/1.5 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:rgba(246,243,238,.75);text-align:center;max-width:62ch}
+.lb__x,.lb__nav{position:fixed;background:none;border:1px solid rgba(246,243,238,.32);color:var(--bone);cursor:pointer;line-height:1;transition:background .25s,border-color .25s,color .25s}
+.lb__x{top:18px;right:18px;width:44px;height:44px;font-size:26px}
+.lb__nav{top:50%;transform:translateY(-50%);width:48px;height:64px;font-size:30px}
+.lb__nav--prev{left:14px}
+.lb__nav--next{right:14px}
+.lb__x:hover,.lb__nav:hover{background:var(--brass);border-color:var(--brass);color:#fff}
+@media (max-width:640px){.lb__nav{width:38px;height:52px;font-size:24px}.lb__fig img{max-height:68vh}}
