@@ -67,7 +67,11 @@ jobs:
   deploy:
     name: Deploy to Pages
     needs: check
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # workflow_dispatch included so main can be re-deployed without a commit,
+    # for a rollback or after changing something outside the repo.
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     permissions:
       pages: write
