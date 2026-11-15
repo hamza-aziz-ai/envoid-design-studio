@@ -1,7 +1,7 @@
 /* Envoid Design Studio — brand palette: bone, charcoal, brass */
 :root{
   --ink:#141414; --ink-2:#1d1d1d; --bone:#f6f3ee; --bone-2:#ece7df;
-  --brass:#b88a52; --brass-lt:#c8a06a; --mute:#6f6a62; --line:#dcd5ca;
+  --brass:#b88a52; --brass-lt:#c8a06a; --brass-ink:#8a6333; --mute:#6f6a62; --line:#dcd5ca;
   --wrap:1200px; --ease:cubic-bezier(.22,.61,.36,1);
   --h1:clamp(2.9rem,7.5vw,6.2rem); --h2:clamp(2rem,3.6vw,3.3rem);
 }
@@ -22,7 +22,7 @@ a{color:inherit}
 .skip{position:absolute;left:-9999px;top:0;background:var(--ink);color:var(--bone);padding:12px 18px;z-index:99}
 .skip:focus{left:0}
 :focus-visible{outline:2px solid var(--brass);outline-offset:3px}
-.label{font:500 11px/1 Inter,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:var(--brass);margin:0 0 18px;text-align:left}
+.label{font:500 11px/1 Inter,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:var(--brass-ink);margin:0 0 18px;text-align:left}
 
 /* buttons */
 .btn{display:inline-flex;align-items:center;gap:10px;background:var(--ink);color:var(--bone);border:1px solid var(--ink);padding:16px 30px;font:500 13px/1 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:background .35s var(--ease),color .35s var(--ease)}
@@ -120,7 +120,7 @@ img.ph::before{content:none}
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,2.5vw,34px);margin-top:clamp(48px,7vw,96px)}
 .card{background:var(--bone-2);padding:clamp(26px,3vw,40px);border-top:2px solid var(--brass)}
 .sec--alt .card{background:var(--bone)}
-.card__num{display:block;font:500 11px/1 Inter,sans-serif;letter-spacing:.2em;color:var(--brass);margin-bottom:20px}
+.card__num{display:block;font:500 11px/1 Inter,sans-serif;letter-spacing:.2em;color:var(--brass-ink);margin-bottom:20px}
 .card h3{margin-bottom:14px}
 .card p{margin:0;color:var(--mute);font-size:.97rem}
 
@@ -166,7 +166,7 @@ img.ph::before{content:none}
 
 /* contact */
 .info{margin:34px 0 0;display:grid;grid-template-columns:120px 1fr;gap:18px 24px;align-items:baseline}
-.info dt{font:500 10px/1.6 Inter,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--brass)}
+.info dt{font:500 10px/1.6 Inter,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--brass-ink)}
 .info dd{margin:0;font-size:.98rem}
 .info a{text-decoration:none;border-bottom:1px solid var(--line)}
 .info a:hover{color:var(--brass);border-color:var(--brass)}

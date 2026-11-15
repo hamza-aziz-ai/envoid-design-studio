@@ -32,12 +32,17 @@ module.exports = {
         viewport: 'error',
         'link-text': 'error',
 
-        'categories:accessibility': ['error', { minScore: 0.9 }],
-        'categories:best-practices': ['error', { minScore: 0.9 }],
+        // Measured 100/100/100 on all three pages once the brass contrast and
+        // the logo's accessible name were fixed, so the floor sits just under
+        // that rather than at the placeholder 0.9 it started from.
+        'categories:accessibility': ['error', { minScore: 0.98 }],
+        'categories:best-practices': ['error', { minScore: 0.98 }],
+        'categories:seo': ['error', { minScore: 0.98 }],
 
-        // Advisory: both move with network timing and third-party fonts in CI.
-        'categories:seo': ['warn', { minScore: 0.9 }],
-        'categories:performance': ['warn', { minScore: 0.85 }],
+        // Advisory: moves with network timing and third-party fonts in CI.
+        // Measured 95-99; the local preview serves no gzip, which costs a few
+        // points that production does not.
+        'categories:performance': ['warn', { minScore: 0.9 }],
 
         // The canonical deliberately points at envoiddesign.in, the domain this
         // site moves to, so Lighthouse sees a cross-domain canonical and fails
@@ -48,9 +53,9 @@ module.exports = {
         'uses-long-cache-ttl': 'off',
         // Likewise CSP: Pages serves no custom headers.
         'csp-xss': 'off',
-        // The renders are served at their native size by design; the gallery
-        // sizes tiles to the picture rather than cropping to a layout box.
-        'uses-responsive-images': 'off',
+        // Advisory now that every photo has 600/1200/native variants behind a
+        // <picture>: worth seeing if a new image lands without them.
+        'uses-responsive-images': 'warn',
 
         'errors-in-console': 'warn',
       },
