@@ -44,7 +44,8 @@ a{color:inherit}
 .nav--solid .nav__inner{padding-block:12px}
 .logo{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--bone)}
 .nav--solid .logo,.nav--solid .nav__links a{color:var(--ink)}
-.logo__mark{width:28px;height:28px;flex:none;color:var(--brass-lt)}
+.logo__mark{width:26px;height:auto;flex:none;filter:invert(1)}
+.nav--solid .logo__mark{filter:none}
 .logo__text{font:600 15px/1 Inter,sans-serif;letter-spacing:.16em;text-transform:uppercase;display:flex;flex-direction:column;gap:4px}
 .logo__text em{font:400 9px/1 Inter,sans-serif;letter-spacing:.3em;font-style:normal;opacity:.65}
 .nav__links{display:flex;gap:30px}
@@ -64,7 +65,8 @@ a{color:inherit}
 .hero{position:relative;min-height:100svh;display:flex;align-items:flex-end;background:var(--ink);color:var(--bone);overflow:hidden}
 .hero__bg{position:absolute;inset:0;background:
   radial-gradient(120% 90% at 78% 8%,rgba(184,138,82,.42),transparent 60%),
-  linear-gradient(200deg,#262320 0%,#141414 55%,#0c0c0c 100%);}
+  linear-gradient(200deg,rgba(38,35,32,.92) 0%,rgba(20,20,20,.86) 55%,rgba(12,12,12,.94) 100%),
+  url(assets/hero.jpg) center/cover no-repeat #141414;}
 .hero__bg::after{content:"";position:absolute;inset:0;opacity:.5;background:
   repeating-linear-gradient(90deg,rgba(246,243,238,.05) 0 1px,transparent 1px 11vw),
   repeating-linear-gradient(0deg,rgba(246,243,238,.04) 0 1px,transparent 1px 9vw)}
@@ -102,6 +104,8 @@ a{color:inherit}
 .ph::before{content:"";position:absolute;inset:0;background:
   repeating-linear-gradient(135deg,rgba(255,255,255,.26) 0 2px,transparent 2px 14px)}
 .ph--tall{aspect-ratio:3/4}
+img.ph{object-fit:cover;height:auto}
+img.ph::before{content:none}
 .ph figcaption{position:relative;font:500 10px/1 Inter,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:#6b6252}
 
 /* philosophy cards */
@@ -136,6 +140,7 @@ a{color:inherit}
 .work{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(20px,2.4vw,36px)}
 .work__item--wide{grid-column:span 2}
 .work__item--wide .ph{aspect-ratio:16/7}
+.work__item--wide img.ph{aspect-ratio:16/7;object-position:center 60%}
 .work__item .ph{transition:transform .7s var(--ease)}
 .work__item{overflow:hidden}
 .work__item:hover .ph{transform:scale(1.03)}
