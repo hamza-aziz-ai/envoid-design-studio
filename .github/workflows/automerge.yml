@@ -1,0 +1,38 @@
+name: Auto-merge
+
+# Turns a green pull request into a merged one without a human clicking Merge.
+#
+# `gh pr merge --auto` queues the merge; the branch protection rule on main is
+# what holds it until the CI/CD "Checks" job reports success. Without that rule
+# auto-merge has nothing to wait for and merges straight away, so the protection
+# rule is load-bearing, not decoration.
+#
+# pull_request_target runs the workflow definition from main, with a writable
+# token. That is only safe because nothing here checks out or executes the pull
+# request's code — it only talks to the API. Do not add a checkout of the head
+# ref to this file.
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize, labeled, ready_for_review]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  enable:
+    name: Enable auto-merge
+    runs-on: ubuntu-latest
+    # Dependabot's own pull requests, and anything a human opts in by applying
+    # the `automerge` label. Drafts are left alone.
+    if: >-
+      github.event.pull_request.draft == false &&
+      (github.actor == 'dependabot[bot]' ||
+       contains(github.event.pull_request.labels.*.name, 'automerge'))
+    steps:
+      - name: Queue the merge
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.html_url }}
+        run: gh pr merge --auto --squash "$PR"

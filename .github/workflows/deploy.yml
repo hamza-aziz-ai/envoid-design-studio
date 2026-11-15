@@ -107,3 +107,47 @@ jobs:
       - uses: actions/checkout@v4
       - name: Probe the deployed origin
         run: bash tools/smoke.sh "${{ needs.deploy.outputs.page_url }}"
+
+  release:
+    name: Release
+    # Only what is deployed AND proven live gets a release, so a tag always
+    # names a version of the site that actually served.
+    needs: [deploy, smoke]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # --generate-notes needs the history to diff against
+
+      - name: Tag and publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PAGE_URL: ${{ needs.deploy.outputs.page_url }}
+        run: |
+          set -euo pipefail
+          # The site carries no version of its own, so releases are dated. The
+          # run number keeps several releases on one day distinct and ordered.
+          VERSION="v$(date -u +%Y.%m.%d)-${{ github.run_number }}"
+
+          mkdir -p _site
+          rsync -a --exclude .git --exclude .github --exclude tools \
+                   --exclude _site --exclude _preview --exclude .lighthouseci \
+                   --exclude lighthouserc.js --exclude .htmlvalidate.json \
+                   ./ _site/
+          ( cd _site && zip -qr "../${VERSION}-site.zip" . )
+
+          gh release create "$VERSION" \
+            --title "$VERSION" \
+            --target "$GITHUB_SHA" \
+            --generate-notes \
+            --notes-start-tag "$(gh release list --limit 1 --json tagName --jq '.[0].tagName // empty')" \
+            "${VERSION}-site.zip#Deployed site"
+
+          {
+            echo "### Released \`$VERSION\`"
+            echo ""
+            echo "- Live: $PAGE_URL"
+            echo "- Release: $(gh release view "$VERSION" --json url --jq .url)"
+          } >> "$GITHUB_STEP_SUMMARY"
