@@ -226,17 +226,20 @@ img.ph::before{content:none}
 .gal__head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:10px 24px;padding-bottom:18px;margin-bottom:clamp(22px,3vw,34px);border-bottom:1px solid var(--line)}
 .gal__head h2{font-size:clamp(1.6rem,2.6vw,2.4rem)}
 .gal__head p{margin:0;color:var(--mute);font:400 12px/1.5 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase}
-/* column-width, not column-count: the browser fits as many ~330px columns as
-   the container allows and stretches them to fill, so tile width tracks the
-   viewport with no breakpoints. Images keep height:auto, so each tile is as
-   tall as its own render demands — native aspect, nothing cropped. */
-.gal__grid{columns:330px;column-gap:clamp(16px,2vw,28px)}
-.shot{display:block;break-inside:avoid;margin:0 0 clamp(16px,2vw,28px);overflow:hidden;background:var(--bone-2)}
-.shot img{width:100%;height:auto;display:block;transition:transform .6s var(--ease)}
+/* Justified rows, as on the homepage work grid: each tile declares its
+   picture's aspect ratio as --r and both flex-basis and flex-grow scale with
+   it, so a row's tiles share one height and fill the width. Nothing cropped. */
+.gal__grid{display:flex;flex-wrap:wrap;gap:clamp(16px,2vw,28px);--row:clamp(190px,19vw,260px)}
+.shot{flex:var(--r) 1 calc(var(--r) * var(--row));margin:0;overflow:hidden;background:var(--bone-2)}
+/* Soaks up the last row's leftover width so a short final row keeps the
+   normal row height instead of one orphan tile stretching across. */
+.gal__grid::after{content:"";flex:1000000 0 0}
+/* ...except a section holding a single sheet, which reads as a full-width plate. */
+.gal__grid:has(> .shot:only-of-type)::after{content:none}
+.shot img{width:100%;height:auto;aspect-ratio:var(--r);display:block;transition:transform .6s var(--ease)}
 .shot:hover img,.shot:focus-visible img{transform:scale(1.03)}
 .work__all{margin:clamp(28px,4vw,44px) 0 0}
 @media (prefers-reduced-motion:reduce){.shot:hover img,.shot:focus-visible img{transform:none}}
-.gal__grid:has(> :only-child){columns:1}
 
 /* contact page */
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
