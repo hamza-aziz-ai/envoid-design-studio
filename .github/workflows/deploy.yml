@@ -1,0 +1,109 @@
+name: CI/CD
+
+# Checks run on every push and pull request. Only main deploys, and only after
+# the checks pass, so a broken page cannot reach the live site. After the
+# deployment goes out, the smoke job proves the real origin serves it.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One deployment at a time. Not cancel-in-progress: cancelling halfway through
+# a Pages deployment can leave the site on a partial upload.
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate HTML
+        run: npx --yes html-validate@9 index.html projects.html contact.html thanks.html 404.html
+
+      - name: Parse browser scripts
+        run: |
+          node --check main.js
+          node --check contact.js
+
+      - name: Site checks
+        run: python3 tools/check_site.py
+
+      # Serve the site at the path it occupies in production, so <base href>
+      # in 404.html and every relative URL resolve the way they will once live.
+      - name: Stage a production-shaped copy
+        run: |
+          mkdir -p _preview/envoid-design-studio
+          rsync -a --exclude .git --exclude .github --exclude tools \
+                   --exclude _preview --exclude .lighthouseci \
+                   ./ _preview/envoid-design-studio/
+
+      - name: Lighthouse
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          configPath: ./lighthouserc.js
+
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-${{ github.run_id }}
+          path: .lighthouseci
+          if-no-files-found: ignore
+          retention-days: 14
+
+  deploy:
+    name: Deploy to Pages
+    needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Ship the site, not the toolchain that checks it.
+      - name: Assemble the published site
+        run: |
+          mkdir -p _site
+          rsync -a --exclude .git --exclude .github --exclude tools \
+                   --exclude _site --exclude _preview --exclude .lighthouseci \
+                   --exclude lighthouserc.js --exclude .htmlvalidate.json \
+                   ./ _site/
+          ls -la _site
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+  smoke:
+    name: Smoke test the live site
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Probe the deployed origin
+        run: bash tools/smoke.sh "${{ needs.deploy.outputs.page_url }}"

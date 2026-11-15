@@ -1,0 +1,11 @@
+version: 2
+updates:
+  # The workflow pins action major versions. Without this they silently rot,
+  # and a deprecated Pages action fails the deploy rather than the checks.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: ci
