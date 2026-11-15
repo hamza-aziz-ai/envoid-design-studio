@@ -1,0 +1,5 @@
+* text=auto
+
+# Shell scripts run on the Linux CI runner. A CRLF line ending there makes the
+# shebang unparseable: "bad interpreter: /usr/bin/env bash^M".
+*.sh text eol=lf
