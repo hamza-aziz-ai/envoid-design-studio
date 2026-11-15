@@ -109,8 +109,11 @@ The site is written for `envoiddesign.in` already. To move it:
    to another domain.
 4. Update `CANONICAL_HOST` in `tools/check_site.py` if the domain differs, and
    `tools/smoke.sh`'s expected canonicals.
-5. Delete the `hamzaaziz.dev` copy. GitHub Pages cannot 301 a project path.
-6. Re-enable the `canonical` audit in `lighthouserc.js`.
+5. Point the form's `_next` hidden field at the new `thanks.html`. FormSubmit
+   needs an absolute URL there, so it currently names the interim host and
+   would send people back to a page that no longer exists.
+6. Delete the `hamzaaziz.dev` copy. GitHub Pages cannot 301 a project path.
+7. Re-enable the `canonical` audit in `lighthouserc.js`.
 
 Until then Google may index the interim copy despite the canonical, because it
 points at a domain still serving different content.
