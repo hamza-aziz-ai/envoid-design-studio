@@ -28,17 +28,4 @@ document.querySelectorAll('.r').forEach((el, i) => {
   io.observe(el);
 });
 
-// enquiry form -> WhatsApp (no backend)
-const form = document.getElementById('form');          // absent on projects.html
-const err = document.getElementById('err');
-form?.addEventListener('submit', e => {
-  e.preventDefault();
-  const f = Object.fromEntries(new FormData(form));
-  const name = f.name.trim(), phone = f.phone.trim();
-  if (!name || !phone) { err.hidden = false; return; }
-  err.hidden = true;
-  const msg = `New project enquiry\nName: ${name}\nPhone: ${phone}\nService: ${f.service}\nLocation: ${f.location || '-'}\nBrief: ${f.brief || '-'}`;
-  open(`https://wa.me/919560769743?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
-});
-
 document.getElementById('yr').textContent = String(new Date().getFullYear());

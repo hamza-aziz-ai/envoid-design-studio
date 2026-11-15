@@ -235,3 +235,11 @@ img.ph::before{content:none}
 @media (max-width:640px){.gal__grid{columns:1}}
 @media (prefers-reduced-motion:reduce){.shot:hover img,.shot:focus-visible img{transform:none}}
 .gal__grid:has(> :only-child){columns:1}
+
+/* contact page */
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.map{width:100%;aspect-ratio:4/3;margin-top:34px;border:1px solid var(--line);display:block}
+.phead--tall{min-height:72svh;display:flex;align-items:center}
+.phead--tall .btn{margin-top:14px}
+.form__note a{color:var(--brass)}
+@media (max-width:860px){.map{aspect-ratio:3/2}}

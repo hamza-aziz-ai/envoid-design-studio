@@ -32,7 +32,7 @@
       <a href="#services">Services</a>
       <a href="#process">Process</a>
       <a href="projects.html">Projects</a>
-      <a href="#contact">Contact</a>
+      <a href="contact.html">Contact</a>
     </nav>
     <div class="nav__cta">
       <a class="btn btn--sm" href="https://wa.me/919560769743?text=Hi%20Envoid%20Design%20Studio%2C%20I%27d%20like%20a%20free%20consultation." target="_blank" rel="noopener">Free Consultation</a>
@@ -193,13 +193,18 @@
         <dd><a href="https://wa.me/919560769743" target="_blank" rel="noopener">Free online consultation</a></dd>
       </dl>
     </div>
-    <form class="form r" id="form" novalidate>
+    <form class="form r" id="form" action="https://formsubmit.co/envoidstudio26@gmail.com" method="POST">
       <h3>Project enquiry</h3>
-      <p class="form__note">Sends your details to the studio over WhatsApp.</p>
-      <label>Name<input name="name" required autocomplete="name"></label>
-      <label>Phone<input name="phone" type="tel" required autocomplete="tel" inputmode="tel"></label>
+      <p class="form__note">Goes straight to the studio inbox. We reply within one working day.</p>
+      <input type="hidden" name="_subject" value="New project enquiry — envoiddesign website">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_next" value="https://hamzaaziz.dev/envoid-design-studio/thanks.html">
+      <p class="hp" aria-hidden="true"><label>Leave this field empty<input name="_honey" tabindex="-1" autocomplete="off"></label></p>
+      <label>Name<input name="Name" required autocomplete="name"></label>
+      <label>Phone<input name="Phone" type="tel" required autocomplete="tel" inputmode="tel"></label>
+      <label>Email<input name="Email" type="email" autocomplete="email"></label>
       <label>Service
-        <select name="service">
+        <select name="Service">
           <option>Architecture &amp; Structure</option>
           <option>Interior Design</option>
           <option>Design &amp; Build</option>
@@ -207,15 +212,15 @@
           <option>Project Management</option>
           <option>Vastu</option>
           <option>Map Approval</option>
-        <option>Daylight Analysis</option>
-        <option>Sustainable &amp; Energy-Efficient Building</option>
+          <option>Daylight Analysis</option>
+          <option>Sustainable &amp; Energy-Efficient Building</option>
           <option>Not sure yet</option>
         </select>
       </label>
-      <label>Location<input name="location" placeholder="City / site location"></label>
-      <label>About the project<textarea name="brief" rows="4" placeholder="Plot size, floors, budget band, timeline…"></textarea></label>
+      <label>Location<input name="Location" placeholder="City / site location"></label>
+      <label>About the project<textarea name="Brief" rows="4" placeholder="Plot size, floors, budget band, timeline…"></textarea></label>
       <button class="btn" type="submit">Send enquiry</button>
-      <p class="form__err" id="err" role="alert" hidden>Please add your name and phone number.</p>
+      <p class="form__note">Prefer WhatsApp? <a href="https://wa.me/919560769743?text=Hi%20Envoid%20Design%20Studio%2C%20I%27d%20like%20a%20free%20consultation." target="_blank" rel="noopener">Message us instead</a>.</p>
     </form>
   </div>
 </section>
@@ -228,7 +233,7 @@
       <p class="foot__tag">Architecture · Interiors · Turnkey execution</p>
     </div>
     <nav aria-label="Footer">
-      <a href="#about">About</a><a href="#services">Services</a><a href="#process">Process</a><a href="projects.html">Projects</a><a href="#contact">Contact</a>
+      <a href="#about">About</a><a href="#services">Services</a><a href="#process">Process</a><a href="projects.html">Projects</a><a href="contact.html">Contact</a>
     </nav>
     <p class="foot__copy">© <span id="yr">2026</span> Envoid Design Studio. Vaishali, Ghaziabad.</p>
   </div>
