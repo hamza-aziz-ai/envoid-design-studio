@@ -243,3 +243,8 @@ img.ph::before{content:none}
 .phead--tall .btn{margin-top:14px}
 .form__note a{color:var(--brass)}
 @media (max-width:860px){.map{aspect-ratio:3/2}}
+
+/* enquiry form status + email typo suggestion */
+.form__status{margin:0;min-height:1.4em;font-size:.88rem;color:var(--mute);text-align:left}
+.form__suggestion{font:inherit;color:var(--brass);background:none;border:0;border-bottom:1px solid currentColor;padding:0;cursor:pointer}
+.form button[disabled]{opacity:.55;cursor:progress}
