@@ -248,3 +248,11 @@ img.ph::before{content:none}
 .form__status{margin:0;min-height:1.4em;font-size:.88rem;color:var(--mute);text-align:left}
 .form__suggestion{font:inherit;color:var(--brass);background:none;border:0;border-bottom:1px solid currentColor;padding:0;cursor:pointer}
 .form button[disabled]{opacity:.55;cursor:progress}
+
+/* 404 */
+.lost{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(246,243,238,.16);margin:clamp(32px,5vw,52px) 0}
+.lost a{display:grid;gap:12px;background:var(--ink);padding:24px 20px;text-decoration:none;color:var(--bone);font:500 12px/1 Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;transition:background .3s var(--ease),color .3s}
+.lost a span{color:var(--brass-lt);font-size:11px;letter-spacing:.2em}
+.lost a:hover{background:var(--brass);color:#fff}
+.lost a:hover span{color:#fff}
+@media (max-width:760px){.lost{grid-template-columns:repeat(2,1fr)}}
