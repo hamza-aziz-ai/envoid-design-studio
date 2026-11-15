@@ -98,13 +98,14 @@ a{color:inherit}
 .grid--contact{grid-template-columns:1fr 1fr;align-items:start}
 
 /* placeholder blocks — swap <figure class="ph"> for <img> when photos are ready */
-.ph{margin:0;position:relative;aspect-ratio:4/3;background:
+.ph{margin:0;position:relative;aspect-ratio:4/3;width:100%;background:
   linear-gradient(135deg,#dfd8cc,#cfc6b6 60%,#bdb2a0);
   display:grid;place-items:center;overflow:hidden}
 .ph::before{content:"";position:absolute;inset:0;background:
   repeating-linear-gradient(135deg,rgba(255,255,255,.26) 0 2px,transparent 2px 14px)}
 .ph--tall{aspect-ratio:3/4}
-img.ph{object-fit:cover;height:auto}
+/* files keep their native proportions; the card crop is display-only */
+img.ph{object-fit:cover;height:100%}
 img.ph::before{content:none}
 .ph figcaption{position:relative;font:500 10px/1 Inter,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:#6b6252}
 
