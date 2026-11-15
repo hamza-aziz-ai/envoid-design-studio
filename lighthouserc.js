@@ -8,7 +8,7 @@
 module.exports = {
   ci: {
     collect: {
-      startServerCommand: 'python3 -m http.server 8000 --directory _preview',
+      startServerCommand: 'python3 -u -m http.server 8000 --directory _preview',
       startServerReadyPattern: 'Serving HTTP',
       url: [
         'http://localhost:8000/envoid-design-studio/',

@@ -44,11 +44,7 @@ jobs:
       # Serve the site at the path it occupies in production, so <base href>
       # in 404.html and every relative URL resolve the way they will once live.
       - name: Stage a production-shaped copy
-        run: |
-          mkdir -p _preview/envoid-design-studio
-          rsync -a --exclude .git --exclude .github --exclude tools \
-                   --exclude _preview --exclude .lighthouseci \
-                   ./ _preview/envoid-design-studio/
+        run: bash tools/stage.sh _preview/envoid-design-studio ci
 
       - name: Lighthouse
         uses: treosh/lighthouse-ci-action@v12
@@ -61,7 +57,9 @@ jobs:
         with:
           name: lighthouse-${{ github.run_id }}
           path: .lighthouseci
-          if-no-files-found: ignore
+          # .lighthouseci is a dotted directory; without this the upload is empty.
+          include-hidden-files: true
+          if-no-files-found: warn
           retention-days: 14
 
   deploy:
@@ -84,15 +82,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      # Ship the site, not the toolchain that checks it.
+      # Ship the site, not the toolchain that checks it. The commit sha is the
+      # cache-busting token, so each deploy invalidates the CSS and JS that
+      # Cloudflare holds for four hours in front of Pages.
       - name: Assemble the published site
-        run: |
-          mkdir -p _site
-          rsync -a --exclude .git --exclude .github --exclude tools \
-                   --exclude _site --exclude _preview --exclude .lighthouseci \
-                   --exclude lighthouserc.js --exclude .htmlvalidate.json \
-                   ./ _site/
-          ls -la _site
+        run: bash tools/stage.sh _site "${GITHUB_SHA::8}"
 
       - uses: actions/configure-pages@v5
 
@@ -135,11 +129,7 @@ jobs:
           # run number keeps several releases on one day distinct and ordered.
           VERSION="v$(date -u +%Y.%m.%d)-${{ github.run_number }}"
 
-          mkdir -p _site
-          rsync -a --exclude .git --exclude .github --exclude tools \
-                   --exclude _site --exclude _preview --exclude .lighthouseci \
-                   --exclude lighthouserc.js --exclude .htmlvalidate.json \
-                   ./ _site/
+          bash tools/stage.sh _site "${GITHUB_SHA::8}"
           ( cd _site && zip -qr "../${VERSION}-site.zip" . )
 
           gh release create "$VERSION" \

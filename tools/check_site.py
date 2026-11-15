@@ -119,9 +119,20 @@ def check_page(name, html):
         check('width="' in tag and 'height="' in tag,
               "%s: <img src=%s> has no width/height" % (name, src))
 
-    # Every local reference must resolve. Root-relative paths are skipped:
-    # 404.html resolves them against its <base href>, not against the repo root.
-    for ref in find(r'(?:src|href)="(?!https?:|mailto:|tel:|data:|#|/)([^"?#]+)"', html):
+    # A <picture> must keep a plain <img> inside it, or browsers that skip the
+    # <source> elements render nothing at all.
+    for block in find(r"<picture\b.*?</picture>", html):
+        check("<img" in block, "%s: <picture> without an <img> fallback" % name)
+        for source in find(r"<source\b[^>]*>", block):
+            check('srcset="' in source and 'type="' in source,
+                  "%s: <source> without srcset and type" % name)
+
+    # Every local reference must resolve, srcset candidates included: a renamed
+    # variant is invisible until a browser happens to pick that width.
+    refs = find(r'(?:src|href)="(?!https?:|mailto:|tel:|data:|#|/)([^"?#]+)"', html)
+    for candidates in find(r'srcset="([^"]+)"', html):
+        refs += [c.strip().split()[0] for c in candidates.split(",") if c.strip()]
+    for ref in refs:
         check(os.path.exists(os.path.join(ROOT, ref)), "%s: references missing file %s" % (name, ref))
 
 

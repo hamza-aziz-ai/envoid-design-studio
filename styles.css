@@ -67,6 +67,13 @@ a{color:inherit}
   radial-gradient(120% 90% at 78% 8%,rgba(184,138,82,.42),transparent 60%),
   linear-gradient(200deg,rgba(38,35,32,.92) 0%,rgba(20,20,20,.86) 55%,rgba(12,12,12,.94) 100%),
   url(assets/hero.jpg) center/cover no-repeat #141414;}
+/* Same hero, WebP where the browser supports image-set: ~35% fewer bytes on
+   the largest asset the first screen needs. The rule above stays as the
+   fallback, so a browser without image-set() still gets the JPEG. */
+.hero__bg{background-image:
+  radial-gradient(120% 90% at 78% 8%,rgba(184,138,82,.42),transparent 60%),
+  linear-gradient(200deg,rgba(38,35,32,.92) 0%,rgba(20,20,20,.86) 55%,rgba(12,12,12,.94) 100%),
+  image-set(url(assets/hero-1200.webp) type("image/webp"),url(assets/hero.jpg) type("image/jpeg"))}
 .hero__bg::after{content:"";position:absolute;inset:0;opacity:.5;background:
   repeating-linear-gradient(90deg,rgba(246,243,238,.05) 0 1px,transparent 1px 11vw),
   repeating-linear-gradient(0deg,rgba(246,243,238,.04) 0 1px,transparent 1px 9vw)}
