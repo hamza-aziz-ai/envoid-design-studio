@@ -1,7 +1,7 @@
 /* Envoid Design Studio — brand palette: bone, charcoal, brass */
 :root{
   --ink:#141414; --ink-2:#1d1d1d; --bone:#f6f3ee; --bone-2:#ece7df;
-  --brass:#b88a52; --brass-lt:#c8a06a; --brass-ink:#8a6333; --mute:#666159; --line:#dcd5ca;
+  --brass:#b88a52; --brass-lt:#c8a06a; --brass-ink:#805a2c; --mute:#666159; --line:#dcd5ca;
   --wrap:1200px; --ease:cubic-bezier(.22,.61,.36,1);
   --h1:clamp(2.9rem,7.5vw,6.2rem); --h2:clamp(2rem,3.6vw,3.3rem);
 }
