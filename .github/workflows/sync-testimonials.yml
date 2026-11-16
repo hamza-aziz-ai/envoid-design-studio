@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: sync-testimonials
@@ -35,14 +36,44 @@ jobs:
           SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
         run: node tools/sync-testimonials.mjs --limit 6
 
-      - name: Commit if changed
+      # A pull request, not a push to main. Two reasons, both load-bearing:
+      # a push made with GITHUB_TOKEN does not trigger deploy.yml (GitHub's
+      # workflow-loop protection), so the file would land in the repository and
+      # never reach the live site; and main requires the Checks status, which
+      # github-actions[bot] cannot bypass. Merging the PR is a human push, which
+      # does deploy - and puts a person in front of public text one last time.
+      - name: Open a pull request if changed
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           if git diff --quiet -- testimonials.json; then
             echo "no change"
             exit 0
           fi
+          BRANCH=sync/testimonials
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH"
           git add testimonials.json
           git commit -m "Sync approved client testimonials"
           git push
+
+      # A push made with GITHUB_TOKEN does not trigger other workflows, so the
+      # commit above would never reach the live site: testimonials.json would
+      # sit in the repository looking deployed until some unrelated human push
+      # happened. deploy.yml carries workflow_dispatch for exactly this.
+      - name: Deploy the change
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet HEAD~1 -- testimonials.json 2>/dev/null; then
+            echo "nothing committed, no deploy needed"
+          else
+            gh workflow run deploy.yml --ref main
+          fi --force-with-lease origin "$BRANCH"
+          if [ -z "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[].number')" ]; then
+            gh pr create --base main --head "$BRANCH"               --title "Sync approved client testimonials"               --body "Automated: approved reviews pulled from Supabase. Merging publishes them. Review the text before merging - it was written by the public."
+          else
+            echo "existing PR updated"
+          fi
