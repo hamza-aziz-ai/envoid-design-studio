@@ -1,0 +1,48 @@
+name: Sync testimonials
+
+# Pulls the studio-approved client reviews out of Supabase and commits them as
+# testimonials.json, which the site renders. Nothing here can publish a review:
+# the query only ever sees rows a human already approved.
+
+on:
+  schedule:
+    - cron: '30 0 * * *' # 06:00 IST daily
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-testimonials
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 20
+
+      - name: Fetch approved reviews
+        env:
+          # Repository *variables*, not secrets: both values are public by
+          # design and ship inside the mobile app. Row-level security is what
+          # protects the data. See MobileApp/supabase/schema.sql.
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+        run: node tools/sync-testimonials.mjs --limit 6
+
+      - name: Commit if changed
+        run: |
+          if git diff --quiet -- testimonials.json; then
+            echo "no change"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add testimonials.json
+          git commit -m "Sync approved client testimonials"
+          git push
