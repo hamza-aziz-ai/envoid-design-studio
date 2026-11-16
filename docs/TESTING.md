@@ -54,6 +54,8 @@ Open the contact page, fill the form the way a real enquirer would, and submit.
 - **While `EMAILJS` is blank:** you should land on `/thanks/`, and the studio's inbox should receive a FormSubmit mail. If no mail arrives, FormSubmit has not been activated — see `docs/FAILURE.md`.
 - **Once `EMAILJS` is filled:** the status line should move through "Checking your email address…" then "Sending…" to the success message, the studio should receive the enquiry, and the sender should receive the auto-reply. Test both mails, not just the first.
 
+Send through the live form rather than EmailJS's **Test It** button: Test It cannot send line breaks at all, so a multi-line Brief looks correct there and arrives wrong. Check the enquiry mail's Reply actually addresses the customer, and submit once with Service and Brief left empty — the studio's copy should show them blank, the customer's copy should read `General enquiry` and `No brief was included.`
+
 Also exercise the two validation paths deliberately, because neither is covered by any automated check:
 
 | Input | Expected |

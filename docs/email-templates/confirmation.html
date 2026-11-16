@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<!--
+  EmailJS CONFIRMATION template — the auto-reply the enquirer receives. Paste
+  this whole file into the template's HTML body in the EmailJS dashboard.
+
+  Variables come from sendConfirmation() in contact.js:
+    {{from_name}} {{subject}} {{message}} {{reply_to}}
+  EmailJS escapes {{...}} values, so visitor text cannot inject HTML here.
+
+  {{subject}} carries the Service field and {{message}} the Brief. Both are
+  optional on the form, so contact.js substitutes a readable default rather
+  than letting an empty row ship to a customer.
+
+  Dashboard settings for this template:
+    To Email:  {{reply_to}}
+    Reply To:  envoidstudio26@gmail.com
+    Subject:   We have your enquiry, {{from_name}} — Envoid Design Studio
+
+  Email rules this follows: tables for layout, every style inline, no
+  JavaScript, absolute URLs, JPG not WebP (Outlook desktop cannot render
+  WebP), and every button also works as a plain link.
+-->
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="x-apple-disable-message-reformatting">
+    <meta name="color-scheme" content="light">
+    <meta name="supported-color-schemes" content="light">
+    <title>We have your enquiry, {{from_name}}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Only clients that support <style> use these. The inline styles carry the design. */
+        @media screen and (max-width: 740px) {
+            .container { width: 100% !important; }
+            .px { padding-left: 20px !important; padding-right: 20px !important; }
+            .stack { display: block !important; width: 100% !important; padding-left: 0 !important; padding-right: 0 !important; }
+            .stack-gap { padding-top: 14px !important; }
+            .hero img { width: 100% !important; height: auto !important; }
+            .h1 { font-size: 26px !important; line-height: 32px !important; }
+        }
+        a { color: #805a2c; }
+        /* Gmail turns a bare address into its own blue underlined link,
+           sometimes inside ours. This overrides both. */
+        .addr, .addr a, .addr a:link, .addr a:visited {
+            color: #141414 !important; text-decoration: none !important; font-weight: 600 !important;
+        }
+        a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !important; }
+        .btn { transition: background-color .4s; }
+        .btn:hover { background-color: #805a2c !important; }
+    </style>
+</head>
+<body style="margin:0; padding:0; background-color:#dcd5ca; -webkit-text-size-adjust:100%;">
+    <!-- Preheader: the grey preview line in the inbox list. -->
+    <div style="display:none; max-height:0; overflow:hidden; mso-hide:all;">
+        Thank you, {{from_name}}. Your enquiry has reached the studio and we will call you back within one working day.&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;
+    </div>
+
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#dcd5ca;">
+        <tr>
+            <td align="center" style="padding:32px 12px;">
+
+                <table role="presentation" class="container" width="720" cellpadding="0" cellspacing="0" border="0" style="width:720px; max-width:720px; background-color:#ffffff;">
+
+                    <!-- Header: charcoal bar, logo on a bone tile so the mark stays visible -->
+                    <tr>
+                        <td class="px" style="background-color:#141414; padding:18px 32px;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                    <td style="width:40px; height:40px; background-color:#f6f3ee; text-align:center; vertical-align:middle;">
+                                        <img src="https://envoiddesign.in/assets/logo.png" width="22" height="30" alt="" style="display:block; margin:0 auto; width:22px; height:30px; border:0;">
+                                    </td>
+                                    <td style="padding-left:12px; font-family:'Fraunces', Georgia, 'Times New Roman', serif; font-size:18px; font-weight:400; letter-spacing:.01em; color:#f6f3ee;">
+                                        <a href="https://envoiddesign.in/" style="color:#f6f3ee; text-decoration:none;">Envoid Design Studio</a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Brass rule -->
+                    <tr><td style="height:4px; line-height:4px; font-size:0; background-color:#b88a52;">&nbsp;</td></tr>
+
+                    <!-- Hero: a built project, not a stock gradient -->
+                    <tr>
+                        <td class="hero" style="font-size:0; line-height:0;">
+                            <img src="https://envoiddesign.in/assets/marriage-hall-1200.jpg" width="720" height="405" alt="A completed Envoid Design Studio project" style="display:block; width:720px; max-width:100%; height:auto; border:0;">
+                        </td>
+                    </tr>
+
+                    <!-- Thank you -->
+                    <tr>
+                        <td class="px" style="padding:34px 32px 4px 32px;">
+                            <p style="margin:0 0 8px 0; font-family:'Inter', Arial, Helvetica, sans-serif; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:#805a2c; font-weight:600;">Enquiry received</p>
+                            <h1 class="h1" style="margin:0; font-family:'Fraunces', Georgia, 'Times New Roman', serif; font-size:32px; line-height:38px; font-weight:400; letter-spacing:-.02em; color:#141414;">Thank you, {{from_name}}.</h1>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="px" style="padding:16px 32px 8px 32px; font-family:'Inter', Arial, Helvetica, sans-serif; font-size:16px; line-height:27px; color:#3a3733;">
+                            <p style="margin:0 0 14px 0;">Your enquiry has reached the studio. We read every one ourselves, and we will call or write back to <span class="addr" style="color:#141414; font-weight:600;"><a href="mailto:{{reply_to}}" style="color:#141414; font-weight:600; text-decoration:none;">{{reply_to}}</a></span> within one working day.</p>
+                            <p style="margin:0;">Here is what you sent us:</p>
+                        </td>
+                    </tr>
+
+                    <!-- Copy of what they sent -->
+                    <tr>
+                        <td class="px" style="padding:14px 32px 8px 32px;">
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f6f3ee; border-left:4px solid #b88a52;">
+                                <tr>
+                                    <td style="padding:20px 22px; font-family:'Inter', Arial, Helvetica, sans-serif;">
+                                        <p style="margin:0 0 6px 0; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#666159; font-weight:600;">Service</p>
+                                        <p style="margin:0 0 16px 0; font-size:16px; line-height:24px; color:#141414; font-weight:600;">{{subject}}</p>
+                                        <p style="margin:0 0 6px 0; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:#666159; font-weight:600;">Your brief</p>
+                                        <p style="margin:0; font-size:15px; line-height:25px; color:#3a3733; white-space:pre-wrap;">{{message}}</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- While you wait -->
+                    <tr>
+                        <td class="px" style="padding:30px 32px 4px 32px;">
+                            <p style="margin:0 0 6px 0; font-family:'Fraunces', Georgia, 'Times New Roman', serif; font-size:22px; line-height:28px; font-weight:400; letter-spacing:-.01em; color:#141414;">While you wait</p>
+                            <p style="margin:0; font-family:'Inter', Arial, Helvetica, sans-serif; font-size:15px; line-height:24px; color:#666159;">Look through what we have built, or send us a message on WhatsApp if something is urgent.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="px" style="padding:18px 32px 8px 32px;">
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                    <td class="stack" width="34%" style="padding-right:6px;">
+                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tr><td class="btn" align="center" style="background-color:#141414;">
+                                                <a href="https://envoiddesign.in/projects/" style="display:block; padding:15px 8px; font-family:'Inter', Arial, Helvetica, sans-serif; font-size:15px; font-weight:600; color:#f6f3ee; text-decoration:none;">Our projects</a>
+                                            </td></tr>
+                                        </table>
+                                    </td>
+                                    <td class="stack stack-gap" width="33%" style="padding:0 3px;">
+                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tr><td class="btn" align="center" style="background-color:#141414;">
+                                                <a href="https://envoiddesign.in/#services" style="display:block; padding:15px 8px; font-family:'Inter', Arial, Helvetica, sans-serif; font-size:15px; font-weight:600; color:#f6f3ee; text-decoration:none;">What we do</a>
+                                            </td></tr>
+                                        </table>
+                                    </td>
+                                    <td class="stack stack-gap" width="33%" style="padding-left:6px;">
+                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tr><td class="btn" align="center" style="background-color:#141414;">
+                                                <a href="https://wa.me/919560769743" style="display:block; padding:15px 8px; font-family:'Inter', Arial, Helvetica, sans-serif; font-size:15px; font-weight:600; color:#f6f3ee; text-decoration:none;">WhatsApp us</a>
+                                            </td></tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Studio details -->
+                    <tr>
+                        <td class="px" style="padding:30px 32px 32px 32px;">
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid #dcd5ca;">
+                                <tr>
+                                    <td style="padding-top:22px; font-family:'Inter', Arial, Helvetica, sans-serif; font-size:15px; line-height:26px; color:#3a3733;">
+                                        <p style="margin:0 0 12px 0;">Warm regards,<br><strong style="font-family:'Fraunces', Georgia, 'Times New Roman', serif; font-size:17px; font-weight:400; color:#141414;">Envoid Design Studio</strong><br><span style="color:#666159;">Architecture &amp; Interior Design · Delhi NCR</span></p>
+                                        <p style="margin:0; font-size:14px; line-height:25px;">
+                                            366, Brahmaputra Lane, Sector 5, Vaishali, Ghaziabad, Uttar Pradesh<br>
+                                            <a href="tel:+919560769743" style="color:#805a2c; white-space:nowrap;">+91&nbsp;95607&nbsp;69743</a> ·
+                                            <a href="tel:+916387847728" style="color:#805a2c; white-space:nowrap;">+91&nbsp;63878&nbsp;47728</a><br>
+                                            <a href="mailto:envoidstudio26@gmail.com" style="color:#805a2c;">envoidstudio26@gmail.com</a> ·
+                                            <a href="https://envoiddesign.in/" style="color:#805a2c;">envoiddesign.in</a>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td class="px" style="background-color:#141414; padding:18px 32px; font-family:'Inter', Arial, Helvetica, sans-serif; font-size:12px; line-height:20px; color:#a9a098;">
+                            You are receiving this one-off confirmation because this address was entered in the enquiry form on
+                            <a href="https://envoiddesign.in/contact/" style="color:#f6f3ee;">envoiddesign.in</a>.<br/>If that was not you, you can ignore it; nothing further will be sent.
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

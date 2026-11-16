@@ -18,6 +18,7 @@ Where things stand. Newest entry on top. Read this first; update it last.
 - Pipeline skips documentation-only pushes (`paths-ignore` on `push` only — a required check that never runs blocks a pull request forever).
 - Every wrap-imitating `<br>` removed from the markup; headings carry a measure plus `text-wrap: balance`, the two phone numbers became a real stack.
 - Every outbound and asset link opens in a new tab; in-site navigation deliberately does not.
+- Both EmailJS email templates written and reviewed in `docs/email-templates/`, so filling the four identifiers is the only step left.
 - EmailJS SDK tag now carries a Subresource Integrity hash and `crossorigin="anonymous"`.
 - URLs dropped the `.html` extension: pages moved into directories and are served at `/projects/`, `/contact/`, `/thanks/`, with every markup reference now root-relative.
 - This `docs/` set written.
@@ -31,7 +32,7 @@ Where things stand. Newest entry on top. Read this first; update it last.
 
 ### Next
 
-1. Fill the four EmailJS identifiers, then run the manual form path in `docs/TESTING.md` and confirm both mails arrive.
+1. Create the EmailJS service and the two templates, paste `docs/email-templates/enquiry.html` and `confirmation.html` into them with the dashboard settings in that folder's README, fill the four identifiers in `contact.js`, then run the manual form path in `docs/TESTING.md` and confirm both mails arrive.
 2. Turn on domain auto-renewal in hPanel.
 3. Confirm the project titles and locations with the studio.
 4. Leave Search Console to re-read `sitemap.xml` on its own — it already lists the new directory URLs. The three `.html` URLs submitted earlier today now 404, which is correct and needs no action.

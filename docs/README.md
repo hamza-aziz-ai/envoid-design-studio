@@ -29,6 +29,7 @@ Written so that any customer-facing part of this site can be explained and defen
 | [ALTERNATIVES](ALTERNATIVES.md) | What was rejected and the condition that would change the answer |
 | [ASSUMPTIONS](ASSUMPTIONS.md) | What is believed but not proven |
 | [DEPENDENCIES](DEPENDENCIES.md) | Every third party, why it is here, and what it can see |
+| [email-templates/](email-templates/) | The two EmailJS emails, their dashboard settings and the client quirks they work around |
 | [defense/](defense/) | One brief per shipped system, in plain words |
 | [features/](features/), [bugs/](bugs/) | One file per feature or bug, traced from start to verification |
 

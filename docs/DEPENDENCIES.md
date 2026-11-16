@@ -47,6 +47,8 @@ Python 3 is used by `tools/check_site.py` and by Lighthouse's local server. It i
 
 The rule in `docs/CONSTRAINTS.md` stands: never commit a credential, key, token or `.env` file. Scan a diff for them before committing — `git diff --cached` — because the repository is public and a push cannot be unpublished.
 
+The two email bodies live in `docs/email-templates/`. EmailJS stores the real copy in its dashboard and offers no export, so that folder is the version under review and the dashboard is a paste of it — they can drift, and only a human re-paste keeps them together.
+
 ## Recomputing the EmailJS SRI hash
 
 Needed only when the pinned version changes. The published hash is cross-checked against jsDelivr's own, so a bad download cannot quietly become the recorded value:

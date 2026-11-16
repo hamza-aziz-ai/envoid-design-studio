@@ -145,7 +145,15 @@ const sendEnquiry = async event => {
   try {
     await emailjs.send(EMAILJS.enquiry.service, EMAILJS.enquiry.template, params, EMAILJS.publicKey)
     statusLine.textContent = 'Enquiry sent. We will call you back within one working day ✅'
-    sendConfirmation({ from_name: params.user_name, subject: params.user_service, message: params.user_message, reply_to: params.user_email })
+    // Service and Brief are optional. The studio's copy keeps them blank, so it
+    // can see what was not said; the enquirer's copy gets readable text instead
+    // of an empty row under a heading.
+    sendConfirmation({
+      from_name: params.user_name,
+      subject: params.user_service || 'General enquiry',
+      message: params.user_message || 'No brief was included.',
+      reply_to: params.user_email,
+    })
     form.reset()
     setTimeout(() => { statusLine.textContent = '' }, 8000)
   } catch {
