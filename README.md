@@ -85,6 +85,7 @@ URLs carry no file extension. GitHub Pages serves `<dir>/index.html` at `<dir>/`
 | `main.js` | `/main.js` | Navigation, scroll reveal, footer year, gallery lightbox |
 | `contact.js` | `/contact.js` | Enquiry form validation and EmailJS delivery |
 | `CNAME` | — | Custom domain declaration |
+| `11a31af272e849d434442a1409c95719.txt` | `/11a31af2….txt` | IndexNow ownership key; the filename is the key |
 | `robots.txt` | `/robots.txt` | Crawl directives and the sitemap's location |
 | `sitemap.xml` | `/sitemap.xml` | The three indexable pages |
 | `assets/` | `/assets/…` | Photography, logo, favicons and generated width variants |

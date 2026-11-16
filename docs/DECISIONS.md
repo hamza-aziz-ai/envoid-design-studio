@@ -6,6 +6,26 @@ Entries made during AI-assisted sessions record the model, because behaviour dif
 
 ---
 
+## D-019 — Use IndexNow for the engines that accept it
+
+**Date:** 2026-11-16 · **Model:** claude-opus-5 (Claude Code)
+
+**Context:** Nine new pages needed crawling. Google retired its sitemap ping endpoint, so Google is a browser job through Search Console — and Search Console caps indexing requests at roughly ten a day, which the submissions on 2026-11-16 hit exactly.
+
+**Options:** 1) submit to Google only and wait for the rest; 2) create Bing Webmaster Tools and Yandex Webmaster accounts; 3) use IndexNow, which needs no account.
+
+**Chosen:** 3, in addition to the Search Console work.
+
+**Why:** IndexNow is one POST that reaches Bing, Yahoo, DuckDuckGo and Yandex together. Ownership is proved by a key file at the site root, so there is no account to create, no credential to store and nothing for a future maintainer to inherit a login for. 2 would mean creating accounts in the studio's name, which is the client's decision and not a prerequisite for the crawling we wanted.
+
+**Trade-off:** It does nothing for Google, which is the engine that matters most in this market. It is a supplement to the Search Console work, never a replacement, and `tools/indexnow.sh` says so in its own header.
+
+**Verification:** First submission returned HTTP 202 (accepted, key being verified), the re-run through `tools/indexnow.sh` returned HTTP 200 for all 12 URLs. Pointing the script at a key the site does not serve makes it refuse to submit and exit 1, which was tested rather than assumed.
+
+**Revisit if:** the studio wants Bing Webmaster Tools properly, which adds reporting that IndexNow does not.
+
+---
+
 ## D-018 — Catch chrome drift with a check, not a template
 
 **Date:** 2026-11-16 · **Model:** claude-opus-5 (Claude Code)
