@@ -20,6 +20,7 @@ Who could behave badly, what they can reach, and what stops them. Known gaps are
 
 - **No CAPTCHA and no rate limit.** A determined submitter can flood the studio's inbox, and can exhaust the EmailJS free-tier quota (roughly 200 emails per month, two per enquiry, so about 100 enquiries). The honeypot stops naive bots and nothing more.
 - **No length cap** on `Brief`. A very large submission is rejected by EmailJS rather than by us.
+- **The EmailJS public key is not scoped to an origin.** Restricting it to `https://envoiddesign.in` is a paid EmailJS feature and this account is on the free tier, so anyone who reads `contact.js` can send through the studio's templates from their own page or from `curl`. What that buys them is the studio's monthly quota and an inbox full of junk, not the mailbox itself: the key cannot read mail, change the templates or reach the Gmail account. Mitigated only by leaving **Allow EmailJS API for non-browser applications** off, which makes EmailJS check the request's origin. Settle it by paying for the allow-list, or by moving the send behind something that can hold a secret.
 - A visitor can read every phone number and the email address on the site. That is intentional — they are published contact details for a business that wants to be contacted.
 
 ### 2. Email-validation side channel

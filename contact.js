@@ -12,9 +12,11 @@
         {{user_location}} {{user_message}}; set Reply-To to {{user_email}}.
      3. A CONFIRMATION template whose To is {{reply_to}} (the auto-reply the
         enquirer receives), using {{from_name}} {{subject}} {{message}}.
-   The public key is meant to ship in client code and is not a secret; EmailJS
-   scopes it by allowed origin instead. The free tier is roughly 200 emails per
-   month and each enquiry sends two. */
+   The public key is meant to ship in client code and is not a secret. EmailJS
+   can scope it to an allowed origin, but that setting is paid-only, so on this
+   account the key works from anywhere: the exposure is the monthly quota, not
+   the mailbox. The free tier is roughly 200 emails per month and each enquiry
+   sends two. */
 const EMAILJS = {
   publicKey: '62buuGiVOAO8DFEZt',  // EmailJS Account > General > Public Key
   enquiry:  { service: 'service_cpailsr', template: 'template_24jbzoi' },  // delivers to envoidstudio26@gmail.com
