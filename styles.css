@@ -9,7 +9,7 @@
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bone);color:var(--ink);font:400 17px/1.7 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 img,svg{max-width:100%;display:block}
-h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:400;letter-spacing:-.02em;line-height:1.04;margin:0;text-wrap:balance}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:400;letter-spacing:-.02em;line-height:1.04;margin:0}
 h1{font-size:var(--h1)}
 h2{font-size:var(--h2)}
 h3{font-size:1.2rem;line-height:1.25;letter-spacing:-.01em}
@@ -17,7 +17,12 @@ h1 em,h2 em{font-style:italic;color:var(--brass)}
 p{margin:0 0 1.1em}
 /* justify only in wide prose columns; narrow columns get rivers */
 .grid--about p{text-align:justify;hyphens:auto}
-a{color:inherit}
+a{color:inherit;text-decoration:none;transition:color .3s var(--ease)}
+/* Links carry colour, never an underline or a bottom border. Inline links
+   in prose take the brass ink and darken to the body colour on hover; on
+   dark panels they take the light brass and go to bone. */
+.prose a,.faq a,.gal__lede a,.form__note a,.grid--about p a,.sec__lede a{color:var(--brass-ink)}
+.prose a:hover,.faq a:hover,.gal__lede a:hover,.form__note a:hover,.grid--about p a:hover,.sec__lede a:hover{color:var(--ink)}
 .wrap{max-width:var(--wrap);margin:0 auto;padding:0 clamp(16px,4vw,40px)}
 .skip{position:absolute;left:-9999px;top:0;background:var(--ink);color:var(--bone);padding:12px 18px;z-index:99}
 .skip:focus{left:0}
@@ -32,9 +37,9 @@ a{color:inherit}
 .btn--ghost:hover{background:var(--bone);color:var(--ink);border-color:var(--bone)}
 .btn--light{background:var(--bone);color:var(--ink);border-color:var(--bone)}
 .btn--light:hover{background:var(--brass);border-color:var(--brass);color:#fff}
-.link{display:inline-flex;gap:10px;align-items:center;font:500 12px/1 Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:8px;transition:border-color .3s,color .3s}
+.link{display:inline-flex;gap:10px;align-items:center;font:500 12px/1 Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--brass-ink);transition:color .3s var(--ease)}
 .link span{transition:transform .3s var(--ease)}
-.link:hover{color:var(--brass);border-color:var(--brass)}
+.link:hover{color:var(--ink)}
 .link:hover span{transform:translateX(6px)}
 
 /* nav */
@@ -66,7 +71,7 @@ a{color:inherit}
 .hero__bg{position:absolute;inset:0;background:
   radial-gradient(120% 90% at 78% 8%,rgba(184,138,82,.42),transparent 60%),
   linear-gradient(200deg,rgba(38,35,32,.92) 0%,rgba(20,20,20,.86) 55%,rgba(12,12,12,.94) 100%),
-  url(assets/hero.jpg) center/cover no-repeat #141414;}
+  url(assets/hero.jpg) center/cover no-repeat #141414}
 /* Same hero, WebP where the browser supports image-set: ~35% fewer bytes on
    the largest asset the first screen needs. The rule above stays as the
    fallback, so a browser without image-set() still gets the JPEG. */
@@ -79,8 +84,7 @@ a{color:inherit}
   repeating-linear-gradient(0deg,rgba(246,243,238,.04) 0 1px,transparent 1px 9vw)}
 .hero__inner{position:relative;padding-block:clamp(130px,18vh,190px) clamp(48px,7vh,76px);width:100%}
 .eyebrow{font:400 italic 1rem/1 Fraunces,Georgia,serif;color:var(--brass-lt);letter-spacing:.04em;margin:0 0 22px;text-align:left}
-.hero h1{max-width:16ch}
-.hero__sub{max-width:46ch;margin:28px 0 0;color:rgba(246,243,238,.72);font-size:1.05rem}
+.hero__sub{margin:28px 0 0;color:rgba(246,243,238,.72);font-size:1.05rem}
 .hero__btns{display:flex;flex-wrap:wrap;gap:14px;margin:38px 0 0}
 .hero .btn:not(.btn--ghost){background:var(--bone);color:var(--ink);border-color:var(--bone)}
 .hero .btn:not(.btn--ghost):hover{background:var(--brass);border-color:var(--brass);color:#fff}
@@ -97,13 +101,12 @@ a{color:inherit}
 /* sections */
 .sec{padding:clamp(72px,11vw,150px) 0}
 .sec--alt{background:var(--bone-2)}
-.sec__head{max-width:62ch;margin-bottom:clamp(40px,5vw,66px)}
+.sec__head{margin-bottom:clamp(40px,5vw,66px)}
 .sec__lede{color:var(--mute);margin:20px 0 0;font-size:1.05rem}
 .grid{display:grid;gap:clamp(32px,5vw,72px)}
 .grid--about{grid-template-columns:1.15fr .85fr;align-items:start}
-.grid--about h2{margin-bottom:26px;max-width:24ch}
+.grid--about h2{margin-bottom:26px}
 .grid--contact{grid-template-columns:1fr 1fr;align-items:start}
-.grid--contact h2{max-width:20ch}
 
 /* Photos render at their own proportions. The work grid overrides the ratio
    per tile from the image's own --r; nothing else constrains them. */
@@ -124,13 +127,14 @@ a{color:inherit}
 /* 10 tiles in a 4-col grid: last two span 2 each so the final row fills */
 .svc li:nth-last-child(-n+2){grid-column:span 2}
 .svc h3{margin-bottom:14px}
-.svc h3 a{text-decoration:none;border-bottom:1px solid var(--brass);padding-bottom:3px;transition:border-color .3s,color .3s}
-.svc li:hover h3 a{border-color:var(--brass-lt);color:var(--brass-lt)}
+.svc h3 a{color:var(--brass-ink)}
+.svc li:hover h3 a{color:var(--brass-lt)}
 .svc p{margin:0;color:var(--mute);font-size:.95rem}
 .svc li:hover p{color:rgba(246,243,238,.75)}
 .svc__cta{background:var(--ink)!important;color:var(--bone)}
 .svc__cta p{color:rgba(246,243,238,.72)}
-.svc__cta .link{border-color:rgba(246,243,238,.35);margin-top:18px;color:var(--brass-lt)}
+.svc__cta .link{margin-top:18px;color:var(--brass-lt)}
+.svc__cta .link:hover{color:var(--bone)}
 
 /* process */
 .steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(24px,3vw,44px);counter-reset:s}
@@ -155,7 +159,7 @@ a{color:inherit}
 
 /* cta band */
 .cta{background:var(--ink);color:var(--bone);padding:clamp(64px,9vw,120px) 0;text-align:center}
-.cta__inner{max-width:60ch;margin:0 auto}
+.cta__inner{margin:0 auto}
 .cta h2{margin-bottom:18px}
 .cta p{color:rgba(246,243,238,.7);text-align:center;margin-bottom:34px}
 
@@ -164,8 +168,8 @@ a{color:inherit}
 .info dt{font:500 10px/1.6 Inter,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--brass-ink)}
 .info dd{margin:0;font-size:.98rem}
 .info__stack{display:grid;gap:5px;justify-items:start}
-.info a{text-decoration:none;border-bottom:1px solid var(--line)}
-.info a:hover{color:var(--brass-ink);border-color:var(--brass-ink)}
+.info a{color:var(--brass-ink)}
+.info a:hover{color:var(--ink)}
 .form{background:var(--bone-2);padding:clamp(26px,3.4vw,46px);display:grid;gap:18px}
 .form h3{font-size:1.5rem}
 .form__note{margin:0;font-size:.85rem;color:var(--mute);text-align:left}
@@ -226,14 +230,14 @@ a{color:inherit}
 
 /* --- projects page --- */
 .phead{background:var(--ink);color:var(--bone);padding:clamp(130px,17vh,180px) 0 clamp(48px,7vh,74px)}
-.phead h1{font-size:clamp(2.6rem,6vw,4.6rem);max-width:18ch}
-.phead__sub{max-width:52ch;margin:22px 0 0;color:rgba(246,243,238,.72)}
+.phead h1{font-size:clamp(2.6rem,6vw,4.6rem)}
+.phead__sub{margin:22px 0 0;color:rgba(246,243,238,.72)}
 .gal{padding:clamp(56px,8vw,104px) 0}
 .gal+.gal{padding-top:0}
 .gal__head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:10px 24px;padding-bottom:18px;margin-bottom:clamp(22px,3vw,34px);border-bottom:1px solid var(--line)}
 .gal__head h2{font-size:clamp(1.6rem,2.6vw,2.4rem)}
 .gal__head p{margin:0;color:var(--mute);font:400 12px/1.5 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase}
-.gal__lede{max-width:74ch;margin:0 0 clamp(22px,3vw,34px);color:var(--mute);font-size:.98rem;text-align:justify;hyphens:auto}
+.gal__lede{margin:0 0 clamp(22px,3vw,34px);color:var(--mute);font-size:.98rem;text-align:justify;hyphens:auto}
 /* Justified rows, as on the homepage work grid: each tile declares its
    picture's aspect ratio as --r and both flex-basis and flex-grow scale with
    it, so a row's tiles share one height and fill the width. Nothing cropped. */
@@ -259,7 +263,8 @@ a{color:inherit}
 
 /* enquiry form status + email typo suggestion */
 .form__status{margin:0;min-height:1.4em;font-size:.88rem;color:var(--mute);text-align:left}
-.form__suggestion{font:inherit;color:var(--brass-ink);background:none;border:0;border-bottom:1px solid currentColor;padding:0;cursor:pointer}
+.form__suggestion{font:inherit;color:var(--brass-ink);background:none;border:0;padding:0;cursor:pointer;transition:color .3s var(--ease)}
+.form__suggestion:hover{color:var(--ink)}
 .form button[disabled]{opacity:.55;cursor:progress}
 
 /* 404 */
@@ -278,14 +283,13 @@ a{color:inherit}
 .crumb ol{list-style:none;display:flex;flex-wrap:wrap;gap:8px 12px;margin:0;padding:0}
 .crumb li::after{content:"/";margin-left:12px;color:rgba(246,243,238,.32)}
 .crumb li:last-child::after{content:none}
-.crumb a{color:var(--brass-lt);text-decoration:none;border-bottom:1px solid transparent}
-.crumb a:hover{border-color:currentColor}
+.crumb a{color:var(--brass-lt)}
+.crumb a:hover{color:var(--bone)}
 .crumb [aria-current]{color:rgba(246,243,238,.85)}
 
 .grid--doc{grid-template-columns:minmax(0,1.5fr) minmax(0,.85fr);align-items:start;gap:clamp(32px,4.5vw,64px)}
-.prose{max-width:72ch}
 .prose p{text-align:justify;hyphens:auto}
-.prose h2{font-size:clamp(1.6rem,2.8vw,2.4rem);margin:clamp(40px,4.5vw,64px) 0 18px;max-width:26ch}
+.prose h2{font-size:clamp(1.6rem,2.8vw,2.4rem);margin:clamp(40px,4.5vw,64px) 0 18px}
 .prose h2:first-child{margin-top:0}
 .prose h3{margin:34px 0 12px}
 .prose ul,.prose ol{margin:0 0 1.1em;padding-left:1.25em;color:var(--ink)}
@@ -301,8 +305,8 @@ a{color:inherit}
 .aside dt{font:500 10px/1.6 Inter,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--brass-ink)}
 .aside dd{margin:0 0 4px;font-size:.95rem}
 .aside .btn{width:100%;justify-content:center;margin-top:24px}
-.aside a:not(.btn){color:inherit;text-decoration:none;border-bottom:1px solid var(--line)}
-.aside a:not(.btn):hover{color:var(--brass-ink);border-color:var(--brass-ink)}
+.aside a:not(.btn){color:var(--brass-ink)}
+.aside a:not(.btn):hover{color:var(--ink)}
 
 .chips{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin:0 0 1.4em;padding:0}
 .chips li{font:500 11px/1 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);background:var(--bone-2);border:1px solid var(--line);padding:9px 13px}
@@ -317,7 +321,7 @@ a{color:inherit}
 .faq details[open] summary::after{content:"–"}
 .faq summary:hover{color:var(--brass-ink)}
 .faq p{margin:0 0 1em;color:var(--mute);font-size:.97rem;text-align:justify;hyphens:auto}
-.faq .faq__body{padding:0 clamp(18px,2.2vw,28px) 24px;max-width:78ch}
+.faq .faq__body{padding:0 clamp(18px,2.2vw,28px) 24px}
 .faq .faq__body p:last-child{margin:0}
 
 .tiles{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);margin:0;padding:0}
@@ -342,7 +346,7 @@ a{color:inherit}
 .lb::backdrop{background:rgba(12,12,12,.93)}
 .lb__fig{margin:0;display:grid;gap:16px;justify-items:center}
 .lb__fig img{max-width:min(94vw,1400px);max-height:80vh;width:auto;height:auto;display:block;background:var(--ink-2)}
-.lb__cap{font:400 12px/1.5 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:rgba(246,243,238,.75);text-align:center;max-width:62ch}
+.lb__cap{font:400 12px/1.5 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:rgba(246,243,238,.75);text-align:center}
 .lb__x,.lb__nav{position:fixed;background:none;border:1px solid rgba(246,243,238,.32);color:var(--bone);cursor:pointer;line-height:1;transition:background .25s,border-color .25s,color .25s}
 .lb__x{top:18px;right:18px;width:44px;height:44px;font-size:26px}
 .lb__nav{top:50%;transform:translateY(-50%);width:48px;height:64px;font-size:30px}
