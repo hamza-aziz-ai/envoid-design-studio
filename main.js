@@ -149,10 +149,36 @@ if (wall && wall.dataset.src) {
   fetch(wall.dataset.src, { cache: 'no-cache' })
     .then((r) => (r.ok ? r.json() : null))
     .then((data) => {
-      const rows = (data && Array.isArray(data.testimonials) ? data.testimonials : [])
+      // reviews.json (left on Google) and testimonials.json (written in the
+      // app) have the same row shape under different keys.
+      const src = data && (Array.isArray(data.reviews) ? data.reviews : data.testimonials);
+      const rows = (Array.isArray(src) ? src : [])
         .filter((t) => t && typeof t.body === 'string' && t.body.trim().length >= 10);
       if (!rows.length) return;
-      rows.forEach((t) => list.append(card(t)));
+      // Six fills two rows of three and one row of two cleanly at every
+      // breakpoint; a seventh leaves a hole in the grid that reads as a blank
+      // card. The rest stay in the file for the app, and the link below goes
+      // to the full set.
+      rows.slice(0, 6).forEach((t) => list.append(card(t)));
+
+      // Say where they came from. Attribution is the honest part and the part
+      // Google's terms care about; the link sends readers to the real profile,
+      // where the reviews are complete and current.
+      if (data.source === 'google') {
+        const note = document.createElement('p');
+        note.className = 'says__from r';
+        note.append(document.createTextNode('These reviews were left on Google. '));
+        if (typeof data.profile === 'string' && data.profile.startsWith('https://')) {
+          const a = document.createElement('a');
+          a.href = data.profile;              // href, never innerHTML
+          a.target = '_blank';
+          a.rel = 'noopener';
+          a.textContent = 'Read them all, or add your own';
+          note.append(a);
+        }
+        list.insertAdjacentElement('afterend', note);
+      }
+
       wall.hidden = false;
       // The reveal observer has already run by now, so show these directly.
       list.querySelectorAll('.r').forEach((el) => el.classList.add('in'));

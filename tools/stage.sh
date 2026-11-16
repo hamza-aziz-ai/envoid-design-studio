@@ -35,13 +35,24 @@ rm -rf "$DEST/.github" "$DEST/tools" \
 # is added only when the data file actually shipped. Without it the browser
 # logs a 404 on every page load, which costs the whole Lighthouse
 # best-practices score — the fetch cannot suppress that, only not happen.
-if [ -f "$DEST/testimonials.json" ]; then
-  while IFS= read -r f; do
-    sed -i 's|<section id="testimonials" class="sec" hidden>|<section id="testimonials" class="sec" data-src="/testimonials.json" hidden>|g' "$f"
-  done < <(find "$DEST" -name "*.html")
-  echo "stage: testimonials.json present, section enabled"
+# reviews.json holds reviews left on Google; testimonials.json holds reviews
+# written in the app and approved by the studio. Either fills the section, and
+# reviews.json wins when both are present.
+if [ -f "$DEST/reviews.json" ]; then
+  TESTIMONIAL_SRC="/reviews.json"
+elif [ -f "$DEST/testimonials.json" ]; then
+  TESTIMONIAL_SRC="/testimonials.json"
 else
-  echo "stage: no testimonials.json, section stays inert"
+  TESTIMONIAL_SRC=""
+fi
+
+if [ -n "$TESTIMONIAL_SRC" ]; then
+  while IFS= read -r f; do
+    sed -i "s|<section id=\"testimonials\" class=\"sec\" hidden>|<section id=\"testimonials\" class=\"sec\" data-src=\"${TESTIMONIAL_SRC}\" hidden>|g" "$f"
+  done < <(find "$DEST" -name "*.html")
+  echo "stage: testimonials section enabled from ${TESTIMONIAL_SRC}"
+else
+  echo "stage: no reviews.json or testimonials.json, section stays inert"
 fi
 
 if [ -n "$TOKEN" ]; then

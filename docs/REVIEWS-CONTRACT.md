@@ -1,10 +1,18 @@
 # `reviews.json` — the contract, if it is ever built
 
-Nothing here is built. This file exists so that the agreement between the website and the mobile app survives the sessions that made it, and so nobody re-derives it by guessing.
+**Status, 2026-11-16: `reviews.json` is built and live**, holding eight reviews left on the studio's Google Business Profile. The rest of this file is the contract it follows. This file exists so that the agreement between the website and the mobile app survives the sessions that made it, and so nobody re-derives it by guessing.
 
 **Do not create `reviews.json` empty.** The app's `listPublished()` throws on any non-200, `loadReviews()` catches it and falls through, and a cached list is shown regardless — so a 404 costs one failed request on tab open and nothing reaches the screen. An empty file would be worse than the 404: it makes the feature look live when it is not.
 
-**Do not build it at all** until the studio has answered the licensing question in [HANDOVER](HANDOVER.md). Republishing Google Places review content on this domain is restricted by the Maps Platform terms, and that is the studio's risk to accept, not a developer's to assume.
+## The licensing position, as it actually stands
+
+The studio was told the concern and chose to publish anyway, which is their call to make. For the record, so nobody re-litigates it from memory:
+
+The Maps Platform [Service Specific Terms](https://cloud.google.com/maps-platform/terms/maps-service-terms) tie the 30-day caching limit to **latitude and longitude values**, not to review text. Claims that review content may never be stored come from third-party commentary that does not quote a clause. The Places API returns at most five reviews, and scraping the Maps place page is separately prohibited — which is why neither route was used here.
+
+What is published was read once from the studio's own profile, at the studio's instruction, with attribution and a link back to the profile. It is not refreshed automatically, and nothing here calls a Google API.
+
+**Attribution is not optional.** `source: "google"` makes the renderer print "These reviews were left on Google." with a link to the profile. Remove the attribution and the position above stops holding.
 
 ## Shape
 
