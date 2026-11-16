@@ -65,9 +65,28 @@ Carried over from the equivalent templates on hamzaaziz.dev, where they were fou
 
 - **Send through the live form, not EmailJS's "Test It" button.** Test It cannot send line breaks at all, so a multi-line Brief looks fine there and wrong in a real send.
 - `contact.js` uses `emailjs.send` with field values rather than `sendForm`. `sendForm` turns textarea line breaks into `\r\n`, which renders as double blank lines.
-- On a Gmail service, leave **Use Default Email Address** ticked. Typing a different From Email does not change the sender.
+- On a Gmail service, leave **Use Default Email Address** ticked unless the sender address is already a verified identity on that account — see [Sending from a studio address](#sending-from-a-studio-address). Typing an arbitrary From Email does not change the sender; Gmail rewrites it to the account's own address.
 - Leave EmailJS's built-in **Google Analytics tracking** off — it only accepts the retired `UA-` id format.
 - `emailjs.send` cannot be stubbed in the page; it is a non-writable getter. Any local test that gets past the checks sends real email.
+
+## Sending from a studio address
+
+Both emails currently come from `envoidstudio26@gmail.com`, which is what the enquirer sees in their inbox. Sending from `contact@envoiddesign.in` instead would look better, and there is a trap in the obvious route.
+
+Gmail has long been able to send from another address, under **Settings → Accounts and Import → Send mail as → Add another email address**, after verifying ownership. EmailJS's From Email field is honoured only when the address is already a verified identity there; otherwise Gmail silently substitutes the account's own address.
+
+**That route is closing.** Google is removing "Send as" for third-party addresses in **January 2027**, with a transition period through Q3–Q4 2026 — which is now — during which it still works but new setups may already be restricted. A Hostinger mailbox on `envoiddesign.in` is a third-party address, so configuring it as a Gmail "Send as" identity would be building on something with a published end date. Gmail-to-Gmail aliases and Google Workspace addresses are not affected.
+
+The two routes that survive January 2027:
+
+| Route | Cost | Notes |
+| --- | --- | --- |
+| **EmailJS custom SMTP** pointed at Hostinger's mail server for `contact@envoiddesign.in` | Free, the domain already includes mailboxes | Takes Gmail out of the sending path entirely, so none of the above applies. The likely right answer |
+| **Google Workspace** on `envoiddesign.in` | Paid, per user | Makes the address a Google address, so aliases keep working |
+
+Nothing is broken today. Sending from `envoidstudio26@gmail.com` keeps working indefinitely; this only matters when the studio wants its own domain on outbound mail.
+
+Sources: [Send emails from a different address or alias](https://support.google.com/mail/answer/22370) · [Changes to third-party email account support in Gmail](https://support.google.com/mail/answer/17101213)
 
 ## Free plan limits
 

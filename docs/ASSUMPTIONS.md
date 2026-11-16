@@ -39,8 +39,17 @@ These were considered and chosen. They are not gaps in knowledge.
 - There is no uptime monitoring. The smoke test runs at deploy time only.
 - `target="_blank"` on `tel:` links leaves an empty tab on desktop browsers. Accepted as the cost of a uniform rule.
 
+## Dated external constraints
+
+| Constraint | Date | Effect here |
+| --- | --- | --- |
+| Google removes "Send as" for third-party addresses | January 2027, restricted from Q3–Q4 2026 | Rules out routing `contact@envoiddesign.in` through a Gmail alias. See `docs/email-templates/README.md` |
+| Domain registration expires | 2029-07-25, auto-renewal **off** | Total loss, silently |
+| GitHub-issued TLS certificate | renews automatically | Verify with `gh api .../pages` if HTTPS ever fails |
+
 ## Questions nobody has answered
 
 1. Who owns the Hostinger account long term — the studio, or the developer? Transfer is far easier before it matters than after.
 2. Should the enquiry form keep a copy of submissions anywhere, or is the inbox the only record?
 3. Is there a brand asset source of truth — a logo file, exact colours — or is `styles.css` now it?
+4. Should outbound mail come from `contact@envoiddesign.in` rather than the studio's Gmail? If so it should be set up through EmailJS custom SMTP, not a Gmail alias.
