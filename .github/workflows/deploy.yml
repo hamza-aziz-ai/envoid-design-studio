@@ -41,10 +41,10 @@ jobs:
       - name: Site checks
         run: python3 tools/check_site.py
 
-      # Serve the site at the path it occupies in production, so <base href>
-      # in 404.html and every relative URL resolve the way they will once live.
+      # Serve the site from a root, the way envoiddesign.in serves it, so
+      # <base href> in 404.html and every relative URL resolve as they will live.
       - name: Stage a production-shaped copy
-        run: bash tools/stage.sh _preview/envoid-design-studio ci
+        run: bash tools/stage.sh _preview ci
 
       - name: Lighthouse
         uses: treosh/lighthouse-ci-action@v12

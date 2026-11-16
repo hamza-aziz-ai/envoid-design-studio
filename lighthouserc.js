@@ -11,9 +11,9 @@ module.exports = {
       startServerCommand: 'python3 -u -m http.server 8000 --directory _preview',
       startServerReadyPattern: 'Serving HTTP',
       url: [
-        'http://localhost:8000/envoid-design-studio/',
-        'http://localhost:8000/envoid-design-studio/projects.html',
-        'http://localhost:8000/envoid-design-studio/contact.html',
+        'http://localhost:8000/',
+        'http://localhost:8000/projects.html',
+        'http://localhost:8000/contact.html',
       ],
       numberOfRuns: 1,
       settings: { preset: 'desktop' },
@@ -44,10 +44,9 @@ module.exports = {
         // points that production does not.
         'categories:performance': ['warn', { minScore: 0.9 }],
 
-        // The canonical deliberately points at envoiddesign.in, the domain this
-        // site moves to, so Lighthouse sees a cross-domain canonical and fails
-        // the audit. Re-enable this at cutover, when it becomes self-referencing.
-        canonical: 'off',
+        // Self-referencing since the move to envoiddesign.in, so this audit is
+        // meaningful again and a canonical pointing anywhere else is a defect.
+        canonical: 'error',
 
         // Cache headers belong to GitHub Pages and Cloudflare, not to this repo.
         'uses-long-cache-ttl': 'off',

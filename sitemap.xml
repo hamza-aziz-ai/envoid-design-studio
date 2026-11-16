@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Indexable pages only. thanks.html and 404.html are noindex and listing a
+     noindex URL here is a contradiction Search Console reports as an error. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://envoiddesign.in/</loc>
+    <lastmod>2026-11-16</lastmod>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://envoiddesign.in/projects.html</loc>
+    <lastmod>2026-11-16</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://envoiddesign.in/contact.html</loc>
+    <lastmod>2026-11-16</lastmod>
+    <priority>0.8</priority>
+  </url>
+</urlset>

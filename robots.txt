@@ -1,0 +1,7 @@
+# Everything here is meant to be found. thanks.html and 404.html carry their
+# own noindex, which is stronger than a Disallow: a disallowed page can still
+# be indexed from an inbound link, it just gets crawled without its content.
+User-agent: *
+Allow: /
+
+Sitemap: https://envoiddesign.in/sitemap.xml

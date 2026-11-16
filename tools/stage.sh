@@ -24,7 +24,8 @@ mkdir -p "$DEST"
 git -C "$SRC" archive HEAD | tar -x -C "$DEST"
 
 rm -rf "$DEST/.github" "$DEST/tools" \
-       "$DEST/lighthouserc.js" "$DEST/.htmlvalidate.json" "$DEST/.gitattributes"
+       "$DEST/lighthouserc.js" "$DEST/.htmlvalidate.json" "$DEST/.gitattributes" \
+       "$DEST/README.md"
 
 if [ -n "$TOKEN" ]; then
   for f in "$DEST"/*.html; do

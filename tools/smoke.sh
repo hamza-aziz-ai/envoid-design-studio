@@ -2,7 +2,7 @@
 # Post-deploy smoke test: proves the deployed site actually serves what it should.
 # A green build only means the files were uploaded; this checks the live origin.
 #
-#   tools/smoke.sh https://hamzaaziz.dev/envoid-design-studio/
+#   tools/smoke.sh https://envoiddesign.in/
 set -uo pipefail
 
 BASE="${1:?usage: smoke.sh <base-url>}"
@@ -59,6 +59,11 @@ expect "deep/nested/missing" 404 "never built"
 
 # thanks.html stays out of the index.
 expect "thanks.html" 200 'name="robots" content="noindex"'
+
+# Crawl directives. A sitemap that 404s is worse than none: Search Console
+# keeps reporting the fetch error against the property.
+expect "robots.txt"  200 'Sitemap: https://envoiddesign.in/sitemap.xml'
+expect "sitemap.xml" 200 '<loc>https://envoiddesign.in/</loc>'
 
 if [ "$fails" -gt 0 ]; then
   echo "::error::$fails smoke check(s) failed against $BASE"

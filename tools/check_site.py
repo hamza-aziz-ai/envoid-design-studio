@@ -153,6 +153,22 @@ def main():
     for name in ("projects.html", "contact.html"):
         check(name in linked, "%s is not linked from any page" % name)
 
+    # The sitemap must list exactly the indexable pages. A stale one either
+    # hides a page from crawlers, or names a noindex URL, which Search Console
+    # reports as an error against the sitemap itself.
+    listed = set(find(r"<loc>([^<]+)</loc>", io.open("sitemap.xml", encoding="utf-8").read()))
+    for name in PAGES:
+        if not os.path.exists(name):
+            continue
+        url = CANONICAL_HOST if name == "index.html" else CANONICAL_HOST + name
+        noindex = 'content="noindex' in io.open(name, encoding="utf-8").read()
+        check((url in listed) != noindex,
+              "%s: %s in sitemap.xml"
+              % (name, "noindex page is listed" if noindex else "indexable page is missing"))
+    known = set([CANONICAL_HOST]) | set(CANONICAL_HOST + n for n in PAGES)
+    for url in sorted(listed - known):
+        check(False, "sitemap.xml lists %s, which is not a page of this site" % url)
+
     if problems:
         print("\n".join(sorted(problems)))
         print("\n%d problem(s)" % len(problems))
