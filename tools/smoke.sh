@@ -46,8 +46,8 @@ expect() {
 echo "Smoke testing $BASE"
 
 expect ""              200 '<link rel="canonical" href="https://envoiddesign.in/">'
-expect "projects.html" 200 'canonical" href="https://envoiddesign.in/projects.html"'
-expect "contact.html"  200 'canonical" href="https://envoiddesign.in/contact.html"'
+expect "projects/"     200 'canonical" href="https://envoiddesign.in/projects/"'
+expect "contact/"      200 'canonical" href="https://envoiddesign.in/contact/"'
 expect "styles.css"    200 '.gal__grid'
 expect "main.js"       200 ""
 expect "contact.js"    200 ""
@@ -57,8 +57,8 @@ expect "assets/marriage-hall.jpg" 200 ""
 expect "no-such-page"        404 "never built"
 expect "deep/nested/missing" 404 "never built"
 
-# thanks.html stays out of the index.
-expect "thanks.html" 200 'name="robots" content="noindex"'
+# The thank-you page stays out of the index.
+expect "thanks/" 200 'name="robots" content="noindex"'
 
 # Crawl directives. A sitemap that 404s is worse than none: Search Console
 # keeps reporting the fetch error against the property.

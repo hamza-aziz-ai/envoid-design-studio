@@ -22,6 +22,7 @@ Marketing website for Envoid Design Studio, an architecture and interior design 
 - [Content and asset conventions](#content-and-asset-conventions)
 - [Operations runbook](#operations-runbook)
 - [Security considerations](#security-considerations)
+- [Documentation](#documentation)
 - [Outstanding items](#outstanding-items)
 
 ---
@@ -54,24 +55,27 @@ There is no server, no database and no runtime configuration. Everything a visit
 
 ## Repository structure
 
-| Path | Purpose |
-| --- | --- |
-| `index.html` | Home: hero, about, services, process, selected work, contact form |
-| `projects.html` | Full gallery, 23 renders across four sections |
-| `contact.html` | Studio details, map, enquiry form |
-| `thanks.html` | Form landing page (`noindex`) |
-| `404.html` | Custom not-found page (`noindex`, carries its own `<base href>`) |
-| `styles.css` | Every page's styles |
-| `main.js` | Navigation, scroll reveal, footer year, gallery lightbox |
-| `contact.js` | Enquiry form validation and EmailJS delivery |
-| `CNAME` | Custom domain declaration |
-| `robots.txt` | Crawl directives and the sitemap's location |
-| `sitemap.xml` | The three indexable pages |
-| `assets/` | Photography, logo, favicons and generated width variants |
-| `tools/` | Validation, staging and smoke-test scripts (never published) |
-| `.github/workflows/` | Delivery and dependency-merge pipelines |
-| `lighthouserc.js` | Lighthouse CI budget |
-| `.htmlvalidate.json` | HTML validation ruleset |
+URLs carry no file extension. GitHub Pages serves `<dir>/index.html` at `<dir>/`, so the pages live in directories and every reference in the markup is root-relative.
+
+| Path | Served at | Purpose |
+| --- | --- | --- |
+| `index.html` | `/` | Home: hero, about, services, process, selected work, contact form |
+| `projects/index.html` | `/projects/` | Full gallery, 23 renders across four sections |
+| `contact/index.html` | `/contact/` | Studio details, map, enquiry form |
+| `thanks/index.html` | `/thanks/` | Form landing page (`noindex`) |
+| `404.html` | any missing path | Custom not-found page (`noindex`, carries its own `<base href>`) |
+| `styles.css` | `/styles.css` | Every page's styles |
+| `main.js` | `/main.js` | Navigation, scroll reveal, footer year, gallery lightbox |
+| `contact.js` | `/contact.js` | Enquiry form validation and EmailJS delivery |
+| `CNAME` | — | Custom domain declaration |
+| `robots.txt` | `/robots.txt` | Crawl directives and the sitemap's location |
+| `sitemap.xml` | `/sitemap.xml` | The three indexable pages |
+| `assets/` | `/assets/…` | Photography, logo, favicons and generated width variants |
+| `tools/` | — | Validation, staging and smoke-test scripts (never published) |
+| `.github/workflows/` | — | Delivery and dependency-merge pipelines |
+| `lighthouserc.js` | — | Lighthouse CI budget |
+| `.htmlvalidate.json` | — | HTML validation ruleset |
+| `docs/` | — | Engineering documentation (never published) |
 
 ## Local development
 
@@ -140,7 +144,7 @@ flowchart LR
 | --- | --- | --- |
 | **Checks** | every push and pull request | `html-validate`, `node --check` on both scripts, `tools/check_site.py`, Lighthouse CI against a staged copy |
 | **Deploy to Pages** | `main`, on push or manual dispatch | stages the site with `tools/stage.sh` and publishes it |
-| **Smoke test** | after a successful deploy | probes the live origin: every page and asset, cache-busted 404s that must answer `404`, `thanks.html` still `noindex`, `robots.txt` and `sitemap.xml` |
+| **Smoke test** | after a successful deploy | probes the live origin: every page and asset, cache-busted 404s that must answer `404`, `/thanks/` still `noindex`, `robots.txt` and `sitemap.xml` |
 | **Release** | after a green smoke test | tags `vYYYY.MM.DD-<run>`, generates notes, attaches the deployed site as a zip |
 
 Pages is configured with **GitHub Actions** as its source rather than a branch build. Both were briefly active at once, which meant a failing build still published; the workflow source is now authoritative.
@@ -191,7 +195,7 @@ The domain appears in nine places. Changing it means editing all of them:
 1. `CNAME`, and the `gh api` call above;
 2. `CANONICAL_HOST` in `tools/check_site.py`;
 3. the expected canonicals in `tools/smoke.sh`;
-4. the `_next` hidden field in `index.html` and `contact.html`;
+4. the `_next` hidden field in `index.html` and `contact/index.html`;
 5. `robots.txt` and `sitemap.xml`;
 6. the canonical, `og:url` and schema.org URLs in each page's `<head>`.
 
@@ -223,10 +227,16 @@ This repository is public and contains the studio's real telephone numbers and e
 
 The one privileged workflow is `automerge.yml`, which runs on `pull_request_target`. Its safety rests entirely on never checking out the pull request's code. Any change to that workflow should be reviewed against that single property.
 
+## Documentation
+
+`docs/` holds the engineering documentation: the architecture and execution flow, the data structures and their trade-offs, the threat and failure models, the decision log with the alternatives that were rejected, the rollback procedure and a per-system defense brief. Start at [docs/README.md](docs/README.md), or at [docs/HANDOVER.md](docs/HANDOVER.md) if you are picking the project up cold.
+
+It is never published — `tools/stage.sh` strips it from the deployed directory — and a documentation-only push skips the pipeline.
+
 ## Outstanding items
 
 | Item | Detail |
 | --- | --- |
 | **EmailJS credentials** | `contact.js` has four blank identifiers at the top: the public key, and a service and template id for the enquiry and the auto-reply. Until they are filled the form falls back to its FormSubmit action, which requires a one-time activation click on the mail sent to the studio on first submission. |
 | **Google Business Profile** | For a search such as "architect in Vaishali", the Business Profile carries more weight than any markup in this repository. |
-| **Project names** | The titles and locations in `projects.html` were read from source filenames. Any that names a client should be confirmed before it stays public. |
+| **Project names** | The titles and locations in `projects/index.html` were read from source filenames. Any that names a client should be confirmed before it stays public. |

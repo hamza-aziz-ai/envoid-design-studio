@@ -21,8 +21,24 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # at cutover. Changing this one string is the whole cutover, for the markup.
 CANONICAL_HOST = "https://envoiddesign.in/"
 
-PAGES = ["index.html", "projects.html", "contact.html", "thanks.html", "404.html"]
-INDEXABLE = {"index.html", "projects.html", "contact.html"}
+# File on disk -> the URL it is served at. GitHub Pages serves <dir>/index.html
+# as <dir>/, which is what keeps ".html" out of the address bar. 404.html is
+# served for any missing path and is never linked, so it has no URL of its own.
+PAGES = {
+    "index.html": "/",
+    "projects/index.html": "/projects/",
+    "contact/index.html": "/contact/",
+    "thanks/index.html": "/thanks/",
+    "404.html": None,
+}
+INDEXABLE = {"index.html", "projects/index.html", "contact/index.html"}
+HOST = CANONICAL_HOST.rstrip("/")
+
+
+def url_for(name):
+    """The absolute URL a page must canonicalise to, or None for 404.html."""
+    path = PAGES[name]
+    return None if path is None else HOST + path
 
 REQUIRED_META = [
     "og:title", "og:description", "og:image", "og:image:alt",
@@ -76,8 +92,9 @@ def check_page(name, html):
     if name in INDEXABLE:
         check(len(canonical) == 1, "%s: expected 1 canonical, found %d" % (name, len(canonical)))
         check(canonical == og_url, "%s: canonical %s != og:url %s" % (name, canonical, og_url))
-        check(all(c.startswith(CANONICAL_HOST) for c in canonical),
-              "%s: canonical is not under %s" % (name, CANONICAL_HOST))
+        expected = url_for(name)
+        check(canonical == [expected],
+              "%s: canonical is %s, expected %s" % (name, canonical, expected))
         check(robots and "noindex" not in robots[0], "%s: indexable page is noindex" % name)
     else:
         check(not canonical, "%s: noindex page must not set a canonical" % name)
@@ -129,11 +146,18 @@ def check_page(name, html):
 
     # Every local reference must resolve, srcset candidates included: a renamed
     # variant is invisible until a browser happens to pick that width.
-    refs = find(r'(?:src|href)="(?!https?:|mailto:|tel:|data:|#|/)([^"?#]+)"', html)
+    refs = find(r'(?:src|href)="(?!https?:|mailto:|tel:|data:|#|//)([^"?#]+)"', html)
     for candidates in find(r'srcset="([^"]+)"', html):
         refs += [c.strip().split()[0] for c in candidates.split(",") if c.strip()]
     for ref in refs:
-        check(os.path.exists(os.path.join(ROOT, ref)), "%s: references missing file %s" % (name, ref))
+        if not ref:
+            continue
+        # A directory URL is served by its index.html; check that, not the folder.
+        target = ref.lstrip("/")
+        if target.endswith("/") or target == "":
+            target += "index.html"
+        check(os.path.exists(os.path.join(ROOT, target)),
+              "%s: references missing file %s" % (name, ref))
 
 
 def main():
@@ -149,9 +173,9 @@ def main():
     for name in PAGES:
         if os.path.exists(name):
             html = io.open(name, encoding="utf-8").read()
-            linked |= set(find(r'href="([^"]+\.html)"', html))
-    for name in ("projects.html", "contact.html"):
-        check(name in linked, "%s is not linked from any page" % name)
+            linked |= set(find(r'href="(/[^"#]*)"', html))
+    for path in ("/projects/", "/contact/"):
+        check(path in linked, "%s is not linked from any page" % path)
 
     # The sitemap must list exactly the indexable pages. A stale one either
     # hides a page from crawlers, or names a noindex URL, which Search Console
@@ -160,12 +184,12 @@ def main():
     for name in PAGES:
         if not os.path.exists(name):
             continue
-        url = CANONICAL_HOST if name == "index.html" else CANONICAL_HOST + name
-        noindex = 'content="noindex' in io.open(name, encoding="utf-8").read()
+        url = url_for(name)
+        noindex = url is None or 'content="noindex' in io.open(name, encoding="utf-8").read()
         check((url in listed) != noindex,
               "%s: %s in sitemap.xml"
               % (name, "noindex page is listed" if noindex else "indexable page is missing"))
-    known = set([CANONICAL_HOST]) | set(CANONICAL_HOST + n for n in PAGES)
+    known = set(u for u in (url_for(n) for n in PAGES) if u)
     for url in sorted(listed - known):
         check(False, "sitemap.xml lists %s, which is not a page of this site" % url)
 

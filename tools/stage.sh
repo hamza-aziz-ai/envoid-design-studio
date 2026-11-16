@@ -28,13 +28,13 @@ rm -rf "$DEST/.github" "$DEST/tools" \
        "$DEST/README.md" "$DEST/docs"
 
 if [ -n "$TOKEN" ]; then
-  for f in "$DEST"/*.html; do
+  while IFS= read -r f; do
     sed -i \
-      -e "s|\"styles\.css\"|\"styles.css?v=${TOKEN}\"|g" \
-      -e "s|\"main\.js\"|\"main.js?v=${TOKEN}\"|g" \
-      -e "s|\"contact\.js\"|\"contact.js?v=${TOKEN}\"|g" \
+      -e "s|\"/styles\.css\"|\"/styles.css?v=${TOKEN}\"|g" \
+      -e "s|\"/main\.js\"|\"/main.js?v=${TOKEN}\"|g" \
+      -e "s|\"/contact\.js\"|\"/contact.js?v=${TOKEN}\"|g" \
       "$f"
-  done
+  done < <(find "$DEST" -name "*.html")
   echo "stage: cache-busted assets with v=${TOKEN}"
 fi
 

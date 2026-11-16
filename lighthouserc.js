@@ -12,8 +12,8 @@ module.exports = {
       startServerReadyPattern: 'Serving HTTP',
       url: [
         'http://localhost:8000/',
-        'http://localhost:8000/projects.html',
-        'http://localhost:8000/contact.html',
+        'http://localhost:8000/projects/',
+        'http://localhost:8000/contact/',
       ],
       numberOfRuns: 1,
       settings: { preset: 'desktop' },

@@ -41,7 +41,7 @@ jobs:
           node-version: '20'
 
       - name: Validate HTML
-        run: npx --yes html-validate@9 index.html projects.html contact.html thanks.html 404.html
+        run: npx --yes html-validate@9 index.html 404.html projects/index.html contact/index.html thanks/index.html
 
       - name: Parse browser scripts
         run: |
