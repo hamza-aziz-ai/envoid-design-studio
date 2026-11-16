@@ -67,6 +67,7 @@ URLs carry no file extension. GitHub Pages serves `<dir>/index.html` at `<dir>/`
 | `services/interior-design/index.html` | `/services/interior-design/` | Interior design |
 | `services/design-build-turnkey/index.html` | `/services/design-build-turnkey/` | Design, build and turnkey execution |
 | `services/map-approval-ghaziabad/index.html` | `/services/map-approval-ghaziabad/` | GDA building plan sanction |
+| `services/vastu/index.html` | `/services/vastu/` | Vastu-informed planning |
 | `architects-in-ghaziabad/index.html` | `/architects-in-ghaziabad/` | Service area: Ghaziabad, architecture |
 | `interior-designers-in-ghaziabad/index.html` | `/interior-designers-in-ghaziabad/` | Service area: Ghaziabad, interiors |
 | `architects-in-noida/index.html` | `/architects-in-noida/` | Service area: Noida and Greater Noida |

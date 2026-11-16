@@ -1,0 +1,7 @@
+# Python bytecode from tools/, never part of the site.
+__pycache__/
+*.pyc
+
+# Local staging output of tools/stage.sh.
+_preview/
+_site/

@@ -10,7 +10,7 @@ Entries made during AI-assisted sessions record the model, because behaviour dif
 
 **Date:** 2026-11-16 · **Model:** claude-opus-5 (Claude Code)
 
-**Context:** Thirteen pages now carry their own copy of the header and the footer (D-017). The failure that follows is familiar and slow: someone adds a nav link on four pages, forgets the rest, and nobody notices for a month because every page still looks fine on its own.
+**Context:** Fourteen pages now carry their own copy of the header and the footer (D-017). The failure that follows is familiar and slow: someone adds a nav link on four pages, forgets the rest, and nobody notices for a month because every page still looks fine on its own.
 
 **Options:** 1) accept it and rely on care; 2) generate the chrome at build time; 3) include the chrome at runtime with JavaScript; 4) compare every page's chrome against the home page's in `check_site.py`.
 
@@ -36,7 +36,7 @@ Entries made during AI-assisted sessions record the model, because behaviour dif
 
 **Why:** 1 means eight hand-copied headers, and a header copied eight times is a header that disagrees with itself within a month. 2 buys templating at the price of a lockfile, a toolchain and a dependency tree, for a site whose content changes a few times a year — the same trade D-001 already refused. 4 is 2 in a smaller box: it makes the HTML a build artifact, which is the part that would have to be explained to whoever maintains this next. 3 gets the consistency where it matters, at birth, and leaves behind exactly what was there before: plain HTML anybody can edit.
 
-**Trade-off:** Nothing in the editing model stops the thirteen copies of the chrome from drifting apart. That is a real cost, and D-018 is the answer to it.
+**Trade-off:** Nothing in the editing model stops the fourteen copies of the chrome from drifting apart. That is a real cost, and D-018 is the answer to it.
 
 **Revisit if:** the page count grows past roughly twenty-five, or content starts changing monthly rather than yearly. At that point templating earns its keep.
 

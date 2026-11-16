@@ -33,6 +33,7 @@ PAGES = {
     "services/interior-design/index.html": "/services/interior-design/",
     "services/design-build-turnkey/index.html": "/services/design-build-turnkey/",
     "services/map-approval-ghaziabad/index.html": "/services/map-approval-ghaziabad/",
+    "services/vastu/index.html": "/services/vastu/",
     "architects-in-ghaziabad/index.html": "/architects-in-ghaziabad/",
     "interior-designers-in-ghaziabad/index.html": "/interior-designers-in-ghaziabad/",
     "architects-in-noida/index.html": "/architects-in-noida/",
@@ -191,7 +192,7 @@ def chrome(html):
 
 
 def check_chrome():
-    """Thirteen hand-edited copies of one header drift. This is what notices.
+    """Fourteen hand-edited copies of one header drift. This is what notices.
 
     Decided in docs/DECISIONS.md D-017: the pages are written by hand, so
     nothing regenerates the chrome and only a check keeps it honest.

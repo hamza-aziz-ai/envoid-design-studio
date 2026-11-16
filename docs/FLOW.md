@@ -82,7 +82,7 @@ POST https://formsubmit.co/envoidstudio26@gmail.com
 ```
 push to main (unless every changed path matches '**.md' or 'docs/**')
   └─ Checks
-       ├─ npx html-validate@9 on all thirteen pages
+       ├─ npx html-validate@9 on all fourteen pages
        ├─ node --check main.js contact.js
        ├─ python3 tools/check_site.py
        ├─ bash tools/stage.sh _preview ci

@@ -41,7 +41,7 @@ jobs:
           node-version: '20'
 
       - name: Validate HTML
-        run: npx --yes html-validate@9 index.html 404.html projects/index.html contact/index.html thanks/index.html services/index.html services/architecture/index.html services/interior-design/index.html services/design-build-turnkey/index.html services/map-approval-ghaziabad/index.html architects-in-ghaziabad/index.html interior-designers-in-ghaziabad/index.html architects-in-noida/index.html
+        run: npx --yes html-validate@9 index.html 404.html projects/index.html contact/index.html thanks/index.html services/index.html services/architecture/index.html services/interior-design/index.html services/design-build-turnkey/index.html services/map-approval-ghaziabad/index.html services/vastu/index.html architects-in-ghaziabad/index.html interior-designers-in-ghaziabad/index.html architects-in-noida/index.html
 
       - name: Parse browser scripts
         run: |

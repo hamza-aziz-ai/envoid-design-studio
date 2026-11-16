@@ -56,6 +56,7 @@ expect "architects-in-noida/"             200 '<h1'
 expect "services/architecture/"           200 '<h1'
 expect "services/interior-design/"        200 '<h1'
 expect "services/design-build-turnkey/"   200 '<h1'
+expect "services/vastu/"                  200 '<h1'
 expect "styles.css"    200 '.gal__grid'
 expect "main.js"       200 ""
 expect "contact.js"    200 ""

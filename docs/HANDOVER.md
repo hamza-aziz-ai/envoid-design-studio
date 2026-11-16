@@ -21,7 +21,7 @@ Where things stand. Newest entry on top. Read this first; update it last.
 - Both EmailJS email templates written and reviewed in `docs/email-templates/`, pasted into the dashboard, and the four identifiers filled in `contact.js`. The enquiry path is live and not yet exercised end to end.
 - EmailJS SDK tag now carries a Subresource Integrity hash and `crossorigin="anonymous"`.
 - URLs dropped the `.html` extension: pages moved into directories and are served at `/projects/`, `/contact/`, `/thanks/`, with every markup reference now root-relative.
-- Eight pages added for local search: a services hub, four service pages and three service-area pages, each with its own breadcrumb, `Service`, `BreadcrumbList` and `FAQPage` data. Navigation and footer changed with them, and `check_site.py` now guards the thirteen copies of the chrome against drift.
+- Nine pages added for local search: a services hub, five service pages and three service-area pages, each with its own breadcrumb, `Service`, `BreadcrumbList` and `FAQPage` data. Navigation and footer changed with them, and `check_site.py` now guards the fourteen copies of the chrome against drift.
 - This `docs/` set written.
 
 ### Broken or risky
