@@ -56,22 +56,7 @@ jobs:
           git checkout -B "$BRANCH"
           git add testimonials.json
           git commit -m "Sync approved client testimonials"
-          git push
-
-      # A push made with GITHUB_TOKEN does not trigger other workflows, so the
-      # commit above would never reach the live site: testimonials.json would
-      # sit in the repository looking deployed until some unrelated human push
-      # happened. deploy.yml carries workflow_dispatch for exactly this.
-      - name: Deploy the change
-        if: success()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          if git diff --quiet HEAD~1 -- testimonials.json 2>/dev/null; then
-            echo "nothing committed, no deploy needed"
-          else
-            gh workflow run deploy.yml --ref main
-          fi --force-with-lease origin "$BRANCH"
+          git push --force-with-lease origin "$BRANCH"
           if [ -z "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[].number')" ]; then
             gh pr create --base main --head "$BRANCH"               --title "Sync approved client testimonials"               --body "Automated: approved reviews pulled from Supabase. Merging publishes them. Review the text before merging - it was written by the public."
           else
