@@ -103,6 +103,12 @@ jobs:
       - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
+          # Without this the action tars with `--exclude=.[^/]*`, which drops
+          # every dot-entry — including /.well-known/, where the Android and
+          # iOS deep-link association files have to live. The failure is
+          # silent: the files are committed, never deployed, and the only
+          # symptom is a deep link opening the browser instead of the app.
+          include-hidden-files: true
 
       - id: deployment
         uses: actions/deploy-pages@v5
