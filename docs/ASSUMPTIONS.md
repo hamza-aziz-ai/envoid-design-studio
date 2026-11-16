@@ -25,6 +25,11 @@ Status is one of **verified** (checked, with the check named), **unverified** (b
 | **`envoidstudio26@gmail.com` is monitored by the studio** | Every enquiry lands somewhere nobody reads | Ask, and send a test enquiry |
 | **FormSubmit has never been activated** | Believed true; if false the fallback already works | Submit the live form once and watch that inbox |
 | **The EmailJS free tier is enough** | Sends stop silently past roughly 100 enquiries in a month | Watch the request counter in the dashboard |
+| **The studio's opening hours** | Absent from the structured data, so the Business Profile and the map pack have less to show | Ask, then add `openingHoursSpecification` |
+| **The studio's price range** | Absent from the structured data; `priceRange` is a display signal for a local business | Ask for a band, not a number |
+| **The studio has no social profiles to link** | No `sameAs` in the schema, which is a weak entity signal for a design practice | Ask for the Instagram handle; for an architecture firm it is usually the strongest second profile |
+| **The description of GDA's sanction process is current** | A service page would describe a process that has changed | Re-read the authority's own published requirements before relying on it; the page says so itself |
+| **The studio holds no Council of Architecture registration worth naming** | A credential that would carry weight is going unstated | Ask; if there is one, it belongs on the pages and in the schema |
 | **The two phone numbers are current and both wanted in public** | A wrong number on a live client site | Confirm with the studio |
 | **The project titles and locations in `projects/index.html` are safe to publish** | A client named without consent, in a public repository | Confirm each one with the studio |
 | **The studio wants the apex, not `www`, as the public form of the domain** | Only cosmetic; `www` already redirects to the apex | Ask which they will print |

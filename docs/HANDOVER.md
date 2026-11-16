@@ -21,11 +21,13 @@ Where things stand. Newest entry on top. Read this first; update it last.
 - Both EmailJS email templates written and reviewed in `docs/email-templates/`, pasted into the dashboard, and the four identifiers filled in `contact.js`. The enquiry path is live and not yet exercised end to end.
 - EmailJS SDK tag now carries a Subresource Integrity hash and `crossorigin="anonymous"`.
 - URLs dropped the `.html` extension: pages moved into directories and are served at `/projects/`, `/contact/`, `/thanks/`, with every markup reference now root-relative.
+- Eight pages added for local search: a services hub, four service pages and three service-area pages, each with its own breadcrumb, `Service`, `BreadcrumbList` and `FAQPage` data. Navigation and footer changed with them, and `check_site.py` now guards the thirteen copies of the chrome against drift.
 - This `docs/` set written.
 
 ### Broken or risky
 
 - **The enquiry path has never been tested end to end.** It is wired and deployed; nobody has yet submitted the live form and watched both mails arrive. **This is the top priority**, and the procedure is in `docs/TESTING.md`.
+- **The site ranks for nothing yet, and on-page work alone will not change that.** The eight new pages are necessary and insufficient. Without a Google Business Profile and reviews, the map pack — which occupies the top of every local query — remains unreachable.
 - **Nothing watches the EmailJS quota.** Roughly 200 requests a month, two per enquiry; past that, sends fail the way an outage does.
 - **Domain auto-renewal is off** (expiry 2029-07-25). Long runway, silent failure.
 - **No uptime monitoring.** The smoke test only runs at deploy time.
@@ -34,10 +36,12 @@ Where things stand. Newest entry on top. Read this first; update it last.
 ### Next
 
 1. Submit the live form once and confirm both mails arrive, following the manual path in `docs/TESTING.md`.
-2. Turn on domain auto-renewal in hPanel.
-3. Confirm the project titles and locations with the studio.
-4. Leave Search Console to re-read `sitemap.xml` on its own — it already lists the new directory URLs. The three `.html` URLs submitted earlier today now 404, which is correct and needs no action.
-5. Create the Google Business Profile — for "architect in Vaishali" it outweighs any markup here.
+2. **Create the Google Business Profile.** For "architect in Vaishali" or "interior designer in Indirapuram" the map pack sits above every organic result, and nothing in this repository can compete with it. Verify the Sector 5 address, set the categories to Architect and Interior Designer, add the service areas, post the project photographs that are already in `assets/`, and then ask every past client for a review. This single item outweighs all of the on-page work below it.
+3. **Supply the facts the pages had to leave out.** Opening hours, a price band, the Instagram handle, and any Council of Architecture registration. Each is a ranking or display signal currently missing from the structured data, and each needs a human to confirm it rather than a model to guess — see `docs/ASSUMPTIONS.md`.
+4. Turn on domain auto-renewal in hPanel.
+5. Confirm the project titles and locations with the studio.
+6. Submit the new URLs in Search Console, or leave it to re-read `sitemap.xml` on its own. Expect weeks, not days, before a new domain settles.
+7. Build links the honest way: a Google Business Profile, Instagram and a Justdial or IndiaMART listing that all carry the same name, address and phone number, exactly as the site writes them. Inconsistent address formatting across directories is the most common self-inflicted local-SEO wound.
 
 ### Do not touch
 

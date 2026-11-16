@@ -4,13 +4,14 @@ The system map. One page. Implementation detail lives in the file it belongs to.
 
 ## What this is
 
-A five-page static marketing website for an architecture practice, served from GitHub Pages at `https://envoiddesign.in/`. There is no server, no database, no session and no runtime configuration. Every byte a visitor receives is a file committed to this repository.
+A thirteen-page static marketing website for an architecture practice, served from GitHub Pages at `https://envoiddesign.in/`. There is no server, no database, no session and no runtime configuration. Every byte a visitor receives is a file committed to this repository.
 
 ## Modules
 
 | Module | Owns | Notes |
 | --- | --- | --- |
 | `index.html`, `projects/index.html`, `contact/index.html` | Indexable content, structured data, the enquiry form markup | Each carries its own canonical, Open Graph tags and JSON-LD |
+| `services/` and its four children, `architects-in-ghaziabad/`, `interior-designers-in-ghaziabad/`, `architects-in-noida/` | Service and service-area pages, written for local search | One shared layout; each carries `WebPage`, `Service`, `BreadcrumbList` and `FAQPage` |
 | `thanks/index.html`, `404.html` | Form landing and not-found pages | `noindex`; `404.html` carries `<base href="/">` |
 | `styles.css` | Every rule on every page | One stylesheet, no preprocessor, no critical-CSS split |
 | `main.js` | Navigation state, scroll reveal, footer year, gallery lightbox | Pure presentation. Nothing here touches visitor data |

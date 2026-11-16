@@ -169,6 +169,48 @@ def check_page(name, html):
               "%s: references missing file %s" % (name, ref))
 
 
+def chrome(html):
+    """The header and footer, normalised so pages can be compared to each other.
+
+    Three differences are legitimate and are flattened away: the current page
+    marks itself with aria-current, the home page's own anchors are written
+    bare (#about) rather than rooted (/#about), and its logo points at #top
+    rather than /. Anything left over is drift.
+    """
+    out = []
+    for pattern in (r'<header class="nav".*?</header>', r'<footer class="foot">.*?</footer>'):
+        block = find(pattern, html)
+        if not block:
+            return None
+        text = block[0]
+        text = re.sub(r'\s*aria-current="page"', "", text)
+        text = text.replace('href="#top"', 'href="/"')
+        text = text.replace('href="#', 'href="/#')
+        out.append(text)
+    return out
+
+
+def check_chrome():
+    """Thirteen hand-edited copies of one header drift. This is what notices.
+
+    Decided in docs/DECISIONS.md D-017: the pages are written by hand, so
+    nothing regenerates the chrome and only a check keeps it honest.
+    """
+    reference = chrome(io.open("index.html", encoding="utf-8").read())
+    check(reference is not None, "index.html: no header/footer to compare against")
+    if reference is None:
+        return
+    for name in PAGES:
+        if name == "index.html" or not os.path.exists(name):
+            continue
+        other = chrome(io.open(name, encoding="utf-8").read())
+        if other is None:
+            check(False, "%s: has no <header class=\"nav\"> or <footer class=\"foot\">" % name)
+            continue
+        for part, (a, b) in zip(("header", "footer"), zip(reference, other)):
+            check(a == b, "%s: %s has drifted from index.html's" % (name, part))
+
+
 def main():
     os.chdir(ROOT)
     for name in PAGES:
@@ -176,6 +218,8 @@ def main():
             problems.append("%s: missing" % name)
             continue
         check_page(name, io.open(name, encoding="utf-8").read())
+
+    check_chrome()
 
     # Orphan pages are invisible to crawlers that only follow links.
     linked = set()

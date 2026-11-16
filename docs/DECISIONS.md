@@ -6,6 +6,60 @@ Entries made during AI-assisted sessions record the model, because behaviour dif
 
 ---
 
+## D-018 — Catch chrome drift with a check, not a template
+
+**Date:** 2026-11-16 · **Model:** claude-opus-5 (Claude Code)
+
+**Context:** Thirteen pages now carry their own copy of the header and the footer (D-017). The failure that follows is familiar and slow: someone adds a nav link on four pages, forgets the rest, and nobody notices for a month because every page still looks fine on its own.
+
+**Options:** 1) accept it and rely on care; 2) generate the chrome at build time; 3) include the chrome at runtime with JavaScript; 4) compare every page's chrome against the home page's in `check_site.py`.
+
+**Chosen:** 4.
+
+**Why:** It is about thirty lines, runs in the pipeline that already runs, and fails loudly the moment two pages disagree. 2 reintroduces the build step D-001 and D-017 both refused. 3 is worse than a build step: it makes the navigation invisible to a crawler with JavaScript disabled and delays the largest contentful paint on every page, to solve a problem that is not a runtime problem.
+
+**Trade-off:** The comparison has to flatten the three differences that are legitimate — `aria-current` on the current page, the home page's bare `#about` anchors, and its logo pointing at `#top`. Each exception is a small hole in the check. They are listed in the function's docstring so the holes are at least visible.
+
+**Verification:** Renaming one nav link on `/services/` makes `check_site.py` report `services/index.html: header has drifted from index.html's`; restoring it returns the run to green.
+
+---
+
+## D-017 — Write the local pages by hand, from a one-off generator
+
+**Date:** 2026-11-16 · **Model:** claude-opus-5 (Claude Code)
+
+**Context:** Eight new pages share a header, a footer and twenty-odd lines of head boilerplate with the five that already existed. D-001 chose hand-written HTML and said to revisit past roughly a dozen pages. Thirteen is past it.
+
+**Options:** 1) hand-write all eight, chrome included; 2) adopt a static site generator and rebuild the site around it; 3) write the eight from a throwaway generator, commit the output, and keep editing by hand afterwards; 4) keep the generator in `tools/` as a permanent build step.
+
+**Chosen:** 3.
+
+**Why:** 1 means eight hand-copied headers, and a header copied eight times is a header that disagrees with itself within a month. 2 buys templating at the price of a lockfile, a toolchain and a dependency tree, for a site whose content changes a few times a year — the same trade D-001 already refused. 4 is 2 in a smaller box: it makes the HTML a build artifact, which is the part that would have to be explained to whoever maintains this next. 3 gets the consistency where it matters, at birth, and leaves behind exactly what was there before: plain HTML anybody can edit.
+
+**Trade-off:** Nothing in the editing model stops the thirteen copies of the chrome from drifting apart. That is a real cost, and D-018 is the answer to it.
+
+**Revisit if:** the page count grows past roughly twenty-five, or content starts changing monthly rather than yearly. At that point templating earns its keep.
+
+---
+
+## D-016 — Eight pages, not twenty, and none of them thin
+
+**Date:** 2026-11-16 · **Model:** claude-opus-5 (Claude Code)
+
+**Context:** The site needs to rank for local queries — architect and interior designer in Ghaziabad, Noida and the surrounding NCR. Competing firms run a page per locality, often a dozen or more, each a reworded copy of the last.
+
+**Options:** 1) match them, a page per suburb — Vaishali, Indirapuram, Vasundhara, Kaushambi, Crossings Republik and so on; 2) one page per genuine query intent, with real content; 3) a single page listing every area served.
+
+**Chosen:** 2 — two Ghaziabad pages split by intent (architecture, interiors), one for Noida, a services hub and four service pages.
+
+**Why:** A page per suburb, written from one template with the place name swapped, is a doorway page. Google names the pattern and devalues it, and the studio has no project in most of those suburbs to make the page honest. What it does have is a genuine difference between the architecture query and the interiors query, a real Noida project, and a service — map approval — where the local authority's own rules supply substance nobody else is writing. Those are five honest pages, and the suburbs live inside them as sections rather than as separate thin pages.
+
+**Trade-off:** We forgo the long tail of "interior designer in Vasundhara" as an exact-match URL. If a suburb ever earns a real project and real photographs, it earns its own page then.
+
+**Revisit if:** the studio completes work in a named locality and can show it.
+
+---
+
 ## D-015 — Pin the EmailJS SDK with a Subresource Integrity hash
 
 **Date:** 2026-11-16 · **Model:** claude-opus-5 (Claude Code)

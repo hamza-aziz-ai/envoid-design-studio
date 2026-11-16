@@ -62,6 +62,22 @@ URLs carry no file extension. GitHub Pages serves `<dir>/index.html` at `<dir>/`
 | `index.html` | `/` | Home: hero, about, services, process, selected work, contact form |
 | `projects/index.html` | `/projects/` | Full gallery, 23 renders across four sections |
 | `contact/index.html` | `/contact/` | Studio details, map, enquiry form |
+| `services/index.html` | `/services/` | Services hub |
+| `services/architecture/index.html` | `/services/architecture/` | Architecture and structural coordination |
+| `services/interior-design/index.html` | `/services/interior-design/` | Interior design |
+| `services/design-build-turnkey/index.html` | `/services/design-build-turnkey/` | Design, build and turnkey execution |
+| `services/map-approval-ghaziabad/index.html` | `/services/map-approval-ghaziabad/` | GDA building plan sanction |
+| `architects-in-ghaziabad/index.html` | `/architects-in-ghaziabad/` | Service area: Ghaziabad, architecture |
+| `interior-designers-in-ghaziabad/index.html` | `/interior-designers-in-ghaziabad/` | Service area: Ghaziabad, interiors |
+| `architects-in-noida/index.html` | `/architects-in-noida/` | Service area: Noida and Greater Noida |
+| `services/index.html` | `/services/` | Services hub |
+| `services/architecture/index.html` | `/services/architecture/` | Architecture and structural coordination |
+| `services/interior-design/index.html` | `/services/interior-design/` | Interior design |
+| `services/design-build-turnkey/index.html` | `/services/design-build-turnkey/` | Design, build and turnkey execution |
+| `services/map-approval-ghaziabad/index.html` | `/services/map-approval-ghaziabad/` | GDA building plan sanction |
+| `architects-in-ghaziabad/index.html` | `/architects-in-ghaziabad/` | Service area: Ghaziabad, architecture |
+| `interior-designers-in-ghaziabad/index.html` | `/interior-designers-in-ghaziabad/` | Service area: Ghaziabad, interiors |
+| `architects-in-noida/index.html` | `/architects-in-noida/` | Service area: Noida and Greater Noida |
 | `thanks/index.html` | `/thanks/` | Form landing page (`noindex`) |
 | `404.html` | any missing path | Custom not-found page (`noindex`, carries its own `<base href>`) |
 | `styles.css` | `/styles.css` | Every page's styles |
@@ -238,5 +254,6 @@ It is never published — `tools/stage.sh` strips it from the deployed directory
 | Item | Detail |
 | --- | --- |
 | **Enquiry path untested** | The EmailJS public key, service and template identifiers are filled in `contact.js` and both templates are live in the dashboard, but nobody has yet submitted the live form and confirmed that the enquiry and the auto-reply both arrive. The procedure is in [docs/TESTING.md](docs/TESTING.md). |
-| **Google Business Profile** | For a search such as "architect in Vaishali", the Business Profile carries more weight than any markup in this repository. |
+| **Google Business Profile** | For a search such as "architect in Vaishali", the Business Profile carries more weight than any markup in this repository. It does not exist yet, and nothing here substitutes for it. |
+| **Facts the studio has not supplied** | Opening hours, a price range and social profiles are ranking and display signals for a local business, and all three are absent from the structured data because nobody has confirmed them. Listed in [docs/ASSUMPTIONS.md](docs/ASSUMPTIONS.md). |
 | **Project names** | The titles and locations in `projects/index.html` were read from source filenames. Any that names a client should be confirmed before it stays public. |

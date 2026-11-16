@@ -21,6 +21,7 @@ What must never happen in this repository, and what requires asking first. Writt
 - **Always set `--r` on a gallery tile** to the replacement image's real aspect ratio when swapping a photograph.
 - **Always regenerate the `-600` and `-1200` WebP variants** for a new photograph, and wire them through `<picture>` and `sizes`.
 - **Always commit before a risky change**, so there is a known-good commit to return to.
+- **Never write a claim the studio has not confirmed.** No project in a locality it has not worked in, no credential, no year count, no client name, no opening hour, no price, no review. The temptation is strongest on the service-area pages, where a sentence like "over 200 projects delivered in Indirapuram" would help the page and be a lie. Where a page states a rule or a procedure, it states one the relevant authority publishes, and says that the authority is the one to check with.
 - **Always give an outbound or asset link `target="_blank" rel="noopener"`.** In-site navigation is the exception and stays in the same tab: forcing a new tab on every nav click is a WCAG 3.2.5 failure and would drop the accessibility score below its floor.
 - **Always read the full diff**, not a summary of it.
 

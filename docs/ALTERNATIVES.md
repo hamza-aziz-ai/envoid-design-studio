@@ -19,8 +19,8 @@ The decisive point: GitHub Pages cannot set custom response headers, which is wh
 
 | Option | Cost | Why not | Revisit if |
 | --- | --- | --- | --- |
-| **Hand-written HTML/CSS/JS** ✅ | Header and footer duplicated across five pages | — | — |
-| Eleventy, Astro or Hugo | A toolchain, a lockfile and a supply chain, permanently | Templating five pages does not pay for a build step and its dependency tree | Page count passes roughly a dozen, or a blog is added |
+| **Hand-written HTML/CSS/JS** ✅ | Header and footer duplicated across thirteen pages, guarded by a drift check in `check_site.py` | — | Page count passes roughly twenty-five (D-017) |
+| Eleventy, Astro or Hugo | A toolchain, a lockfile and a supply chain, permanently | Templating thirteen pages still does not pay for a build step and its dependency tree; the eight new ones were written once from a throwaway generator and committed as plain HTML | Page count passes roughly twenty-five, or a blog is added |
 | React / Next.js | All of the above, plus hydration and a JavaScript-dependent first paint | A brochure site that must be fast and crawlable is the worst possible case for it | Never, for this site |
 
 ## Enquiry delivery

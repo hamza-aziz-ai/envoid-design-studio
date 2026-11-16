@@ -45,6 +45,8 @@ Then walk the paths by hand:
 | `http://localhost:8000/deep/nested/anything` | The styled 404 page, not an unstyled one |
 | `http://localhost:8000/contact/` | Map iframe, form, no console errors |
 
+`check_site.py` also compares every page's header and footer against the home page's, because thirteen hand-edited copies of one navigation drift apart quietly. Changing a nav link means changing it on every page; the check says so rather than leaving it to be noticed months later.
+
 The 404 check is the one people skip and the one that regresses. It only reproduces through `stage.sh`, because `<base href="/">` resolves differently when the repository root is served directly.
 
 ### The manual customer path
