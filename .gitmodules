@@ -1,0 +1,3 @@
+[submodule "MobileApp"]
+	path = MobileApp
+	url = git@github.com:hamza-aziz-ai/envoid-design-studio-mobile.git
