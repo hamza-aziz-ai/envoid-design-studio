@@ -84,9 +84,17 @@ The two routes that survive January 2027:
 | **EmailJS custom SMTP** pointed at Hostinger's mail server for `contact@envoiddesign.in` | Free, the domain already includes mailboxes | Takes Gmail out of the sending path entirely, so none of the above applies. The likely right answer |
 | **Google Workspace** on `envoiddesign.in` | Paid, per user | Makes the address a Google address, so aliases keep working |
 
+### Two doors that look open and are not
+
+Both are reasonable things to try, and both end in the same place, so they are written down rather than rediscovered.
+
+**Changing the Google Account's own email address.** Google does allow this, but a `@gmail.com` account can only be moved to another `@gmail.com` address. Making the account email a non-Gmail address requires deleting the Gmail service from the account, which destroys the mailbox — not something to do to a studio's live inbox. It is also capped at once every 12 months and three times in total, and the old address stays on as an alternate.
+
+**Adding `contact@envoiddesign.in` as an alternate email on the account.** An alternate address lets you sign in and receive account notices. It does not make Gmail send from it; that is "Send as", which is the feature with the January 2027 end date above.
+
 Nothing is broken today. Sending from `envoidstudio26@gmail.com` keeps working indefinitely; this only matters when the studio wants its own domain on outbound mail.
 
-Sources: [Send emails from a different address or alias](https://support.google.com/mail/answer/22370) · [Changes to third-party email account support in Gmail](https://support.google.com/mail/answer/17101213)
+Sources: [Send emails from a different address or alias](https://support.google.com/mail/answer/22370) · [Changes to third-party email account support in Gmail](https://support.google.com/mail/answer/17101213) · [Change your Google Account email](https://support.google.com/accounts/answer/19870) · [Manage your email addresses](https://support.google.com/accounts/answer/6316959)
 
 ## Free plan limits
 
