@@ -22,6 +22,8 @@ Where things stand. Newest entry on top. Read this first; update it last.
 - EmailJS SDK tag now carries a Subresource Integrity hash and `crossorigin="anonymous"`.
 - URLs dropped the `.html` extension: pages moved into directories and are served at `/projects/`, `/contact/`, `/thanks/`, with every markup reference now root-relative.
 - Nine pages added for local search: a services hub, five service pages and three service-area pages, each with its own breadcrumb, `Service`, `BreadcrumbList` and `FAQPage` data. Navigation and footer changed with them, and `check_site.py` now guards the fourteen copies of the chrome against drift.
+- Search Console, 2026-11-16: the sitemap was resubmitted and re-read on the spot, taking discovered pages from 3 to 12. Indexing was requested for all nine new pages plus `/` and `/projects/`, which is 11 of the day's quota. **`/contact/` hit "Quota Exceeded" and still needs submitting** — one request, any day, it is already in the sitemap either way.
+- Search Console facts worth keeping: `/` was already indexed before any of this; every other URL reported either "Discovered - currently not indexed" or "URL is unknown to Google". The Page indexing and Performance reports were still showing "Processing data" because the property is barely a day old, so there is no ranking or impression data to read yet.
 - This `docs/` set written.
 
 ### Broken or risky
@@ -40,7 +42,7 @@ Where things stand. Newest entry on top. Read this first; update it last.
 3. **Supply the facts the pages had to leave out.** Opening hours, a price band, the Instagram handle, and any Council of Architecture registration. Each is a ranking or display signal currently missing from the structured data, and each needs a human to confirm it rather than a model to guess — see `docs/ASSUMPTIONS.md`.
 4. Turn on domain auto-renewal in hPanel.
 5. Confirm the project titles and locations with the studio.
-6. Submit the new URLs in Search Console, or leave it to re-read `sitemap.xml` on its own. Expect weeks, not days, before a new domain settles.
+6. Submit `https://envoiddesign.in/contact/` in Search Console — it is the one URL the daily quota cut off on 2026-11-16. Everything else is submitted. Then leave it alone: expect weeks, not days, before a new domain settles, and resubmitting a URL does not improve its queue position.
 7. Build links the honest way: a Google Business Profile, Instagram and a Justdial or IndiaMART listing that all carry the same name, address and phone number, exactly as the site writes them. Inconsistent address formatting across directories is the most common self-inflicted local-SEO wound.
 
 ### Do not touch
