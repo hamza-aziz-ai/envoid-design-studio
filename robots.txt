@@ -1,4 +1,4 @@
-# Everything here is meant to be found. thanks.html and 404.html carry their
+# Everything here is meant to be found. /thanks/ and the 404 page carry their
 # own noindex, which is stronger than a Disallow: a disallowed page can still
 # be indexed from an inbound link, it just gets crawled without its content.
 User-agent: *
