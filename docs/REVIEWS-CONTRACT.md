@@ -45,6 +45,14 @@ Order is preserved exactly as written. The app does not re-sort, so whatever ran
 - If any of this text ever enters a `<script type="application/ld+json">` block for some other reason, escape `<` as `<`. `JSON.stringify` does not, and a body containing `</script>` terminates the element.
 - **A Google Places API key is a repository secret**, with referrer or IP restrictions set in the Google Cloud console, used only by a server-side job. It is the opposite of the Supabase anon key, which is a repository variable because it is public by design and constrained by row-level security.
 
+## The renderer exists
+
+`main.js` already reads `/testimonials.json` and fills the `#testimonials` section on the home page. It ships `hidden` and reveals itself only when the file parses and holds at least one row with a body of ten characters or more, so a missing file costs one failed request and shows nothing — which is the state the site is in today and will stay in until the first review is approved.
+
+It was tested against hostile input before it shipped: a row whose name was `<img src=x onerror=alert(1)>` and whose body contained `</script><script>alert('xss')</script>` rendered as visible text, executed nothing, and raised no dialog. Any future change to that code should be re-tested the same way rather than reasoned about.
+
+`reviews.json` has no renderer. If one is ever written it uses the same approach, and the same prohibition on `Review` structured data.
+
 ## Related
 
 `testimonials.json` is a different file with a different source: reviews written in the app by clients, approved by a human, synced by `tools/sync-testimonials.mjs`. The two are deliberately not merged.
