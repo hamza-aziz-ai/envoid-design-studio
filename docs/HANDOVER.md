@@ -40,7 +40,7 @@ Where things stand. Newest entry on top. Read this first; update it last.
 ### Next
 
 1. Submit the live form once and confirm both mails arrive, following the manual path in `docs/TESTING.md`.
-2. **Create the Google Business Profile.** For "architect in Vaishali" or "interior designer in Indirapuram" the map pack sits above every organic result, and nothing in this repository can compete with it. Verify the Sector 5 address, set the categories to Architect and Interior Designer, add the service areas, post the project photographs that are already in `assets/`, and then ask every past client for a review. This single item outweighs all of the on-page work below it.
+2. **Create the Google Business Profile.** Every field is written out ready to paste in [GOOGLE-BUSINESS-PROFILE.md](GOOGLE-BUSINESS-PROFILE.md), including the five facts that need the studio to confirm them. For "architect in Vaishali" or "interior designer in Indirapuram" the map pack sits above every organic result, and nothing in this repository can compete with it. Verify the Sector 5 address, set the categories to Architect and Interior Designer, add the service areas, post the project photographs that are already in `assets/`, and then ask every past client for a review. This single item outweighs all of the on-page work below it.
 3. **Supply the facts the pages had to leave out.** Opening hours, a price band, the Instagram handle, and any Council of Architecture registration. Each is a ranking or display signal currently missing from the structured data, and each needs a human to confirm it rather than a model to guess — see `docs/ASSUMPTIONS.md`.
 4. Turn on domain auto-renewal in hPanel.
 5. Confirm the project titles and locations with the studio.

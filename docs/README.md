@@ -17,6 +17,7 @@ Written so that any customer-facing part of this site can be explained and defen
 | File | Answers |
 | --- | --- |
 | [HANDOVER](HANDOVER.md) | Where things stand right now |
+| [GOOGLE-BUSINESS-PROFILE](GOOGLE-BUSINESS-PROFILE.md) | Every field needed to create the studio's Business Profile, ready to paste |
 | [ARCHITECTURE](ARCHITECTURE.md) | What the modules are and where the trust boundaries sit |
 | [FLOW](FLOW.md) | How execution actually travels, call by call |
 | [DATA](DATA.md) | Which structures exist and what each trade-off buys |
