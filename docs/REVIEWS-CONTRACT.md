@@ -49,6 +49,8 @@ Order is preserved exactly as written. The app does not re-sort, so whatever ran
 
 `main.js` already reads `/testimonials.json` and fills the `#testimonials` section on the home page. It ships `hidden` and reveals itself only when the file parses and holds at least one row with a body of ten characters or more, so a missing file costs one failed request and shows nothing — which is the state the site is in today and will stay in until the first review is approved.
 
+The fetch is gated on a `data-src` attribute that `tools/stage.sh` adds at deploy time, and only when `testimonials.json` actually shipped. Without the file there is no attribute and no request at all. That is not tidiness: a 404 is logged to the console by the browser whatever the code does with the response, and Lighthouse scores a console error as a best-practices failure — the first version of this took the home page's best-practices score from 1.0 to 0 and the pipeline caught it.
+
 It was tested against hostile input before it shipped: a row whose name was `<img src=x onerror=alert(1)>` and whose body contained `</script><script>alert('xss')</script>` rendered as visible text, executed nothing, and raised no dialog. Any future change to that code should be re-tested the same way rather than reasoned about.
 
 `reviews.json` has no renderer. If one is ever written it uses the same approach, and the same prohibition on `Review` structured data.

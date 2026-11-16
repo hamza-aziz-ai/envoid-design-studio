@@ -31,6 +31,19 @@ rm -rf "$DEST/.github" "$DEST/tools" \
        "$DEST/.gitignore" "$DEST/.gitmodules" \
        "$DEST/README.md" "$DEST/docs" "$DEST/MobileApp"
 
+# The testimonials section only fetches when this attribute is present, and it
+# is added only when the data file actually shipped. Without it the browser
+# logs a 404 on every page load, which costs the whole Lighthouse
+# best-practices score — the fetch cannot suppress that, only not happen.
+if [ -f "$DEST/testimonials.json" ]; then
+  while IFS= read -r f; do
+    sed -i 's|<section id="testimonials" class="sec" hidden>|<section id="testimonials" class="sec" data-src="/testimonials.json" hidden>|g' "$f"
+  done < <(find "$DEST" -name "*.html")
+  echo "stage: testimonials.json present, section enabled"
+else
+  echo "stage: no testimonials.json, section stays inert"
+fi
+
 if [ -n "$TOKEN" ]; then
   while IFS= read -r f; do
     sed -i \

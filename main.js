@@ -106,7 +106,11 @@ if (grid && typeof HTMLDialogElement === 'function') {
    Google's policy disallows self-serving reviews on a business's own pages and
    the penalty is a manual action. See docs/REVIEWS-CONTRACT.md. */
 const wall = document.getElementById('testimonials');
-if (wall) {
+// tools/stage.sh adds data-src at deploy time, and only when testimonials.json
+// is actually present. Without it we do not fetch at all: a 404 is logged to
+// the console by the browser whatever the code does with the response, and
+// that costs the whole Lighthouse best-practices score on every page load.
+if (wall && wall.dataset.src) {
   const list = wall.querySelector('.says');
 
   const card = ({ name, rating, body, project, date }) => {
@@ -142,7 +146,7 @@ if (wall) {
 
   // A missing file is the normal state until the first review is approved, so
   // failure here is silent by design: no console noise, no empty section.
-  fetch('/testimonials.json', { cache: 'no-cache' })
+  fetch(wall.dataset.src, { cache: 'no-cache' })
     .then((r) => (r.ok ? r.json() : null))
     .then((data) => {
       const rows = (data && Array.isArray(data.testimonials) ? data.testimonials : [])
