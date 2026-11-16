@@ -86,14 +86,16 @@ GitHub Pages serves the site; Hostinger only answers DNS. The records in Hosting
 
 Four A records, not one: they are GitHub's anycast edge, and dropping any of them removes a path to the site rather than saving a line.
 
-`CNAME` in this repository is what tells Pages the domain. It ships with every deploy, so deleting it silently hands the site back to `*.github.io`.
+A TXT record on `@` holds the Google Search Console verification token. Removing it un-verifies the property.
+
+`CNAME` in this repository ships with every deploy, but an Actions-deployed Pages site does not read it the way a branch build does: the domain is set on the repository itself, and was set with `gh api -X PUT repos/:owner/:repo/pages -f cname=envoiddesign.in`. Keep the file anyway — it is what a branch build would need, and it documents the domain next to the code.
+
+`envoiddesign.in` previously served a Hostinger AI Builder placeholder. That site still exists in the Hostinger account, on its own `*.hostingersite.com` subdomain, and is deliberately left there; it is unreachable at the domain.
 
 To change the domain, edit `CNAME`, then `CANONICAL_HOST` in `tools/check_site.py`, the expected canonicals in `tools/smoke.sh`, the `_next` hidden field in `index.html` and `contact.html`, `robots.txt`, `sitemap.xml`, and the canonical, `og:url` and schema.org URLs in each page's head.
 
 ## Still needs a human
 
 - **EmailJS.** `contact.js` has four blank identifiers at the top: the public key, and a service and template id for the enquiry and the auto-reply. Until they are filled the form falls back to its FormSubmit action, which needs a one-time activation click on the mail sent to the studio on first submit.
-- **Search Console.** Add `envoiddesign.in` as a property and submit `https://envoiddesign.in/sitemap.xml`. The sitemap exists and is checked by CI, but nothing has told Google it is there.
 - **Google Business Profile.** For "architect in Vaishali" the Business Profile does more than any markup here.
-- **The old Hostinger site.** `envoiddesign.in` used to serve a Hostinger AI Builder placeholder ("ARCHITECTURE FIRM"). It is still in the Hostinger account and can be deleted once the new site is confirmed good.
 - **Project names.** The titles and locations in `projects.html` were read off the source filenames. If any names a client, confirm it before it stays public — this repository is public and carries the studio's real phone numbers and email.
