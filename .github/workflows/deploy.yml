@@ -4,9 +4,19 @@ name: CI/CD
 # the checks pass, so a broken page cannot reach the live site. After the
 # deployment goes out, the smoke job proves the real origin serves it.
 
+# Documentation is not published: tools/stage.sh strips README.md and docs/
+# out of the deployed directory, so a docs-only commit cannot change what the
+# site serves and does not need to be built, deployed, smoke tested or tagged.
+#
+# The filter is on push only. A required status check that never runs reports
+# as "Expected" forever, so putting paths-ignore on pull_request would block a
+# docs-only pull request from merging rather than speed it up.
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
   pull_request:
   workflow_dispatch:
 
