@@ -34,7 +34,7 @@ Beyond that there is no persistent data at all: no database, no cookies, no `loc
 
 There is no server to attack and no database to read, which removes most of the usual surface. What remains is the form: no CAPTCHA and no rate limit, so a determined submitter can flood the studio's inbox and exhaust the EmailJS free-tier quota of roughly 200 emails a month, two per enquiry. The honeypot stops naive bots and nothing more.
 
-The sharper risk is the third-party script. The EmailJS SDK loads from jsDelivr, pinned to 3.12.1 but **without a Subresource Integrity hash**, so a compromise of that artifact would run in the page with access to every enquiry. That is the single highest-value piece of hardening still outstanding.
+The third-party script was the sharper risk and is now closed: the EmailJS SDK loads from jsDelivr pinned to 3.12.1 and carries a Subresource Integrity hash, so the browser hashes the delivered bytes and refuses to run them if they differ. It fails closed — a tampered CDN breaks the form rather than quietly reading every enquiry, which is the right way round.
 
 The highest-impact target of all is not in the repository: control of the Hostinger account is control of where the domain points. Its auto-renewal is currently off.
 
@@ -46,4 +46,4 @@ More generally, the smoke test proves the live origin serves correctly at the mo
 
 ## What I would change with more time
 
-Add the SRI hash to the EmailJS tag. Put uptime monitoring in front of the live origin so an outage is not discovered by the client. Turn on domain auto-renewal. Confirm the project names in `projects/index.html` with the studio before they stay public in a public repository. And get the four EmailJS identifiers filled, because every other improvement is secondary to the form actually working.
+Put uptime monitoring in front of the live origin so an outage is not discovered by the client. Turn on domain auto-renewal. Confirm the project names in `projects/index.html` with the studio before they stay public in a public repository. And get the four EmailJS identifiers filled, because every other improvement is secondary to the form actually working.

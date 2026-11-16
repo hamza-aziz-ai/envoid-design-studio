@@ -6,6 +6,26 @@ Entries made during AI-assisted sessions record the model, because behaviour dif
 
 ---
 
+## D-015 — Pin the EmailJS SDK with a Subresource Integrity hash
+
+**Date:** 2026-11-16 · **Model:** claude-opus-5 (Claude Code)
+
+**Context:** The SDK runs in the page with access to every enquiry field. Pinning the version stops a bad *release*; it does nothing about tampered *bytes* at the CDN.
+
+**Options:** 1) leave it pinned and accept the risk; 2) add an SRI hash; 3) self-host a copy in `assets/`; 4) drop the SDK and post to the EmailJS REST API directly.
+
+**Chosen:** 2, `sha384`, with `crossorigin="anonymous"`.
+
+**Why:** It costs two attributes and converts a silent-compromise risk into a loud failure. 3 moves the supply-chain problem to whoever updates the copy, and loses the shared-CDN cache. 4 is a larger rewrite of working code for a smaller gain.
+
+**Trade-off:** It fails **closed**. If the served bytes ever change, the script stops loading and the form silently stops working, because `contact.js` still believes EmailJS is configured. That is the correct direction for a security control, but it is a real failure mode and is recorded in `docs/FAILURE.md`.
+
+**Verification:** Downloaded twice, byte-identical; computed sha256 equals jsDelivr's own published sha256 for the file; the attribute in the markup recomputed and compared.
+
+**Revisit if:** the pinned version changes — the hash must be recomputed, and `docs/DEPENDENCIES.md` holds the procedure.
+
+---
+
 ## D-014 — Skip the pipeline for documentation-only commits
 
 **Date:** 2026-11-16 · **Model:** claude-opus-5 (Claude Code)

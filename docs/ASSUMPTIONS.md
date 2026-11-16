@@ -13,6 +13,7 @@ Status is one of **verified** (checked, with the check named), **unverified** (b
 | The live site serves what the repository contains | verified | `tools/smoke.sh` returns twelve `ok` lines against the real origin |
 | Search Console owns the property and has the sitemap | verified | Ownership verified by TXT; sitemap reports **Success**, 3 pages discovered |
 | The 404 page answers a real 404 at any depth | verified | Smoke probes `no-such-page` and `deep/nested/missing`, both cache-busted |
+| The EmailJS SRI hash matches what jsDelivr serves | verified | Two independent downloads identical; computed sha256 equals jsDelivr's published sha256; markup attribute compared against the recomputed sha384 |
 | Pages publishes only from Actions | verified | `build_type: workflow`; the legacy branch build is off |
 | The domain had nothing to lose | verified | It served a Hostinger AI Builder placeholder titled "ARCHITECTURE FIRM" |
 
@@ -33,7 +34,6 @@ Status is one of **verified** (checked, with the check named), **unverified** (b
 
 These were considered and chosen. They are not gaps in knowledge.
 
-- The EmailJS SDK loads without a Subresource Integrity hash. The version is pinned; the gap is real and recorded in `docs/THREAT.md`.
 - `enforce_admins` is `false` on branch protection, so an administrator can bypass CI. Accepted for a single maintainer.
 - Domain auto-renewal is **off**, expiring 2029-07-25. Accepted only because the runway is long; it is still a silent total-loss risk.
 - There is no uptime monitoring. The smoke test runs at deploy time only.

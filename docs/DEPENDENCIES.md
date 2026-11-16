@@ -6,7 +6,7 @@ Every dependency is code somebody else wrote and nobody here will read. Each one
 
 | Dependency | Version | Why it is here | Pinned | Risk |
 | --- | --- | --- | --- | --- |
-| `@emailjs/browser` via `cdn.jsdelivr.net` | `3.12.1` | Sends the enquiry and the auto-reply without a backend | Exact version | **Executes in the page with access to the form. No SRI hash** — see `docs/THREAT.md` |
+| `@emailjs/browser` via `cdn.jsdelivr.net` | `3.12.1` | Sends the enquiry and the auto-reply without a backend | Exact version **and** an SRI hash | Executes in the page with access to the form, but tampered bytes fail closed — see `docs/THREAT.md` |
 | Google Fonts — Fraunces, Inter | unversioned CSS endpoint | The two typefaces the design is built on | No | Visitor IP and user agent reach Google. Blocked or slow, fallback fonts render and layout holds |
 | Google Maps embed | iframe, contact page | Shows the studio's verified business listing | No | `loading="lazy"` and `referrerpolicy="strict-origin-when-cross-origin"`; blocked, an empty box |
 | `cloudflare-dns.com` DNS-over-HTTPS | — | MX/A lookup for a typed email domain | No | Fails open after a 4-second timeout |
@@ -46,6 +46,22 @@ Python 3 is used by `tools/check_site.py` and by Lighthouse's local server. It i
 | Hostinger and Google account access | Outside this repository | Yes. Never put them in it |
 
 The rule in `docs/CONSTRAINTS.md` stands: never commit a credential, key, token or `.env` file. Scan a diff for them before committing — `git diff --cached` — because the repository is public and a push cannot be unpublished.
+
+## Recomputing the EmailJS SRI hash
+
+Needed only when the pinned version changes. The published hash is cross-checked against jsDelivr's own, so a bad download cannot quietly become the recorded value:
+
+```bash
+URL="https://cdn.jsdelivr.net/npm/@emailjs/browser@<version>/dist/email.min.js"
+curl -sS -o sdk.js "$URL"
+python3 -c "import hashlib,base64;print('sha384-'+base64.b64encode(hashlib.sha384(open('sdk.js','rb').read()).digest()).decode())"
+curl -sS "https://data.jsdelivr.com/v1/packages/npm/@emailjs/browser@<version>?structure=flat" \
+  | grep -o '"name":"/dist/email.min.js".\{0,80\}'
+```
+
+The second command prints jsDelivr's published **sha256** for the same file. Compute the sha256 of your download too and confirm it matches before trusting the sha384 you are about to paste into the markup.
+
+The tag must carry `crossorigin="anonymous"` as well — without it the browser cannot read the cross-origin response to hash it, and blocks the script regardless of whether the hash is right.
 
 ## Adding a dependency
 

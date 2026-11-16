@@ -19,7 +19,7 @@ Where this breaks, what happens when a dependency is slow, down, wrong or empty,
 | **EmailJS quota** | Sends reject once exhausted | — | Roughly 200 emails/month, two per enquiry | About 100 enquiries per month before silence |
 | **FormSubmit** | Fallback POST fails, visitor sees a browser error page | — | **Unactivated: accepts and discards** | Enquiries only, and only while EmailJS is unconfigured |
 | **cloudflare-dns.com** | `domainAcceptsMail` catches and returns `true` | 4-second `AbortSignal.timeout`, then `true` | NXDOMAIN correctly refuses a dead domain | None. Fails open by design |
-| **jsdelivr.net** | SDK absent, `emailjs` undefined, submit throws | Form is unusable until it loads | Pinned to 3.12.1 | Enquiries only |
+| **jsdelivr.net** | SDK absent, `emailjs` undefined, submit throws | Form is unusable until it loads | **Bytes that fail the SRI hash are refused**, same as absent | Enquiries only |
 | **Google Fonts** | Fallback system fonts render; layout holds | Brief flash of fallback text | — | Cosmetic |
 | **Google Maps iframe** | Empty box on the contact page | Lazy-loaded, so no effect above the fold | — | Cosmetic. The address is also in text |
 | **DNS (Hostinger)** | Domain stops resolving; the site is gone | — | A wrong record points the domain elsewhere | Total |

@@ -34,7 +34,9 @@ Who could behave badly, what they can reach, and what stops them. Known gaps are
 
 **What stops a bad version:** the version is pinned, so jsDelivr serves an immutable artifact rather than a moving `latest`.
 
-**Gap:** there is **no Subresource Integrity hash** on the tag. A compromise of jsDelivr, or of the published 3.12.1 artifact, would execute in the page with access to every enquiry. Adding `integrity` and `crossorigin` closes this and is the single highest-value hardening left. See `docs/ASSUMPTIONS.md`.
+**What stops a tampered one:** a Subresource Integrity hash, `sha384-VDbnsk/qjpIVHPQMkJiROI+vW/7cw0k8TFYVLUabm7EWoLEDwcXh09XQ6gQ86Y0B`, with `crossorigin="anonymous"`. The browser hashes the delivered bytes and refuses to execute them if they differ, so a compromise of jsDelivr or of the published 3.12.1 artifact fails closed rather than silently reading every enquiry.
+
+**Residual risk:** failing closed means the form stops working rather than leaking. If EmailJS ever republishes 3.12.1 with different bytes — which it should not, since npm versions are immutable — the script would stop loading and enquiries would fall back to nothing, because `contact.js` would still believe EmailJS is configured. Recomputing the hash is the fix; `docs/DEPENDENCIES.md` records how.
 
 ### 4. Third-party services receiving enquiry data
 
@@ -82,7 +84,6 @@ Public, and it contains the studio's real telephone numbers, email address and s
 
 | Gap | Impact | Cost to close |
 | --- | --- | --- |
-| No SRI on the EmailJS SDK | Third-party script compromise reads enquiries | One attribute, plus the published hash |
 | No rate limit or CAPTCHA on the form | Inbox spam; EmailJS quota exhaustion | A service, or a third party; weighed against friction on a real lead |
 | `enforce_admins: false` | An administrator can bypass CI | One setting, at the cost of locking yourself out of your own emergency fix |
 | Domain auto-renewal off | Silent total loss at expiry | One toggle |
