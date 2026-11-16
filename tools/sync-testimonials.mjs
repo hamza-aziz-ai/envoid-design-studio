@@ -50,39 +50,61 @@ const res = await fetch(`${URL_BASE}/rest/v1/reviews?${q}`, {
   headers: { apikey: KEY, Authorization: `Bearer ${KEY}` },
 });
 
+// Everything below is nested rather than guarded with early process.exit():
+// the fetch above leaves a handle open, and exiting on top of it trips a libuv
+// assertion on Windows ("!(handle->flags & UV_HANDLE_CLOSING)") that reports
+// 127 and buries the real message. Setting process.exitCode instead lets node
+// close down and still fail the workflow step.
 if (!res.ok) {
   console.error(`sync-testimonials: Supabase returned ${res.status} ${res.statusText}`);
-  process.exit(1); // a broken sync must be loud, not silently stale
+  process.exitCode = 1; // a broken sync must be loud, not silently stale
+} else {
+  const rows = await res.json();
+
+  if (!Array.isArray(rows)) {
+    console.error('sync-testimonials: expected an array, got', typeof rows);
+    process.exitCode = 1;
+  } else {
+    const testimonials = rows
+      .filter(
+        (r) =>
+          Number.isInteger(r.rating) &&
+          r.rating >= 1 &&
+          r.rating <= 5 &&
+          clean(r.body, 800).length >= 10,
+      )
+      .map((r) => ({
+        name: clean(r.name, 60),
+        rating: r.rating,
+        body: clean(r.body, 800),
+        project: clean(r.project, 80) || null,
+        date: String(r.created_at ?? '').slice(0, 10), // day precision; the hour is nobody's business
+      }));
+
+    // Nothing approved and no file yet: write nothing. A testimonials.json
+    // holding an empty array makes a feature that has never published anything
+    // look live, and it would open a pull request whose whole content is "[]".
+    // Once the file exists an empty result IS written - that is how a withdrawn
+    // testimonial disappears from the site.
+    if (testimonials.length === 0 && !existsSync(OUT)) {
+      console.log('sync-testimonials: nothing approved yet, not creating an empty file.');
+    } else {
+      const payload =
+        JSON.stringify({ updated: new Date().toISOString().slice(0, 10), testimonials }, null, 2) + '\n';
+
+      // Only rewrite when the reviews themselves changed: the `updated` stamp
+      // alone would make a commit every single run.
+      const same =
+        existsSync(OUT) &&
+        JSON.stringify(JSON.parse(readFileSync(OUT, 'utf8')).testimonials) ===
+          JSON.stringify(testimonials);
+
+      if (same) {
+        console.log(`sync-testimonials: ${testimonials.length} approved, unchanged.`);
+      } else {
+        writeFileSync(OUT, payload);
+        console.log(`sync-testimonials: wrote ${testimonials.length} approved review(s) to ${OUT}.`);
+      }
+    }
+  }
 }
-
-const rows = await res.json();
-if (!Array.isArray(rows)) {
-  console.error('sync-testimonials: expected an array, got', typeof rows);
-  process.exit(1);
-}
-
-const testimonials = rows
-  .filter((r) => Number.isInteger(r.rating) && r.rating >= 1 && r.rating <= 5 && clean(r.body, 800).length >= 10)
-  .map((r) => ({
-    name: clean(r.name, 60),
-    rating: r.rating,
-    body: clean(r.body, 800),
-    project: clean(r.project, 80) || null,
-    date: String(r.created_at ?? '').slice(0, 10), // day precision; the hour is nobody's business
-  }));
-
-const payload = JSON.stringify({ updated: new Date().toISOString().slice(0, 10), testimonials }, null, 2) + '\n';
-
-// Only rewrite when the reviews themselves changed: the `updated` stamp alone
-// would make a commit every single run.
-const same =
-  existsSync(OUT) &&
-  JSON.stringify(JSON.parse(readFileSync(OUT, 'utf8')).testimonials) === JSON.stringify(testimonials);
-
-if (same) {
-  console.log(`sync-testimonials: ${testimonials.length} approved, unchanged.`);
-  process.exit(0);
-}
-
-writeFileSync(OUT, payload);
-console.log(`sync-testimonials: wrote ${testimonials.length} approved review(s) to ${OUT}.`);
