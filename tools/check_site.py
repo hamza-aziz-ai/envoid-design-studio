@@ -212,6 +212,26 @@ def check_chrome():
             check(a == b, "%s: %s has drifted from index.html's" % (name, part))
 
 
+def check_workflow():
+    """The deploy must keep shipping dot-directories.
+
+    actions/upload-pages-artifact defaults include-hidden-files to false, and
+    in that mode it tars the site with `--exclude=.[^/]*`, dropping every
+    dot-entry. That silently un-deploys /.well-known/, where the Android and
+    iOS deep-link association files live: the files stay committed, the site
+    serves 404, and the only symptom is a deep link opening the browser.
+    Proved by probe on 2026-11-16; see docs/DECISIONS.md D-020.
+    """
+    path = os.path.join(".github", "workflows", "deploy.yml")
+    if not os.path.exists(path):
+        return
+    text = io.open(path, encoding="utf-8").read()
+    if "upload-pages-artifact" in text:
+        check("include-hidden-files: true" in text,
+              "%s: upload-pages-artifact without include-hidden-files: true "
+              "would drop /.well-known/ from the deploy" % path)
+
+
 def main():
     os.chdir(ROOT)
     for name in PAGES:
@@ -221,6 +241,7 @@ def main():
         check_page(name, io.open(name, encoding="utf-8").read())
 
     check_chrome()
+    check_workflow()
 
     # Orphan pages are invisible to crawlers that only follow links.
     linked = set()

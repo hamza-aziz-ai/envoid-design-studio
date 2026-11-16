@@ -23,8 +23,12 @@ mkdir -p "$DEST"
 # depending on rsync, which Git Bash on Windows does not ship.
 git -C "$SRC" archive HEAD | tar -x -C "$DEST"
 
+# Repository plumbing, not site content. Since the deploy started shipping
+# dot-entries so that /.well-known/ reaches the live site, .gitignore and
+# .gitmodules would otherwise be published along with everything else.
 rm -rf "$DEST/.github" "$DEST/tools" \
        "$DEST/lighthouserc.js" "$DEST/.htmlvalidate.json" "$DEST/.gitattributes" \
+       "$DEST/.gitignore" "$DEST/.gitmodules" \
        "$DEST/README.md" "$DEST/docs" "$DEST/MobileApp"
 
 if [ -n "$TOKEN" ]; then

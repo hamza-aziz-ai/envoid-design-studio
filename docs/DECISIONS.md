@@ -6,6 +6,28 @@ Entries made during AI-assisted sessions record the model, because behaviour dif
 
 ---
 
+## D-020 — Ship dot-directories, and guard that in `check_site.py`
+
+**Date:** 2026-11-16 · **Model:** claude-opus-5 (Claude Code)
+
+**Context:** The mobile app needs `/.well-known/assetlinks.json` and `/.well-known/apple-app-site-association` to claim `envoiddesign.in` links. The app session flagged that silent non-serving is the usual failure, and asked for confirmation that a dot-path is actually served.
+
+**What was found:** It was not. Two probe files were committed, staged into `_site` correctly, and still answered 404 on the live site. The cause is in the deploy log: `actions/upload-pages-artifact@v5` defaults `include-hidden-files` to false, and in that mode it archives with `tar ... --exclude=.git --exclude=.github --exclude=.[^/]* .`, which removes every dot-entry at every level. The tar listing for that run held 167 paths and not one of them was under `.well-known`.
+
+**Options:** 1) serve the association files from a non-dot path — impossible, Apple and Google fix the location; 2) move off GitHub Pages; 3) set `include-hidden-files: true`.
+
+**Chosen:** 3, one line.
+
+**Trade-off:** Everything hidden now ships, so `tools/stage.sh` had to start stripping `.gitignore` and `.gitmodules` from the deployed directory. That is the whole cost.
+
+**Verification:** Before the fix, both probes returned 404. After it, `/.well-known/probe.txt` returns 200 `text/plain` and the extensionless `/.well-known/probe-extensionless` returns 200 `application/octet-stream` with its body intact — which is the content type iOS accepts for `apple-app-site-association`, so that question is settled too. The probes were then removed.
+
+**Guard:** `check_site.py` now fails if the workflow uses `upload-pages-artifact` without `include-hidden-files: true`. Tested by flipping it to false and watching the run go red. Without the guard this regresses the next time somebody tidies the workflow, and regresses silently.
+
+**Note:** the repository had already paid for this default once — the Lighthouse report upload carries the same flag and a comment saying the upload is empty without it. The same default caught us twice in two different steps.
+
+---
+
 ## D-019 — Use IndexNow for the engines that accept it
 
 **Date:** 2026-11-16 · **Model:** claude-opus-5 (Claude Code)
