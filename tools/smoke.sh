@@ -48,6 +48,14 @@ echo "Smoke testing $BASE"
 expect ""              200 '<link rel="canonical" href="https://envoiddesign.in/">'
 expect "projects/"     200 'canonical" href="https://envoiddesign.in/projects/"'
 expect "contact/"      200 'canonical" href="https://envoiddesign.in/contact/"'
+expect "services/"     200 'canonical" href="https://envoiddesign.in/services/"'
+expect "services/map-approval-ghaziabad/" 200 'Ghaziabad Development Authority'
+expect "architects-in-ghaziabad/"         200 'canonical" href="https://envoiddesign.in/architects-in-ghaziabad/"'
+expect "interior-designers-in-ghaziabad/" 200 '<h1'
+expect "architects-in-noida/"             200 '<h1'
+expect "services/architecture/"           200 '<h1'
+expect "services/interior-design/"        200 '<h1'
+expect "services/design-build-turnkey/"   200 '<h1'
 expect "styles.css"    200 '.gal__grid'
 expect "main.js"       200 ""
 expect "contact.js"    200 ""

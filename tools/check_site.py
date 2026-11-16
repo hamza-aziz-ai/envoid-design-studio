@@ -28,10 +28,19 @@ PAGES = {
     "index.html": "/",
     "projects/index.html": "/projects/",
     "contact/index.html": "/contact/",
+    "services/index.html": "/services/",
+    "services/architecture/index.html": "/services/architecture/",
+    "services/interior-design/index.html": "/services/interior-design/",
+    "services/design-build-turnkey/index.html": "/services/design-build-turnkey/",
+    "services/map-approval-ghaziabad/index.html": "/services/map-approval-ghaziabad/",
+    "architects-in-ghaziabad/index.html": "/architects-in-ghaziabad/",
+    "interior-designers-in-ghaziabad/index.html": "/interior-designers-in-ghaziabad/",
+    "architects-in-noida/index.html": "/architects-in-noida/",
     "thanks/index.html": "/thanks/",
     "404.html": None,
 }
-INDEXABLE = {"index.html", "projects/index.html", "contact/index.html"}
+# Everything except the two that carry their own noindex.
+INDEXABLE = set(PAGES) - {"thanks/index.html", "404.html"}
 HOST = CANONICAL_HOST.rstrip("/")
 
 
@@ -174,7 +183,11 @@ def main():
         if os.path.exists(name):
             html = io.open(name, encoding="utf-8").read()
             linked |= set(find(r'href="(/[^"#]*)"', html))
-    for path in ("/projects/", "/contact/"):
+    # /thanks/ is reached only by the form's redirect, so it is deliberately
+    # unlinked; the home page is the root and needs no inbound link either.
+    for name, path in PAGES.items():
+        if path in (None, "/") or name not in INDEXABLE or not os.path.exists(name):
+            continue
         check(path in linked, "%s is not linked from any page" % path)
 
     # The sitemap must list exactly the indexable pages. A stale one either

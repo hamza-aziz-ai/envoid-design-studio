@@ -14,6 +14,10 @@ module.exports = {
         'http://localhost:8000/',
         'http://localhost:8000/projects/',
         'http://localhost:8000/contact/',
+        // One of each new page type: the services hub and a service-area page
+        // share a layout, so a regression in it shows up here.
+        'http://localhost:8000/services/',
+        'http://localhost:8000/architects-in-ghaziabad/',
       ],
       numberOfRuns: 1,
       settings: { preset: 'desktop' },
