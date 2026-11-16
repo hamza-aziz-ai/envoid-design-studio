@@ -36,12 +36,17 @@ rm -rf "$DEST/.github" "$DEST/tools" \
 # logs a 404 on every page load, which costs the whole Lighthouse
 # best-practices score — the fetch cannot suppress that, only not happen.
 # reviews.json holds reviews left on Google; testimonials.json holds reviews
-# written in the app and approved by the studio. Either fills the section, and
-# reviews.json wins when both are present.
-if [ -f "$DEST/reviews.json" ]; then
-  TESTIMONIAL_SRC="/reviews.json"
-elif [ -f "$DEST/testimonials.json" ]; then
+# written in the app and approved by the studio.
+#
+# The studio's own approved testimonials win when there are any, because they
+# are the ones it chose to publish. "Any" is the load-bearing word: the sync
+# job writes testimonials.json even when nothing is approved yet, so testing
+# for the file's existence would hide the Google reviews behind an empty file
+# the moment that job first runs. Test for content instead.
+if [ -f "$DEST/testimonials.json" ] && grep -q '"body"' "$DEST/testimonials.json"; then
   TESTIMONIAL_SRC="/testimonials.json"
+elif [ -f "$DEST/reviews.json" ]; then
+  TESTIMONIAL_SRC="/reviews.json"
 else
   TESTIMONIAL_SRC=""
 fi
