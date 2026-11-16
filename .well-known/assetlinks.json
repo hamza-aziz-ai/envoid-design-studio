@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "in.envoiddesign.app",
+      "sha256_cert_fingerprints": [
+        "CF:92:11:3E:5C:38:9C:64:36:36:81:A6:1C:93:20:F3:39:83:4E:3A:A4:F3:7B:34:42:AF:87:FB:63:A3:55:04"
+      ]
+    }
+  }
+]
