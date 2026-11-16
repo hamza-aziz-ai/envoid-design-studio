@@ -2,13 +2,17 @@
 
 Where this breaks, what happens when a dependency is slow, down, wrong or empty, and how anyone would find out.
 
-## The failure that is live right now
+## The failure that was live, and what replaced it
 
-**Enquiries submitted through the form reach nobody.**
+Until 2026-11-16 `EMAILJS` held four blank identifiers, so `contact.js` attached no handler, the browser performed the form's native POST to FormSubmit, and FormSubmit had never been activated: enquiries were accepted and discarded. The identifiers are now filled and the EmailJS path is live.
 
-`EMAILJS` has four blank identifiers, so `contact.js` attaches no handler and the browser performs the form's native POST to FormSubmit. FormSubmit requires a one-time activation click on a mail it sends to `envoidstudio26@gmail.com` on the first submission. Until someone clicks it, a visitor sees the form submit and land on `/thanks/`, and the studio receives nothing.
+Two things take its place, and both are quiet by nature.
 
-**How you would notice:** you would not. Nothing in CI or the smoke test exercises a real submission, and a lost lead is silent by nature. This is the single highest-priority item in `docs/HANDOVER.md`.
+**The quota.** The free tier is roughly 200 requests a month and each enquiry spends two, so enquiry 101 in a month fails with the same "service error" a visitor would see during an outage. The counter is on the EmailJS dashboard and nothing here watches it.
+
+**The fallback is still unactivated.** If anyone empties an identifier, the form silently reverts to the FormSubmit path, which still needs a one-time activation click on a mail sent to `envoidstudio26@gmail.com`. Removing an identifier therefore does not degrade the form, it disables it.
+
+**How you would notice either:** you would not. Nothing in CI or the smoke test exercises a real submission, and a lost lead is silent. The manual path in `docs/TESTING.md` is the only check there is.
 
 ## Dependency by dependency
 
@@ -17,7 +21,7 @@ Where this breaks, what happens when a dependency is slow, down, wrong or empty,
 | **GitHub Pages / Cloudflare** | Site unreachable | Slow first byte | — | Total. No fallback origin exists |
 | **EmailJS API** | `emailjs.send` rejects; the visitor sees "service error" and is told to call or WhatsApp | Visitor waits on "Sending…" with no timeout of ours | Wrong template id resolves as a rejection, same path | Enquiries only; the rest of the site is unaffected |
 | **EmailJS quota** | Sends reject once exhausted | — | Roughly 200 emails/month, two per enquiry | About 100 enquiries per month before silence |
-| **FormSubmit** | Fallback POST fails, visitor sees a browser error page | — | **Unactivated: accepts and discards** | Enquiries only, and only while EmailJS is unconfigured |
+| **FormSubmit** | Fallback POST fails, visitor sees a browser error page | — | **Unactivated: accepts and discards** | Enquiries only, and only if an `EMAILJS` identifier is emptied |
 | **cloudflare-dns.com** | `domainAcceptsMail` catches and returns `true` | 4-second `AbortSignal.timeout`, then `true` | NXDOMAIN correctly refuses a dead domain | None. Fails open by design |
 | **jsdelivr.net** | SDK absent, `emailjs` undefined, submit throws | Form is unusable until it loads | **Bytes that fail the SRI hash are refused**, same as absent | Enquiries only |
 | **Google Fonts** | Fallback system fonts render; layout holds | Brief flash of fallback text | — | Cosmetic |

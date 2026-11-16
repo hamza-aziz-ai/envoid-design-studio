@@ -16,6 +16,7 @@ Status is one of **verified** (checked, with the check named), **unverified** (b
 | The EmailJS SRI hash matches what jsDelivr serves | verified | Two independent downloads identical; computed sha256 equals jsDelivr's published sha256; markup attribute compared against the recomputed sha384 |
 | Pages publishes only from Actions | verified | `build_type: workflow`; the legacy branch build is off |
 | The domain had nothing to lose | verified | It served a Hostinger AI Builder placeholder titled "ARCHITECTURE FIRM" |
+| An EmailJS account exists for this studio | verified | Created 2026-11-16; one Gmail service and both templates live in its dashboard |
 
 ## Unverified
 
@@ -23,7 +24,7 @@ Status is one of **verified** (checked, with the check named), **unverified** (b
 | --- | --- | --- |
 | **`envoidstudio26@gmail.com` is monitored by the studio** | Every enquiry lands somewhere nobody reads | Ask, and send a test enquiry |
 | **FormSubmit has never been activated** | Believed true; if false the fallback already works | Submit the live form once and watch that inbox |
-| **An EmailJS account exists for this studio** | The four blank identifiers may have nowhere to come from | Ask whoever owns the studio's accounts |
+| **The EmailJS free tier is enough** | Sends stop silently past roughly 100 enquiries in a month | Watch the request counter in the dashboard |
 | **The two phone numbers are current and both wanted in public** | A wrong number on a live client site | Confirm with the studio |
 | **The project titles and locations in `projects/index.html` are safe to publish** | A client named without consent, in a public repository | Confirm each one with the studio |
 | **The studio wants the apex, not `www`, as the public form of the domain** | Only cosmetic; `www` already redirects to the apex | Ask which they will print |

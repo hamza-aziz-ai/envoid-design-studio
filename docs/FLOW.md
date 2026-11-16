@@ -38,7 +38,7 @@ Without JavaScript each tile is a plain link to the full image, so the gallery s
 
 ## Enquiry submit — EmailJS path
 
-Live only when all four identifiers in `EMAILJS` are filled. `configured` is computed once at load.
+This is the live path: all four identifiers in `EMAILJS` are filled. `configured` is computed once at load.
 
 ```
 submit ─► sendEnquiry(event)
@@ -65,7 +65,7 @@ Step 8 is deliberate: the auto-reply is a courtesy, and failing it must never te
 
 ## Enquiry submit — fallback path
 
-While any `EMAILJS` identifier is blank, `contact.js` attaches no submit handler at all. The browser performs the form's own `action`:
+Not live. While any `EMAILJS` identifier is blank, `contact.js` attaches no submit handler at all, and the browser performs the form's own `action` instead:
 
 ```
 POST https://formsubmit.co/envoidstudio26@gmail.com

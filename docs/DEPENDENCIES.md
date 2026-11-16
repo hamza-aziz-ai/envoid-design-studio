@@ -41,7 +41,7 @@ Python 3 is used by `tools/check_site.py` and by Lighthouse's local server. It i
 | --- | --- | --- |
 | `GITHUB_TOKEN` | Injected by Actions per job, scoped per job | Yes, and never written down |
 | EmailJS **public key** | `contact.js`, in plain sight | **No.** It is designed to ship in client code; EmailJS scopes it by allowed origin |
-| EmailJS service and template ids | `contact.js`, currently blank | No. Identifiers, not credentials |
+| EmailJS service and template ids | `contact.js`, in plain sight | No. Identifiers, not credentials |
 | Studio phone, email, address | In the markup | No. They are published contact details |
 | Hostinger and Google account access | Outside this repository | Yes. Never put them in it |
 

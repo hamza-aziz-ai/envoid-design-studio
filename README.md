@@ -237,6 +237,6 @@ It is never published — `tools/stage.sh` strips it from the deployed directory
 
 | Item | Detail |
 | --- | --- |
-| **EmailJS credentials** | `contact.js` has four blank identifiers at the top: the public key, and a service and template id for the enquiry and the auto-reply. Until they are filled the form falls back to its FormSubmit action, which requires a one-time activation click on the mail sent to the studio on first submission. |
+| **Enquiry path untested** | The EmailJS public key, service and template identifiers are filled in `contact.js` and both templates are live in the dashboard, but nobody has yet submitted the live form and confirmed that the enquiry and the auto-reply both arrive. The procedure is in [docs/TESTING.md](docs/TESTING.md). |
 | **Google Business Profile** | For a search such as "architect in Vaishali", the Business Profile carries more weight than any markup in this repository. |
 | **Project names** | The titles and locations in `projects/index.html` were read from source filenames. Any that names a client should be confirmed before it stays public. |

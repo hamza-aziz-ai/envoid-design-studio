@@ -1,24 +1,24 @@
 /* Enquiry form — EmailJS, same pattern as hamzaaziz.dev.
    Two sends: the enquiry to the studio, then a confirmation to the sender.
 
-   SETUP: fill in the four IDs below from the EmailJS dashboard. While any of
-   them is empty the form falls back to its native POST to FormSubmit, so the
-   site keeps working — nothing here runs until all four are set.
+   The four identifiers below are filled, so this path is live. While any of
+   them is empty the form falls back instead to its native POST to FormSubmit,
+   so the site keeps working — nothing here runs until all four are set.
 
-   Create, in an EmailJS account:
+   They came from an EmailJS account holding:
      1. A service connected to the inbox the enquiries should arrive in.
      2. An ENQUIRY template whose To is envoidstudio26@gmail.com, using
         {{user_name}} {{user_email}} {{user_phone}} {{user_service}}
         {{user_location}} {{user_message}}; set Reply-To to {{user_email}}.
      3. A CONFIRMATION template whose To is {{reply_to}} (the auto-reply the
         enquirer receives), using {{from_name}} {{subject}} {{message}}.
-   Then paste the service and template IDs and the account's public key here.
-   The public key is meant to ship in client code and is not a secret; the
-   free tier is roughly 200 emails/month and each enquiry sends two. */
+   The public key is meant to ship in client code and is not a secret; EmailJS
+   scopes it by allowed origin instead. The free tier is roughly 200 emails per
+   month and each enquiry sends two. */
 const EMAILJS = {
-  publicKey: '',  // EmailJS Account > General > Public Key
-  enquiry:  { service: '', template: '' },  // delivers to envoidstudio26@gmail.com
-  confirm:  { service: '', template: '' },  // auto-reply to the person enquiring
+  publicKey: '62buuGiVOAO8DFEZt',  // EmailJS Account > General > Public Key
+  enquiry:  { service: 'service_cpailsr', template: 'template_24jbzoi' },  // delivers to envoidstudio26@gmail.com
+  confirm:  { service: 'service_cpailsr', template: 'template_vxjz63k' },  // auto-reply to the person enquiring
 }
 
 const form = document.getElementById('form')
