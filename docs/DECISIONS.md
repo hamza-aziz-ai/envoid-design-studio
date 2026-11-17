@@ -6,6 +6,24 @@ Entries made during AI-assisted sessions record the model, because behaviour dif
 
 ---
 
+## D-021 — No "Open in app" banner on the site, because neither platform hands off a typed URL
+
+**Date:** 2026-11-17 · **Model:** claude-opus-5 (Claude Code)
+
+**Context:** The studio asked that hitting `envoiddesign.in` in a phone's browser open the app instead of the website, when the app is installed. `/.well-known/assetlinks.json` is live and verified on two Android devices, so the question is why that does not already cover the browser.
+
+**What was found:** It cannot, and no file published from this repository can change it. Android App Links and iOS Universal Links are triggered by an incoming `VIEW` intent from another app, not by navigation the browser performs itself. A URL typed into Chrome's address bar is handled by Chrome; Chrome deliberately does not launch an app for a typed navigation or for one without a user gesture, because that would let any page hijack a session. Safari behaves the same way and additionally will not fire a Universal Link for a link to the site you are already browsing, which is why deep-link vendors recommend a separate `links.` subdomain. Both behaviours are widely documented by vendors and by Apple's own developer forum; neither Apple nor Google states it in a one-line spec sentence, so it was verified against several independent sources rather than one.
+
+Consequence worth knowing for search: a Google result tapped on Android is a click inside Chrome, so organic search traffic lands on the website, never in the app. The app opens for links arriving from WhatsApp, Gmail, SMS, Instagram and other apps, which is what the asset statement buys and what was verified on hardware.
+
+**Options:** 1) accept the platform behaviour and change nothing; 2) add a tappable "Open in app" banner using an `intent://` URL with `S.browser_fallback_url`, which is the one mechanism that does work from inside Chrome on a user gesture; 3) auto-redirect to `intent://` on page load; 4) add a Safari Smart App Banner via `<meta name="apple-itunes-app">`.
+
+**Chosen:** 1, nothing. 3 is rejected outright — Chrome blocks an ungestured intent navigation anyway, and a marketing site that throws visitors at an app they may not have is a broken website. 4 is impossible: it needs an App Store ID, and D-012 in the app repository records that the studio declined the paid Apple Developer membership, so there is no iOS app at all. 2 is the only real option and it is blocked on a precondition rather than on taste: the Android build is distributed as an internal APK with no Play listing, so the banner would be shown to every visitor while almost none of them could act on it, and its fallback would point at a store page that does not exist. Revisit 2 if and when the app is published to Play.
+
+**Cost of being wrong:** low and reversible. If a Play listing appears, option 2 is a banner, one `intent://` URL and a dismissal flag.
+
+---
+
 ## D-020 — Ship dot-directories, and guard that in `check_site.py`
 
 **Date:** 2026-11-16 · **Model:** claude-opus-5 (Claude Code)
