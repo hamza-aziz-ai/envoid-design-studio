@@ -42,15 +42,11 @@ jobs:
 
       - name: Validate HTML
         # Every tracked page, found rather than listed. The list used to be
-        # written out by hand and went stale the moment a page was added - a new
-        # page would deploy unvalidated and nothing would say so. git ls-files
-        # skips the MobileApp submodule on its own; docs/ holds email templates,
-        # which are mail HTML and fail web rules by design.
-        run: |
-          mapfile -t pages < <(git ls-files '*.html' | grep -v '^docs/')
-          printf 'validating %d pages
-' "${#pages[@]}"
-          npx --yes html-validate@9 "${pages[@]}"
+        # written out by hand and went stale the moment a page was added - a
+        # new page would deploy unvalidated and nothing would say so.
+        # git ls-files skips the MobileApp submodule on its own; docs/ holds
+        # email templates, which are mail HTML and fail web rules by design.
+        run: git ls-files '*.html' | grep -v '^docs/' | xargs npx --yes html-validate@9
 
       - name: Parse browser scripts
         run: |
