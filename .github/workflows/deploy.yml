@@ -41,7 +41,16 @@ jobs:
           node-version: '20'
 
       - name: Validate HTML
-        run: npx --yes html-validate@9 index.html 404.html projects/index.html contact/index.html thanks/index.html services/index.html services/architecture/index.html services/interior-design/index.html services/design-build-turnkey/index.html services/map-approval-ghaziabad/index.html services/vastu/index.html architects-in-ghaziabad/index.html interior-designers-in-ghaziabad/index.html architects-in-noida/index.html
+        # Every tracked page, found rather than listed. The list used to be
+        # written out by hand and went stale the moment a page was added - a new
+        # page would deploy unvalidated and nothing would say so. git ls-files
+        # skips the MobileApp submodule on its own; docs/ holds email templates,
+        # which are mail HTML and fail web rules by design.
+        run: |
+          mapfile -t pages < <(git ls-files '*.html' | grep -v '^docs/')
+          printf 'validating %d pages
+' "${#pages[@]}"
+          npx --yes html-validate@9 "${pages[@]}"
 
       - name: Parse browser scripts
         run: |

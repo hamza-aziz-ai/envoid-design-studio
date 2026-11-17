@@ -37,6 +37,7 @@ PAGES = {
     "architects-in-ghaziabad/index.html": "/architects-in-ghaziabad/",
     "interior-designers-in-ghaziabad/index.html": "/interior-designers-in-ghaziabad/",
     "architects-in-noida/index.html": "/architects-in-noida/",
+    "privacy/index.html": "/privacy/",
     "thanks/index.html": "/thanks/",
     "404.html": None,
 }
