@@ -18,7 +18,7 @@ Entries made during AI-assisted sessions record the model, because behaviour dif
   - Page views, plus Google's enhanced measurement as left on: scrolls, outbound clicks, site search, video engagement, file downloads and form interactions. Form interactions report that a form was started or submitted, never what was typed in it.
   - `contact_click`, with `method` (phone, WhatsApp or email).
   - `tool_use`, the first interaction with a play tool on a page.
-  - `generate_lead` when an enquiry is sent, carrying only the service chosen. `generate_lead` is the key event. Google lists an event for starring only after it has processed one, which takes up to 24 hours, so the key event is starred after that wait.
+  - `generate_lead` when an enquiry is sent, carrying only the service chosen. `generate_lead` is the key event. Google lists an event for starring only after it has processed one, which takes up to 24 hours, so the key event was starred after that wait, on 2026-11-22.
   - Never a name, phone number, email address or brief.
 - **Property settings:**
   - Measurement ID `G-95C4HE9ZZC`, property 547361214, owned by the studio account.
@@ -26,6 +26,7 @@ Entries made during AI-assisted sessions record the model, because behaviour dif
   - Event data retention 14 months, the most the free tier allows.
   - Google signals and user-provided data off, and ad personalisation off in the tag too.
   - Linked to the `envoiddesign.in` Search Console domain property, so search queries show up in Analytics.
+  - Event-scoped custom dimensions for every event parameter: Contact method (`method`), Contact placement (`placement`), Enquiry service (`service`) and Tool page (`tool`). A parameter shows in reports only once registered, and not for earlier data, so register any new one the day it ships.
 - **Tag tester marker (2026-11-22).** Google's "Test your website" check never presses Accept, so it reported "Your Google tag wasn't detected". The homepage `<head>` now carries `<script type="text/plain" id="google-tag-marker">` naming the tag IDs. A `text/plain` script never runs and never loads anything, so consent is untouched; the check now passes. Keep it, and keep its type `text/plain`.
 
 **Rejected:**
