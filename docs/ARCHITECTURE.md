@@ -63,4 +63,4 @@ push to main ─► Checks ─► Deploy to Pages ─► Smoke test ─► Relea
 
 ## What is deliberately absent
 
-No analytics, no cookies, no `localStorage`, no `sessionStorage`, no tag manager, no consent banner. A visitor who blocks third parties entirely still gets a complete, readable site with a working enquiry path, because the form degrades to a native HTML POST.
+No tag manager, no advertising, no `sessionStorage`, and no cookies or analytics unless the visitor accepts them. `analytics.js` (D-028) loads Google Analytics only after Accept on its consent panel, and keeps that one choice in `localStorage`. A visitor who blocks third parties entirely still gets a complete, readable site with a working enquiry path, because the form degrades to a native HTML POST.

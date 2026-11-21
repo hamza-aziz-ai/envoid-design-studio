@@ -4,7 +4,7 @@ The structures this site relies on, how they are read and written, and what each
 
 ## There is no persistent data
 
-No database, no API, no server-side state, no cookies, no `localStorage` or `sessionStorage`, no analytics identifier. Nothing a visitor does is remembered between page loads. This is the single most important fact about the system's data model, and it is what removes most of the usual privacy and breach surface.
+No database, no API, no server-side state, no `sessionStorage`. One value is remembered between page loads: the visitor's analytics choice, `envoid-analytics-consent` in `localStorage` (`granted` or `denied`). Only after `granted` does Google Analytics load and set its `_ga` cookies, with a random identifier and no personal data (D-028). Nothing else a visitor does is remembered. This is the single most important fact about the system's data model, and it is what removes most of the usual privacy and breach surface.
 
 The only visitor data that exists at all lives in form fields for the length of one submission, and is then handed to EmailJS or FormSubmit and forgotten by the page.
 

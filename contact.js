@@ -147,6 +147,9 @@ const sendEnquiry = async event => {
   try {
     await emailjs.send(EMAILJS.enquiry.service, EMAILJS.enquiry.template, params, EMAILJS.publicKey)
     statusLine.textContent = 'Enquiry sent. We will call you back within one working day ✅'
+    // Key event in Google Analytics, only if the visitor accepted it. No form
+    // content is sent: only which service was asked about, or none.
+    if (window.envoidTrack) window.envoidTrack('generate_lead', { service: params.user_service || 'not given' })
     // Service and Brief are optional. The studio's copy keeps them blank, so it
     // can see what was not said; the enquirer's copy gets readable text instead
     // of an empty row under a heading.

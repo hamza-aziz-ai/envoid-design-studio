@@ -28,7 +28,7 @@ The only moving part is the enquiry form. JavaScript checks the typed email doma
 
 `--r`, the aspect ratio carried on each gallery tile. It feeds `flex-grow`, `flex-basis` and `aspect-ratio` from one value, which is what reserves the correct box before the image loads and keeps the justified rows honest. It is the one number in the system where a wrong value produces a quietly wrong layout rather than a visible error.
 
-Beyond that there is no persistent data at all: no database, no cookies, no `localStorage`, no analytics. Visitor data exists for the duration of one form submission and is then handed to EmailJS and forgotten.
+Beyond that there is no persistent data of the site's own: no database, and one `localStorage` value holding the visitor's analytics choice. Google Analytics runs only after the visitor accepts it, receives no form content, and keeps its data for 14 months in Google's property (D-028). Visitor data exists for the duration of one form submission and is then handed to EmailJS and forgotten.
 
 ## How someone could abuse it
 

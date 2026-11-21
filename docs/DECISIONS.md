@@ -6,6 +6,34 @@ Entries made during AI-assisted sessions record the model, because behaviour dif
 
 ---
 
+## D-028 — Google Analytics 4, opt-in only, with no form content
+
+**Date:** 2026-11-21 · **Model:** claude-opus-5-5 (Claude Code)
+
+**Context:** The studio asked for Google Analytics, set up professionally. Until now the site promised "no analytics", in `/privacy/` and in these docs.
+
+**Decided:**
+- **Consent first.** Google Analytics loads only after a visitor presses Accept on a small panel. Before that and after Decline, no Google script, request or cookie happens at all. This is stricter than Consent Mode's "advanced" setup, which sends cookieless pings before consent. India's DPDP Act asks for consent, and the old privacy promise made it a commitment. The choice can be changed from "Cookie settings" in every footer, and withdrawing deletes the `_ga` cookies.
+- **What is measured:**
+  - Page views, plus enhanced measurement: scrolls, outbound clicks, site search and file downloads.
+  - `contact_click`, with `method` (phone, WhatsApp or email).
+  - `tool_use`, the first interaction with a play tool on a page.
+  - `generate_lead` when an enquiry is sent, carrying only the service chosen. `generate_lead` is the key event.
+  - Never a name, phone number, email address or brief.
+- **Property settings:**
+  - Measurement ID `G-95C4HE9ZZC`, property 547361214, owned by the studio account.
+  - Time zone India and currency INR.
+  - Event data retention 14 months, the most the free tier allows.
+  - Google signals and user-provided data off, and ad personalisation off in the tag too.
+  - Linked to the `envoiddesign.in` Search Console domain property, so search queries show up in Analytics.
+
+**Rejected:**
+- Google Tag Manager: a second container to secure and audit for one tag.
+- Advanced consent mode: it sends data before consent.
+- A third-party consent platform: a dependency and a script for one checkbox.
+
+---
+
 ## D-027 — The whole playground in 3D, through one shared lazy viewer
 
 **Date:** 2026-11-21 · **Model:** claude-opus-5-5 (Claude Code)
