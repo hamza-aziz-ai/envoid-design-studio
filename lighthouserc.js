@@ -18,6 +18,9 @@ module.exports = {
         // share a layout, so a regression in it shows up here.
         'http://localhost:8000/services/',
         'http://localhost:8000/architects-in-ghaziabad/',
+        // The interactive tools carry the most accessibility risk on the site:
+        // custom controls drawn in SVG. One of them is enough to gate both.
+        'http://localhost:8000/room-planner/',
       ],
       numberOfRuns: 1,
       settings: { preset: 'desktop' },

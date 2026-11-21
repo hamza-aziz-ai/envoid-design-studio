@@ -5,7 +5,9 @@
 #
 # Two jobs it does beyond copying:
 #   - leaves the toolchain behind, so only the site ships;
-#   - appends ?v=<token> to the stylesheet and scripts. Cloudflare caches those
+#   - appends ?v=<token> to the stylesheet and every root-level script, by
+#     pattern so a new page's script is covered without editing this file.
+#     Cloudflare caches those
 #     for four hours in front of Pages, and without a changing query a visitor
 #     keeps the old CSS against the new HTML. Source files stay clean: the
 #     query only exists in what is deployed.
@@ -64,8 +66,7 @@ if [ -n "$TOKEN" ]; then
   while IFS= read -r f; do
     sed -i \
       -e "s|\"/styles\.css\"|\"/styles.css?v=${TOKEN}\"|g" \
-      -e "s|\"/main\.js\"|\"/main.js?v=${TOKEN}\"|g" \
-      -e "s|\"/contact\.js\"|\"/contact.js?v=${TOKEN}\"|g" \
+      -e "s|\"/\([a-z-]*\)\.js\"|\"/\1.js?v=${TOKEN}\"|g" \
       "$f"
   done < <(find "$DEST" -name "*.html")
   echo "stage: cache-busted assets with v=${TOKEN}"

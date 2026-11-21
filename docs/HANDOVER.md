@@ -4,6 +4,12 @@ Where things stand. Newest entry on top. Read this first; update it last.
 
 ---
 
+## 2026-11-21 — interactive planning tools
+
+- `/room-planner/` and `/sun-path/` are live, linked from a dark "Plan your space" band on the home page, a footer column on every page, and the daylight sentence on the architecture page. Reasons and rejected options are in D-023.
+- `tools/test-tools.js` checks the sun and room maths and runs in CI. `tools/stage.sh` now cache-busts every root-level script by pattern, so a new page's script is covered without editing it. The deploy's script check covers every `*.js` at the root.
+- **Waiting on the studio:** a drawing-fee estimator is the obvious third tool. Envoid-Agent's quotation defaults (₹2,000 per floor for the plan, ₹5,000 structural, ₹2,000 electrical and plumbing, ₹4,000 elevation and 3D, ₹500 per site visit) would drive it, but publishing them makes them public prices the studio will be held to. It needs an explicit yes, or a decision to show "from" figures instead.
+
 ## 2026-11-21 — the enquiry form was broken, and now works
 
 - **`contact.js` had been sending to an EmailJS service that does not exist.** It carried `service_cpailsr`; the account lists exactly one service, "Envoid Studio Gmail", whose id is `service_ueaeebb`. Every enquiry was rejected before a template was reached, from the day the identifiers were filled until this fix. Corrected in `contact.js` and in `docs/email-templates/README.md`, deployed as `c499076`.

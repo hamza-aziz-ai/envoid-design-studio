@@ -50,8 +50,9 @@ jobs:
 
       - name: Parse browser scripts
         run: |
-          node --check main.js
-          node --check contact.js
+          for f in *.js; do node --check "$f"; done
+          # The sun and room maths behind /sun-path/ and /room-planner/.
+          node tools/test-tools.js
 
       - name: Site checks
         run: python3 tools/check_site.py

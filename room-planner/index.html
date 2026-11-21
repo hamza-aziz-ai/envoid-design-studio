@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Room Area &amp; Paint Calculator | Envoid Design Studio</title>
+<meta name="description" content="Sketch the shape of your room and get its floor area, paintable wall area, paint in litres, floor tiles and skirting instantly. A free planning tool from Envoid Design Studio, Vaishali.">
+<meta name="theme-color" content="#121212">
+<link rel="icon" href="/assets/favicon.png" sizes="512x512" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta property="og:title" content="Room Area &amp; Paint Calculator | Envoid Design Studio">
+<meta property="og:description" content="Draw your room, get floor area, wall area, paint, tiles and skirting.">
+<meta property="og:type" content="website">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://envoiddesign.in/room-planner/">
+<meta property="og:url" content="https://envoiddesign.in/room-planner/">
+<meta property="og:site_name" content="Envoid Design Studio">
+<meta property="og:locale" content="en_IN">
+<meta property="og:image" content="https://envoiddesign.in/assets/studio.jpg">
+<meta property="og:image:width" content="1000">
+<meta property="og:image:height" content="1200">
+<meta property="og:image:alt" content="Residential elevation designed by Envoid Design Studio">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://envoiddesign.in/room-planner/#page","url":"https://envoiddesign.in/room-planner/","name":"Room Area &amp; Paint Calculator | Envoid Design Studio","description":"Sketch the shape of your room and get its floor area, paintable wall area, paint in litres, floor tiles and skirting instantly. A free planning tool from Envoid Design Studio, Vaishali.","isPartOf":{"@id":"https://envoiddesign.in/#website"},"about":{"@id":"https://envoiddesign.in/#studio"},"inLanguage":"en-IN"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://envoiddesign.in/"},{"@type":"ListItem","position":2,"name":"Room area calculator","item":"https://envoiddesign.in/room-planner/"}]}]}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav" id="nav">
+  <div class="wrap nav__inner">
+    <a class="logo" href="/">
+      <img class="logo__mark" src="/assets/logo.png" alt="" width="188" height="256">
+      <span class="logo__text">Envoid<em>Design Studio</em></span>
+    </a>
+    <nav class="nav__links" id="menu" aria-label="Main">
+      <a href="/#about">About</a>
+      <a href="/services/">Services</a>
+      <a href="/projects/">Projects</a>
+      <a href="/contact/">Contact</a>
+    </nav>
+    <div class="nav__cta">
+      <a class="btn btn--sm" href="https://wa.me/919560769743?text=Hi%20Envoid%20Design%20Studio%2C%20I%27d%20like%20a%20free%20consultation." target="_blank" rel="noopener">Free Consultation</a>
+      <button type="button" class="burger" id="burger" aria-expanded="false" aria-controls="menu" aria-label="Open menu"><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="phead">
+    <div class="wrap">
+      <nav class="crumb r" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li aria-current="page">Room area calculator</li></ol></nav>
+      <p class="eyebrow r">Plan your space</p>
+      <h1 class="r"><em>Room</em> area calculator</h1>
+      <p class="phead__sub r">Drag the corners until the outline matches your room. Floor area, paintable wall area, paint, floor tiles and skirting update as you go, and the model beside it turns so you can see the room you have drawn.</p>
+    </div>
+  </section>
+  <section class="sec">
+    <div class="wrap">
+      <noscript><p class="play__note">This calculator runs in your browser and needs JavaScript switched on.</p></noscript>
+      <div id="pl-form" class="play">
+        <div class="play__stage">
+          <div class="play__panel">
+            <p class="label">Plan · drag a corner</p>
+            <svg id="plan" class="pl" viewBox="-2 -2 44 44" role="group" aria-label="Room outline on a one-foot grid. Each corner is a button: focus it and use the arrow keys to move it, Shift for two-foot steps."></svg>
+            <div class="play__btns">
+              <button type="button" class="play__btn" data-shape="rect">Rectangle</button>
+              <button type="button" class="play__btn" data-shape="l">L-shape</button>
+              <button type="button" class="play__btn" data-shape="t">T-shape</button>
+              <button type="button" class="play__btn" id="pl-add">Add corner</button>
+              <button type="button" class="play__btn" id="pl-remove">Remove corner</button>
+            </div>
+            <p id="pl-status" class="play__status" role="status"></p>
+          </div>
+          <div class="play__panel">
+            <p class="label">Model · drag to turn</p>
+            <svg id="view" class="v3" role="img" aria-label="3D view of the room"></svg>
+            <label class="play__range">Turn the model <input id="pl-rot" type="range" min="0" max="359" value="35"></label>
+          </div>
+        </div>
+
+        <div class="play__fields">
+          <fieldset>
+            <legend>Room</legend>
+            <label>Ceiling height, ft <input id="pl-h" type="number" inputmode="decimal" min="7" max="30" step="0.5" value="10"></label>
+          </fieldset>
+          <fieldset>
+            <legend>Doors</legend>
+            <label>How many <input id="pl-doors" type="number" inputmode="numeric" min="0" max="10" step="1" value="1"></label>
+            <label>Width, ft <input id="pl-door-w" type="number" inputmode="decimal" min="0" step="0.5" value="3"></label>
+            <label>Height, ft <input id="pl-door-h" type="number" inputmode="decimal" min="0" step="0.5" value="7"></label>
+          </fieldset>
+          <fieldset>
+            <legend>Windows</legend>
+            <label>How many <input id="pl-wins" type="number" inputmode="numeric" min="0" max="20" step="1" value="1"></label>
+            <label>Width, ft <input id="pl-win-w" type="number" inputmode="decimal" min="0" step="0.5" value="4"></label>
+            <label>Height, ft <input id="pl-win-h" type="number" inputmode="decimal" min="0" step="0.5" value="4"></label>
+          </fieldset>
+          <fieldset>
+            <legend>Paint and tiles</legend>
+            <label>Coats <input id="pl-coats" type="number" inputmode="numeric" min="1" max="5" step="1" value="2"></label>
+            <label>Coverage, sq ft per litre per coat <input id="pl-cover" type="number" inputmode="decimal" min="0" step="5" value="100"></label>
+            <label>Wastage, % <input id="pl-waste" type="number" inputmode="decimal" min="0" max="50" step="1" value="10"></label>
+            <label>Floor tile size
+              <select id="pl-tile">
+                <option value="1x1">1 × 1 ft</option>
+                <option value="2x2" selected>2 × 2 ft</option>
+                <option value="2x4">2 × 4 ft</option>
+                <option value="4x4">4 × 4 ft</option>
+              </select>
+            </label>
+          </fieldset>
+        </div>
+
+        <dl class="play__out">
+          <div><dt>Floor area</dt><dd><output id="o-area"></output><span><output id="o-area-m"></output></span></dd></div>
+          <div><dt>Perimeter</dt><dd><output id="o-per"></output></dd></div>
+          <div><dt>Wall area</dt><dd><output id="o-gross"></output><span>before openings</span></dd></div>
+          <div><dt>Doors and windows</dt><dd><output id="o-open"></output></dd></div>
+          <div><dt>Paintable walls</dt><dd><output id="o-net"></output></dd></div>
+          <div><dt>Paint for walls</dt><dd><output id="o-paint-w"></output></dd></div>
+          <div><dt>Paint for ceiling</dt><dd><output id="o-paint-c"></output></dd></div>
+          <div><dt>Floor tiles</dt><dd><output id="o-tiles"></output><span>including wastage</span></dd></div>
+          <div><dt>Skirting</dt><dd><output id="o-skirt"></output><span>running length, less doors</span></dd></div>
+        </dl>
+        <p id="pl-openings-warn" class="play__note" hidden>The doors and windows add up to more than the wall area, so check their sizes.</p>
+      </div>
+    </div>
+  </section>
+  <section class="sec sec--alt">
+    <div class="wrap grid grid--doc">
+      <div class="prose r">
+        <h2>How the numbers are worked out</h2>
+        <p>These are the same formulas the studio uses when it builds a quantity estimate, applied to the outline you draw.</p>
+        <ul>
+          <li><strong>Floor area</strong> is measured from the outline itself, so L-shapes, T-shapes and odd corners count correctly rather than being rounded to a rectangle.</li>
+          <li><strong>Wall area</strong> is the perimeter times the ceiling height. <strong>Paintable walls</strong> take away every door and window.</li>
+          <li><strong>Paint</strong> is the surface divided by the coverage of one litre for one coat, times the number of coats, plus your wastage.</li>
+          <li><strong>Floor tiles</strong> are the floor area plus wastage, divided by the area of one tile, rounded up to whole tiles.</li>
+          <li><strong>Skirting</strong> runs the full perimeter, less the width of each door.</li>
+        </ul>
+        <h2>What it does not know</h2>
+        <p>Paint coverage differs from one brand, finish and wall to another, so take the figure from the tin rather than trusting the default here. A new or porous wall drinks more than a repaint. Tile counts follow the floor area; a diagonal or patterned layout, or a room with many short walls, cuts more tiles than plain wastage allows for. Treat every figure as a planning estimate. The quantity you order should come from a measurement taken on site.</p>
+        <a class="link" href="/sun-path/">See how sunlight reaches a room<span aria-hidden="true">&rarr;</span></a>
+      </div>
+      <aside class="aside r">
+        <h2>Have it measured</h2>
+        <p>A site visit gives exact dimensions, wall conditions and a quantity estimate for the finishes you choose. The first consultation is free.</p>
+        <a class="btn" href="/contact/">Book a site visit</a>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__inner">
+    <div>
+      <a class="logo" href="/"><img class="logo__mark" src="/assets/logo.png" alt="" width="188" height="256"><span class="logo__text">Envoid<em>Design Studio</em></span></a>
+      <p class="foot__tag">Architecture · Interiors · Turnkey execution</p>
+    </div>
+    <div class="foot__col">
+      <p class="foot__h">Explore</p>
+      <nav aria-label="Footer"><a href="/#about">About</a><a href="/services/">Services</a><a href="/#process">Process</a><a href="/projects/">Projects</a><a href="/contact/">Contact</a></nav>
+    </div>
+    <div class="foot__col">
+      <p class="foot__h">Service areas</p>
+      <nav aria-label="Service areas"><a href="/architects-in-ghaziabad/">Architects in Ghaziabad</a><a href="/interior-designers-in-ghaziabad/">Interior designers in Ghaziabad</a><a href="/architects-in-noida/">Architects in Noida</a></nav>
+    </div>
+    <div class="foot__col">
+      <p class="foot__h">Plan your space</p>
+      <nav aria-label="Planning tools"><a href="/room-planner/">Room area calculator</a><a href="/sun-path/">Sunlight explorer</a></nav>
+    </div>
+    <p class="foot__copy">© <span id="yr">2026</span> Envoid Design Studio. Vaishali, Ghaziabad. · <a href="/privacy/">Privacy</a></p>
+  </div>
+</footer>
+
+<script src="/main.js" defer></script>
+<script src="/room-planner.js" defer></script>
+</body>
+</html>
