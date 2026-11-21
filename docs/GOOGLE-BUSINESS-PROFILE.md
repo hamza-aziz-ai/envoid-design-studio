@@ -15,7 +15,7 @@ Edited on 2026-11-21:
 | PIN | `201010` | `201019`, confirmed by the studio. The website was right; the profile was wrong |
 | Service areas | Delhi, National Capital Region, Faridabad, Ghaziabad | Those four plus Noida, Greater Noida, Gurugram, Meerut, Indirapuram, Vasundhara |
 | Additional categories | Interior designer | Interior designer, Architecture firm, Design agency |
-| Service descriptions | All 11 empty | Written for Architectural consultation, Architectural design services, Building code analysis and permit coordination, Sustainable and Energy Efficient Building. Façade design was typed and saved but the session lost its browser before the save could be confirmed |
+| Service descriptions | All empty | Written for 15 services across the Architect, Architecture firm and Interior designer categories. Three were left blank on purpose: Restaurant design, Stone, brick and stucco design, and a service named "Architect" — nothing on the website supports them, so the studio should either describe them or delete them |
 
 Edits to the description, categories and service areas go through Google's review, usually within ten minutes; the PIN applied immediately and no re-verification was requested.
 
@@ -23,8 +23,8 @@ Already correct on the profile and left alone: primary category `Architect`, bot
 
 ### Still to do
 
-- **Service descriptions** for Home building and renovations, Interior design, Project management, Site master planning, Map Approval and Vastu consultation, and confirm Façade design saved. The services table below has the wording; the profile's service names differ slightly, so match by meaning.
-- **Photographs.** See the table below. This is the largest remaining gap.
+- **Project photographs, uploaded by hand.** The profile already has a cover, the logo and several photographs of the studio interior, so it is not empty. What it lacks is the built work. Google's uploader cannot be driven from automation, so these need adding from a browser signed in as the managing account: `assets/hero.jpg`, `assets/marriage-hall.jpg`, `assets/farm-house.jpg`, `assets/interiors.jpg`, `assets/residence-sadrauna.jpg`, `assets/residence-hardoi.jpg`, `assets/residence-lucknow.jpg`. Add a few at a time over weeks rather than all at once; recent uploads are favoured.
+- **The three undescribed services** above: describe or delete.
 - **Town/City reads `Vaishali`**, so the profile displays "Vaishali, Vaishali". The website says Ghaziabad. Changing it is a one-field edit, but an address change can prompt re-verification on some profiles, so it is left for the studio to decide.
 
 ### A decision for the studio: the name
