@@ -65,4 +65,48 @@ for (const poly of [rect, rect.slice().reverse()]) {
   });
 }
 
-console.log('test-tools: sun and room maths OK');
+// Staircase. A 10 ft (3048 mm) floor height splits into 18 risers of about
+// 169 mm, and the comfort check follows Blondel's 2R + T.
+const St = require('../staircase.js');
+const ten = 10 * St.MM_PER_FT;
+assert.equal(St.suggest(ten), 18);
+const stair = St.design(ten, 18, 275);
+near(stair.riser, 169.33, 0.01, 'riser');
+assert.equal(stair.treads, 17, 'one fewer tread than risers: the last step is the upper floor');
+assert.equal(stair.run, 17 * 275);
+near(stair.blondel, 2 * 169.33 + 275, 0.05, '2R + T');
+assert.equal(St.feel(stair).tone, 'good');
+assert.equal(St.feel(St.design(ten, 10, 220)).tone, 'bad', 'tall risers on short treads are flagged');
+assert.equal(St.feel(St.design(ten, 30, 225)).tone, 'bad', 'tiny risers on short treads are flagged');
+assert.equal(St.design(ten, 1, 275).risers, 2, 'a stair has at least two risers');
+
+// Guess the area: every generated room is a valid outline with a whole-foot area.
+const G = require('../guess-the-area.js');
+let seed = 7;
+const rng = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+const kinds = new Set();
+for (let i = 0; i < 2000; i++) {
+  const { kind, pts } = G.make(rng);
+  kinds.add(kind);
+  assert.ok(R.valid(pts), `generated ${kind} is not a valid room: ${JSON.stringify(pts)}`);
+  assert.ok(Number.isInteger(Math.abs(R.signedArea(pts))), 'areas are whole square feet');
+}
+assert.equal(kinds.size, G.KINDS.length, 'every room shape turns up');
+assert.equal(G.score(100, 100), 100);
+assert.equal(G.score(110, 100), 80);
+assert.equal(G.score(90, 100), 80, 'over and under score the same');
+assert.equal(G.score(300, 100), 0, 'never below zero');
+
+// Will it fit.
+const Fit = require('../furniture-planner.js');
+const room = { w: 12, l: 14 }, door = { x: 1, w: 3 };
+assert.ok(Fit.overlap({ x: 0, y: 0, w: 2, d: 2 }, { x: 1, y: 1, w: 2, d: 2 }));
+assert.ok(!Fit.overlap({ x: 0, y: 0, w: 2, d: 2 }, { x: 2, y: 0, w: 2, d: 2 }), 'touching is not overlapping');
+assert.ok(!Fit.inside({ x: 11, y: 0, w: 2, d: 2 }, room), 'crossing a wall is caught');
+assert.deepEqual(Fit.gaps({ x: 4, y: 4, w: 2, d: 2 }, [{ x: 0, y: 4, w: 3, d: 2 }], room), { left: 1, right: 6, top: 4, bottom: 8 });
+assert.ok(Fit.blocksDoor({ x: 2, y: 12, w: 1, d: 1 }, room, door), 'a piece in the swing blocks the door');
+assert.ok(!Fit.blocksDoor({ x: 5, y: 12, w: 1, d: 1 }, room, door), 'a piece beyond the swing does not');
+assert.ok(!Fit.blocksDoor({ x: 0, y: 12, w: 0.5, d: 2 }, room, door), 'a piece behind the hinge does not');
+assert.ok(Fit.CATALOGUE.every((c) => c.w > 0 && c.d > 0 && c.name), 'every catalogue piece has a size');
+
+console.log('test-tools: sun, room, stair, game and furniture maths OK');

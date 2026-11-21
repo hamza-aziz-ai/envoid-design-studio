@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guess the Area: A Floor Plan Game | Envoid Design Studio</title>
+<meta name="description" content="Read the wall lengths on five floor plans and guess each room’s area in square feet. The closer you get, the more points. A game for anyone buying, building or renting a home.">
+<meta name="theme-color" content="#121212">
+<link rel="icon" href="/assets/favicon.png" sizes="512x512" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta property="og:title" content="Guess the Area: A Floor Plan Game | Envoid Design Studio">
+<meta property="og:description" content="Read five floor plans and guess each room’s area. How close can you get?">
+<meta property="og:type" content="website">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://envoiddesign.in/guess-the-area/">
+<meta property="og:url" content="https://envoiddesign.in/guess-the-area/">
+<meta property="og:site_name" content="Envoid Design Studio">
+<meta property="og:locale" content="en_IN">
+<meta property="og:image" content="https://envoiddesign.in/assets/studio.jpg">
+<meta property="og:image:width" content="1000">
+<meta property="og:image:height" content="1200">
+<meta property="og:image:alt" content="Residential elevation designed by Envoid Design Studio">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://envoiddesign.in/guess-the-area/#page","url":"https://envoiddesign.in/guess-the-area/","name":"Guess the Area: A Floor Plan Game | Envoid Design Studio","description":"Read the wall lengths on five floor plans and guess each room’s area in square feet. The closer you get, the more points. A game for anyone buying, building or renting a home.","isPartOf":{"@id":"https://envoiddesign.in/#website"},"about":{"@id":"https://envoiddesign.in/#studio"},"inLanguage":"en-IN"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://envoiddesign.in/"},{"@type":"ListItem","position":2,"name":"Guess the area","item":"https://envoiddesign.in/guess-the-area/"}]}]}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav" id="nav">
+  <div class="wrap nav__inner">
+    <a class="logo" href="/">
+      <img class="logo__mark" src="/assets/logo.png" alt="" width="188" height="256">
+      <span class="logo__text">Envoid<em>Design Studio</em></span>
+    </a>
+    <nav class="nav__links" id="menu" aria-label="Main">
+      <a href="/#about">About</a>
+      <a href="/services/">Services</a>
+      <a href="/projects/">Projects</a>
+      <a href="/contact/">Contact</a>
+    </nav>
+    <div class="nav__cta">
+      <a class="btn btn--sm" href="https://wa.me/919560769743?text=Hi%20Envoid%20Design%20Studio%2C%20I%27d%20like%20a%20free%20consultation." target="_blank" rel="noopener">Free Consultation</a>
+      <button type="button" class="burger" id="burger" aria-expanded="false" aria-controls="menu" aria-label="Open menu"><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="phead">
+    <div class="wrap">
+      <nav class="crumb r" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li aria-current="page">Guess the area</li></ol></nav>
+      <p class="eyebrow r">Play with your space</p>
+      <h1 class="r">Guess the <em>area</em></h1>
+      <p class="phead__sub r">Five rooms, each drawn with its wall lengths the way a floor plan shows them. Guess the floor area in square feet: the closer you get, the more points.</p>
+    </div>
+  </section>
+  <section class="sec">
+    <div class="wrap">
+      <noscript><p class="play__note">This runs in your browser and needs JavaScript switched on.</p></noscript>
+      <div class="play">
+        <div class="play__stage">
+          <div class="play__panel">
+            <p class="label"><span id="ga-round"></span> · <span id="ga-total"></span></p>
+            <svg id="ga-plan" class="pl ga" role="img" aria-label="Floor plan of a room"></svg>
+          </div>
+          <div class="play__panel">
+            <p class="label">Your guess</p>
+            <form id="ga-form" class="ga__form" novalidate>
+              <label for="ga-guess">Floor area, sq ft</label>
+              <input id="ga-guess" type="number" inputmode="numeric" min="1" step="1" autocomplete="off">
+              <button type="submit" class="btn">Check</button>
+            </form>
+            <p id="ga-result" class="play__summary" role="status"></p>
+            <button type="button" class="btn btn--light ga__next" id="ga-next" hidden>Next room</button>
+            <p id="ga-best" class="play__key"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="sec sec--alt">
+    <div class="wrap grid grid--doc">
+      <div class="prose r">
+        <h2>Why this is harder than it looks</h2>
+        <p>Most people misjudge floor area by a long way, and the error matters: it is the number a flat is sold by, a contractor quotes by and a tile order is worked out from. A rectangle is easy. An L-shape or a room with a bay in it is where guesses drift, because the eye counts the outline rather than the floor.</p>
+        <p>The quick way is to split the room into rectangles, work out each and add them up. Or take the whole outer rectangle and subtract the missing corner. After each guess the room fills with one-foot squares, so you can count the answer for yourself.</p>
+        <h2>Square feet, carpet and built-up</h2>
+        <p>The floor inside the walls is the carpet area, which is what this game asks for. A built-up figure adds the walls themselves, and a super built-up one adds a share of lifts, lobbies and stairs, which is why the same flat can be advertised at three very different sizes.</p>
+      </div>
+      <aside class="aside r">
+        <h2>Comparing homes?</h2>
+        <p>Bring a plan and the studio will read it with you: what the areas really are, and what can and cannot change.</p>
+        <a class="btn" href="/contact/">Talk to the studio</a>
+        <a class="link" href="/room-planner/">Room area calculator<span aria-hidden="true">&rarr;</span></a>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__inner">
+    <div>
+      <a class="logo" href="/"><img class="logo__mark" src="/assets/logo.png" alt="" width="188" height="256"><span class="logo__text">Envoid<em>Design Studio</em></span></a>
+      <p class="foot__tag">Architecture · Interiors · Turnkey execution</p>
+    </div>
+    <div class="foot__col">
+      <p class="foot__h">Explore</p>
+      <nav aria-label="Footer"><a href="/#about">About</a><a href="/services/">Services</a><a href="/#process">Process</a><a href="/projects/">Projects</a><a href="/contact/">Contact</a></nav>
+    </div>
+    <div class="foot__col">
+      <p class="foot__h">Service areas</p>
+      <nav aria-label="Service areas"><a href="/architects-in-ghaziabad/">Architects in Ghaziabad</a><a href="/interior-designers-in-ghaziabad/">Interior designers in Ghaziabad</a><a href="/architects-in-noida/">Architects in Noida</a></nav>
+    </div>
+    <div class="foot__col">
+      <p class="foot__h">Plan your space</p>
+      <nav aria-label="Planning tools"><a href="/room-planner/">Room area calculator</a><a href="/sun-path/">Sunlight explorer</a><a href="/furniture-planner/">Will it fit?</a><a href="/colour-your-room/">Colour your room</a><a href="/staircase/">Staircase designer</a><a href="/guess-the-area/">Guess the area</a></nav>
+    </div>
+    <p class="foot__copy">© <span id="yr">2026</span> Envoid Design Studio. Vaishali, Ghaziabad. · <a href="/privacy/">Privacy</a></p>
+  </div>
+</footer>
+
+<script src="/main.js" defer></script>
+<script src="/room-planner.js" defer></script>
+<script src="/guess-the-area.js" defer></script>
+</body>
+</html>

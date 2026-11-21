@@ -40,6 +40,10 @@ PAGES = {
     "privacy/index.html": "/privacy/",
     "room-planner/index.html": "/room-planner/",
     "sun-path/index.html": "/sun-path/",
+    "colour-your-room/index.html": "/colour-your-room/",
+    "furniture-planner/index.html": "/furniture-planner/",
+    "staircase/index.html": "/staircase/",
+    "guess-the-area/index.html": "/guess-the-area/",
     "thanks/index.html": "/thanks/",
     "404.html": None,
 }

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Will It Fit? Furniture Layout Planner | Envoid Design Studio</title>
+<meta name="description" content="Set your room size, drop in beds, sofas, wardrobes and tables at common sizes, and drag them around. See the gap to every wall and piece, and whether anything blocks the door.">
+<meta name="theme-color" content="#121212">
+<link rel="icon" href="/assets/favicon.png" sizes="512x512" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta property="og:title" content="Will It Fit? Furniture Layout Planner | Envoid Design Studio">
+<meta property="og:description" content="Drag furniture into a room of your size and see the gaps around every piece.">
+<meta property="og:type" content="website">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://envoiddesign.in/furniture-planner/">
+<meta property="og:url" content="https://envoiddesign.in/furniture-planner/">
+<meta property="og:site_name" content="Envoid Design Studio">
+<meta property="og:locale" content="en_IN">
+<meta property="og:image" content="https://envoiddesign.in/assets/studio.jpg">
+<meta property="og:image:width" content="1000">
+<meta property="og:image:height" content="1200">
+<meta property="og:image:alt" content="Residential elevation designed by Envoid Design Studio">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://envoiddesign.in/furniture-planner/#page","url":"https://envoiddesign.in/furniture-planner/","name":"Will It Fit? Furniture Layout Planner | Envoid Design Studio","description":"Set your room size, drop in beds, sofas, wardrobes and tables at common sizes, and drag them around. See the gap to every wall and piece, and whether anything blocks the door.","isPartOf":{"@id":"https://envoiddesign.in/#website"},"about":{"@id":"https://envoiddesign.in/#studio"},"inLanguage":"en-IN"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://envoiddesign.in/"},{"@type":"ListItem","position":2,"name":"Will it fit?","item":"https://envoiddesign.in/furniture-planner/"}]}]}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav" id="nav">
+  <div class="wrap nav__inner">
+    <a class="logo" href="/">
+      <img class="logo__mark" src="/assets/logo.png" alt="" width="188" height="256">
+      <span class="logo__text">Envoid<em>Design Studio</em></span>
+    </a>
+    <nav class="nav__links" id="menu" aria-label="Main">
+      <a href="/#about">About</a>
+      <a href="/services/">Services</a>
+      <a href="/projects/">Projects</a>
+      <a href="/contact/">Contact</a>
+    </nav>
+    <div class="nav__cta">
+      <a class="btn btn--sm" href="https://wa.me/919560769743?text=Hi%20Envoid%20Design%20Studio%2C%20I%27d%20like%20a%20free%20consultation." target="_blank" rel="noopener">Free Consultation</a>
+      <button type="button" class="burger" id="burger" aria-expanded="false" aria-controls="menu" aria-label="Open menu"><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="phead">
+    <div class="wrap">
+      <nav class="crumb r" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li aria-current="page">Will it fit?</li></ol></nav>
+      <p class="eyebrow r">Play with your space</p>
+      <h1 class="r">Will it <em>fit</em>?</h1>
+      <p class="phead__sub r">Set your room’s size, add furniture and drag it around. The gaps to the walls and to other pieces show as you move, and anything that overlaps, crosses a wall or blocks the door turns red.</p>
+    </div>
+  </section>
+  <section class="sec">
+    <div class="wrap">
+      <noscript><p class="play__note">This runs in your browser and needs JavaScript switched on.</p></noscript>
+      <div id="fp" class="play">
+        <div class="play__stage">
+          <div class="play__panel">
+            <p class="label">Plan · drag a piece</p>
+            <svg id="fp-plan" class="fp" role="group" aria-label="Room plan"></svg>
+            <div class="play__btns">
+              <button type="button" class="play__btn" id="fp-rotate">Turn piece</button>
+              <button type="button" class="play__btn" id="fp-remove">Remove piece</button>
+              <button type="button" class="play__btn" id="fp-clear">Clear the room</button>
+            </div>
+            <p id="fp-status" class="play__status" role="status"></p>
+          </div>
+          <div class="play__panel">
+            <p class="label">Add furniture</p>
+            <div id="fp-catalogue" class="play__btns"></div>
+            <div class="play__fields">
+              <fieldset id="fp-room">
+                <legend>Your room</legend>
+                <label>Width, ft <input id="fp-w" type="number" inputmode="decimal" min="6" max="40" step="0.5" value="12"></label>
+                <label>Length, ft <input id="fp-l" type="number" inputmode="decimal" min="6" max="40" step="0.5" value="14"></label>
+                <label>Door, ft from the left wall <input id="fp-door-x" type="number" inputmode="decimal" min="0" max="40" step="0.5" value="1"></label>
+                <label>Door width, ft <input id="fp-door-w" type="number" inputmode="decimal" min="2" max="5" step="0.5" value="3"></label>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+        <dl class="play__out">
+          <div><dt>Floor area</dt><dd><output id="o-floor"></output></dd></div>
+          <div><dt>Under furniture</dt><dd><output id="o-covered"></output></dd></div>
+          <div><dt>Free floor</dt><dd><output id="o-free"></output><span><output id="o-free-pct"></output></span></dd></div>
+          <div id="fp-issues"><dt>Check</dt><dd><output id="o-issues"></output></dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+  <section class="sec sec--alt">
+    <div class="wrap grid grid--doc">
+      <div class="prose r">
+        <h2>How to use it</h2>
+        <p>Drag a piece to move it, or select it and use the arrow keys, holding Shift for bigger steps. Press R or the Turn button to turn it a quarter, and Delete to take it out. Select a piece to see its gap to the nearest wall or piece on every side.</p>
+        <p>The door sits in the bottom wall and swings into the room. Anything in its arc turns red, because a wardrobe that fits on paper but stops the door opening does not fit.</p>
+        <h2>About the sizes</h2>
+        <p>Every piece uses a common size from Indian furniture shops, so a queen bed is 5 by 6½ feet and a three-seat sofa 7 by 3. Your own furniture may differ by a few inches, which is often exactly the margin that decides whether something fits, so measure what you have before you buy.</p>
+        <p>Remember the space furniture needs in use as well as at rest: chairs pulled out from a dining table, a wardrobe’s doors swung open, room to walk round the foot of a bed. The gaps shown are clear floor, before any of that.</p>
+      </div>
+      <aside class="aside r">
+        <h2>Planning a whole home?</h2>
+        <p>A good layout is decided at the drawing stage, with doors, windows and switches placed around the furniture rather than the other way round.</p>
+        <a class="btn" href="/contact/">Talk to the studio</a>
+        <a class="link" href="/colour-your-room/">Colour your room<span aria-hidden="true">&rarr;</span></a>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__inner">
+    <div>
+      <a class="logo" href="/"><img class="logo__mark" src="/assets/logo.png" alt="" width="188" height="256"><span class="logo__text">Envoid<em>Design Studio</em></span></a>
+      <p class="foot__tag">Architecture · Interiors · Turnkey execution</p>
+    </div>
+    <div class="foot__col">
+      <p class="foot__h">Explore</p>
+      <nav aria-label="Footer"><a href="/#about">About</a><a href="/services/">Services</a><a href="/#process">Process</a><a href="/projects/">Projects</a><a href="/contact/">Contact</a></nav>
+    </div>
+    <div class="foot__col">
+      <p class="foot__h">Service areas</p>
+      <nav aria-label="Service areas"><a href="/architects-in-ghaziabad/">Architects in Ghaziabad</a><a href="/interior-designers-in-ghaziabad/">Interior designers in Ghaziabad</a><a href="/architects-in-noida/">Architects in Noida</a></nav>
+    </div>
+    <div class="foot__col">
+      <p class="foot__h">Plan your space</p>
+      <nav aria-label="Planning tools"><a href="/room-planner/">Room area calculator</a><a href="/sun-path/">Sunlight explorer</a><a href="/furniture-planner/">Will it fit?</a><a href="/colour-your-room/">Colour your room</a><a href="/staircase/">Staircase designer</a><a href="/guess-the-area/">Guess the area</a></nav>
+    </div>
+    <p class="foot__copy">© <span id="yr">2026</span> Envoid Design Studio. Vaishali, Ghaziabad. · <a href="/privacy/">Privacy</a></p>
+  </div>
+</footer>
+
+<script src="/main.js" defer></script>
+<script src="/furniture-planner.js" defer></script>
+</body>
+</html>

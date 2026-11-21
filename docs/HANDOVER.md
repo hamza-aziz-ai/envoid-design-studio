@@ -8,6 +8,7 @@ Where things stand. Newest entry on top. Read this first; update it last.
 
 - `/room-planner/` and `/sun-path/` are live, linked from a dark "Plan your space" band on the home page, a footer column on every page, and the daylight sentence on the architecture page. Reasons and rejected options are in D-023.
 - `tools/test-tools.js` checks the sun and room maths and runs in CI. `tools/stage.sh` now cache-busts every root-level script by pattern, so a new page's script is covered without editing it. The deploy's script check covers every `*.js` at the root.
+- Four more tools added (D-025): Will it fit?, Colour your room, Staircase designer and Guess the area. With the room calculator and sunlight explorer that makes six, linked from the home page band and a footer column on every page.
 - A drawing-fee estimator was built and withdrawn the same day: the studio does not want prices on the site, because they set expectations that conflict with the real consultation (D-024). Do not re-propose one.
 
 ## 2026-11-21 — the enquiry form was broken, and now works

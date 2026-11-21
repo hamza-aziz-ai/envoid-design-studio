@@ -19,8 +19,9 @@ module.exports = {
         'http://localhost:8000/services/',
         'http://localhost:8000/architects-in-ghaziabad/',
         // The interactive tools carry the most accessibility risk on the site:
-        // custom controls drawn in SVG. One of them is enough to gate both.
+        // custom controls drawn in SVG. The two with the most custom keyboard handling are gated.
         'http://localhost:8000/room-planner/',
+        'http://localhost:8000/furniture-planner/',
       ],
       numberOfRuns: 1,
       settings: { preset: 'desktop' },

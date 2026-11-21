@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Staircase Designer: Risers, Treads and Comfort | Envoid Design Studio</title>
+<meta name="description" content="Set the floor-to-floor height and see your stair drawn to scale, with the riser and tread, the length of the flight, how steep it is and whether it will be comfortable to climb.">
+<meta name="theme-color" content="#121212">
+<link rel="icon" href="/assets/favicon.png" sizes="512x512" type="image/png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta property="og:title" content="Staircase Designer: Risers, Treads and Comfort | Envoid Design Studio">
+<meta property="og:description" content="Set the floor height and see your stair drawn to scale, with a comfort check.">
+<meta property="og:type" content="website">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://envoiddesign.in/staircase/">
+<meta property="og:url" content="https://envoiddesign.in/staircase/">
+<meta property="og:site_name" content="Envoid Design Studio">
+<meta property="og:locale" content="en_IN">
+<meta property="og:image" content="https://envoiddesign.in/assets/studio.jpg">
+<meta property="og:image:width" content="1000">
+<meta property="og:image:height" content="1200">
+<meta property="og:image:alt" content="Residential elevation designed by Envoid Design Studio">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="/styles.css">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://envoiddesign.in/staircase/#page","url":"https://envoiddesign.in/staircase/","name":"Staircase Designer: Risers, Treads and Comfort | Envoid Design Studio","description":"Set the floor-to-floor height and see your stair drawn to scale, with the riser and tread, the length of the flight, how steep it is and whether it will be comfortable to climb.","isPartOf":{"@id":"https://envoiddesign.in/#website"},"about":{"@id":"https://envoiddesign.in/#studio"},"inLanguage":"en-IN"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://envoiddesign.in/"},{"@type":"ListItem","position":2,"name":"Staircase designer","item":"https://envoiddesign.in/staircase/"}]}]}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav" id="nav">
+  <div class="wrap nav__inner">
+    <a class="logo" href="/">
+      <img class="logo__mark" src="/assets/logo.png" alt="" width="188" height="256">
+      <span class="logo__text">Envoid<em>Design Studio</em></span>
+    </a>
+    <nav class="nav__links" id="menu" aria-label="Main">
+      <a href="/#about">About</a>
+      <a href="/services/">Services</a>
+      <a href="/projects/">Projects</a>
+      <a href="/contact/">Contact</a>
+    </nav>
+    <div class="nav__cta">
+      <a class="btn btn--sm" href="https://wa.me/919560769743?text=Hi%20Envoid%20Design%20Studio%2C%20I%27d%20like%20a%20free%20consultation." target="_blank" rel="noopener">Free Consultation</a>
+      <button type="button" class="burger" id="burger" aria-expanded="false" aria-controls="menu" aria-label="Open menu"><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="phead">
+    <div class="wrap">
+      <nav class="crumb r" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li aria-current="page">Staircase designer</li></ol></nav>
+      <p class="eyebrow r">Play with your space</p>
+      <h1 class="r"><em>Staircase</em> designer</h1>
+      <p class="phead__sub r">Set the height between floors, the number of steps and the depth of each tread. The stair redraws to scale, with a person beside it, and tells you how it will feel to climb.</p>
+    </div>
+  </section>
+  <section class="sec">
+    <div class="wrap">
+      <noscript><p class="play__note">This runs in your browser and needs JavaScript switched on.</p></noscript>
+      <div id="st" class="play">
+        <div class="play__stage">
+          <div class="play__panel">
+            <p class="label">Side view, to scale</p>
+            <svg id="st-svg" class="st" role="img" aria-label="Side view of a stair"></svg>
+            <p id="st-verdict" class="st__verdict"></p>
+          </div>
+          <div class="play__panel">
+            <p class="label">Your stair</p>
+            <fieldset>
+              <legend>Shape it</legend>
+              <div class="play__ctl"><label for="st-height">Floor to floor</label><output id="st-height-out" for="st-height"></output><input id="st-height" type="range" min="8" max="14" step="0.25" value="10"></div>
+              <div class="play__ctl"><label for="st-risers">Number of risers</label><output id="st-risers-out" for="st-risers"></output><input id="st-risers" type="range" min="6" max="30" step="1" value="18"></div>
+              <div class="play__ctl"><label for="st-tread">Tread depth</label><output id="st-tread-out" for="st-tread"></output><input id="st-tread" type="range" min="220" max="330" step="5" value="275"></div>
+              <button type="button" class="play__btn" id="st-auto">Suggest the number of risers</button>
+            </fieldset>
+          </div>
+        </div>
+        <dl class="play__out">
+          <div><dt>Each riser</dt><dd><output id="o-riser"></output><span><output id="o-riser-in"></output></span></dd></div>
+          <div><dt>Steps</dt><dd><output id="o-steps"></output></dd></div>
+          <div><dt>Length of flight</dt><dd><output id="o-run"></output><span><output id="o-run-ft"></output></span></dd></div>
+          <div><dt>Steepness</dt><dd><output id="o-angle"></output></dd></div>
+          <div><dt>Stride, 2 risers + tread</dt><dd><output id="o-blondel"></output></dd></div>
+        </dl>
+        <p id="st-dogleg" class="play__key"></p>
+      </div>
+    </div>
+  </section>
+  <section class="sec sec--alt">
+    <div class="wrap grid grid--doc">
+      <div class="prose r">
+        <h2>The rule behind the comfort check</h2>
+        <p>Every step asks your legs to lift by one riser and reach forward by one tread. In 1675 the French architect François Blondel noticed that a stair feels natural when twice the riser plus the tread matches an ordinary walking stride, about 630 millimetres. The rule has outlived almost everything else from his era; UK building regulations still use it, accepting anything from 550 to 700 mm.</p>
+        <p>Try it. Lower the tread and the stair gets steeper and shorter. Add risers and each one gets lower. Push either too far and the verdict changes. The figures here are a feel for the trade-off, not a design: real stairs also have to meet the local building rules, clear the headroom above them and fit the structure.</p>
+        <h2>Why stairs eat floor space</h2>
+        <p>A straight flight between floors of an ordinary home runs four to five metres, before any landing. That is why so many Indian houses turn the stair back on itself as a dog-leg, halving the length at the cost of a landing. The figure below the results shows the trade for your settings.</p>
+      </div>
+      <aside class="aside r">
+        <h2>Building a house?</h2>
+        <p>Where the stair goes shapes every floor of the plan. It is one of the first things the studio settles, with the structure, the light and the headroom worked out together.</p>
+        <a class="btn" href="/contact/">Talk to the studio</a>
+        <a class="link" href="/guess-the-area/">Play guess the area<span aria-hidden="true">&rarr;</span></a>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__inner">
+    <div>
+      <a class="logo" href="/"><img class="logo__mark" src="/assets/logo.png" alt="" width="188" height="256"><span class="logo__text">Envoid<em>Design Studio</em></span></a>
+      <p class="foot__tag">Architecture · Interiors · Turnkey execution</p>
+    </div>
+    <div class="foot__col">
+      <p class="foot__h">Explore</p>
+      <nav aria-label="Footer"><a href="/#about">About</a><a href="/services/">Services</a><a href="/#process">Process</a><a href="/projects/">Projects</a><a href="/contact/">Contact</a></nav>
+    </div>
+    <div class="foot__col">
+      <p class="foot__h">Service areas</p>
+      <nav aria-label="Service areas"><a href="/architects-in-ghaziabad/">Architects in Ghaziabad</a><a href="/interior-designers-in-ghaziabad/">Interior designers in Ghaziabad</a><a href="/architects-in-noida/">Architects in Noida</a></nav>
+    </div>
+    <div class="foot__col">
+      <p class="foot__h">Plan your space</p>
+      <nav aria-label="Planning tools"><a href="/room-planner/">Room area calculator</a><a href="/sun-path/">Sunlight explorer</a><a href="/furniture-planner/">Will it fit?</a><a href="/colour-your-room/">Colour your room</a><a href="/staircase/">Staircase designer</a><a href="/guess-the-area/">Guess the area</a></nav>
+    </div>
+    <p class="foot__copy">© <span id="yr">2026</span> Envoid Design Studio. Vaishali, Ghaziabad. · <a href="/privacy/">Privacy</a></p>
+  </div>
+</footer>
+
+<script src="/main.js" defer></script>
+<script src="/staircase.js" defer></script>
+</body>
+</html>
