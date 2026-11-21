@@ -90,6 +90,7 @@ jobs:
     permissions:
       pages: write
       id-token: write
+      actions: read # list this run's artifacts before deploying
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -115,6 +116,26 @@ jobs:
           # silent: the files are committed, never deployed, and the only
           # symptom is a deep link opening the browser instead of the app.
           include-hidden-files: true
+
+      # deploy-pages looks the artifact up once, the instant upload finishes.
+      # GitHub's artifacts API can take a moment to list an artifact that was
+      # just finalised, and when the lookup lands first the deploy fails with
+      # "No artifacts named github-pages were found" - three times on
+      # 2026-11-21, 350 ms after a successful upload. Re-running the job does
+      # not help: it uploads a second copy and then fails on "Multiple
+      # artifacts". So wait until the API lists it, then deploy.
+      - name: Wait until the artifact is listed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for i in $(seq 1 30); do
+            n=$(gh api "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" \
+                  --jq '[.artifacts[] | select(.name == "github-pages")] | length' 2>/dev/null || echo 0)
+            if [ "${n:-0}" -ge 1 ]; then echo "listed after ${i} check(s)"; exit 0; fi
+            sleep 2
+          done
+          echo "::error::the github-pages artifact was never listed"
+          exit 1
 
       - id: deployment
         uses: actions/deploy-pages@v5
