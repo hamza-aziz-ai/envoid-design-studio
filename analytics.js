@@ -16,6 +16,22 @@
   const read = () => { try { return localStorage.getItem(KEY); } catch { return null; } };
   const write = (v) => { try { localStorage.setItem(KEY, v); } catch { /* the choice just will not persist */ } };
 
+  // The studio's own devices: open any page with ?internal=1 once per browser
+  // (?internal=0 undoes it). A flagged browser never loads GA and sees no
+  // banner, so the studio's visits are never sent at all. Per device, not per
+  // IP: the studio's broadband is CGNAT, so its public IP is shared with
+  // strangers. (traffic_type "internal" was tried first: the Google tag strips
+  // it from every client-side gtag call, so GA's data filter never sees it.)
+  const INTERNAL = 'envoid-internal';
+  const q = new URLSearchParams(location.search);
+  if (q.has('internal')) {
+    try { if (q.get('internal') === '0') localStorage.removeItem(INTERNAL); else localStorage.setItem(INTERNAL, '1'); } catch { /* private window */ }
+    q.delete('internal');
+    const rest = q.toString();
+    history.replaceState(null, '', location.pathname + (rest ? `?${rest}` : '') + location.hash);
+  }
+  const internal = (() => { try { return localStorage.getItem(INTERNAL) === '1'; } catch { return false; } })();
+
   window.dataLayer = window.dataLayer || [];
   function gtag() { window.dataLayer.push(arguments); } // eslint-disable-line prefer-rest-params
   window.gtag = gtag;
@@ -23,7 +39,7 @@
 
   let on = false;
   const start = () => {
-    if (on) return;
+    if (on || internal) return;
     on = true;
     window[`ga-disable-${ID}`] = false;
     gtag('consent', 'update', { analytics_storage: 'granted' });
@@ -124,5 +140,5 @@
 
   const choice = read();
   if (choice === 'granted') start();
-  else if (choice !== 'denied') show();
+  else if (choice !== 'denied' && !internal) show();
 })();
