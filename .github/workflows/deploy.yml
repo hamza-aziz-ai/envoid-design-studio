@@ -90,12 +90,11 @@ jobs:
     permissions:
       pages: write
       id-token: write
-      actions: read # list this run's artifacts before deploying
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url || steps.deployment_retry.outputs.page_url || steps.deployment_last.outputs.page_url }}
     outputs:
-      page_url: ${{ steps.deployment.outputs.page_url }}
+      page_url: ${{ steps.deployment.outputs.page_url || steps.deployment_retry.outputs.page_url || steps.deployment_last.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
 
@@ -117,27 +116,34 @@ jobs:
           # symptom is a deep link opening the browser instead of the app.
           include-hidden-files: true
 
-      # deploy-pages looks the artifact up once, the instant upload finishes.
-      # GitHub's artifacts API can take a moment to list an artifact that was
-      # just finalised, and when the lookup lands first the deploy fails with
-      # "No artifacts named github-pages were found" - three times on
-      # 2026-11-21, 350 ms after a successful upload. Re-running the job does
-      # not help: it uploads a second copy and then fails on "Multiple
-      # artifacts". So wait until the API lists it, then deploy.
-      - name: Wait until the artifact is listed
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          for i in $(seq 1 30); do
-            n=$(gh api "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" \
-                  --jq '[.artifacts[] | select(.name == "github-pages")] | length' 2>/dev/null || echo 0)
-            if [ "${n:-0}" -ge 1 ]; then echo "listed after ${i} check(s)"; exit 0; fi
-            sleep 2
-          done
-          echo "::error::the github-pages artifact was never listed"
-          exit 1
-
+      # deploy-pages looks the artifact up once, immediately after upload, and
+      # sometimes GitHub's artifact service does not return it yet: the deploy
+      # fails with "No artifacts named github-pages were found" though the
+      # upload succeeded. It hit four of six deploys on 2026-11-21. Polling the
+      # REST artifacts list first did not help: the list showed the artifact
+      # while deploy-pages, which asks a different service, still missed it.
+      # Re-running the job does not help either: it uploads a second copy and
+      # then fails on "Multiple artifacts". So retry the deploy step itself,
+      # after a pause, against the one artifact already uploaded.
       - id: deployment
+        continue-on-error: true
+        uses: actions/deploy-pages@v5
+
+      - name: Pause before retrying the deploy
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 30
+
+      - id: deployment_retry
+        if: steps.deployment.outcome == 'failure'
+        continue-on-error: true
+        uses: actions/deploy-pages@v5
+
+      - name: Pause before the last attempt
+        if: steps.deployment.outcome == 'failure' && steps.deployment_retry.outcome == 'failure'
+        run: sleep 60
+
+      - id: deployment_last
+        if: steps.deployment.outcome == 'failure' && steps.deployment_retry.outcome == 'failure'
         uses: actions/deploy-pages@v5
 
   smoke:
