@@ -12,10 +12,14 @@ Every dependency is code somebody else wrote and nobody here will read. Each one
 | `cloudflare-dns.com` DNS-over-HTTPS | — | MX/A lookup for a typed email domain | No | Fails open after a 4-second timeout |
 | `formsubmit.co` | — | Fallback form target while EmailJS is unconfigured | No | Receives the full enquiry on the fallback path only |
 | `wa.me` | — | WhatsApp deep links | No | Outbound link only; `rel="noopener"` |
+| three.js, self-hosted at `/vendor/three-0.187.0/three.min.js` | `0.187.0` (MIT) | The real-time 3D in `/3d-room/` | Exact version, in the path itself | Served from our own origin, so no third party sees the visitor. Loaded only when the visitor presses "Enter the room", never with the page. 753 KB, about 196 KB compressed |
+| Poly Haven textures, self-hosted under `/assets/textures/` | 1K, re-encoded | Wood, marble, terrazzo, plaster and fabric for the 3D room | Files are committed | CC0, so no licence obligation; credited on the page anyway. Fetched with three.js, only on request |
 
 **Node modules: none.** There is no `package.json` and no `node_modules`. `html-validate` runs through `npx --yes` in CI and is never installed into the repository.
 
-**One third-party script, total.** That number is the design, not an accident. `docs/CONSTRAINTS.md` requires asking before it changes.
+**One third-party script from another origin, plus one vendored library.** That is the design, not an accident, and `docs/CONSTRAINTS.md` requires asking before it changes. three.js was added at the studio's request for the 3D room (D-026).
+
+**How the three.js bundle was made**, so it can be rebuilt or upgraded. Use a scratch folder, never this repository: `npm i three@0.187.0 esbuild`. Then bundle an entry file that re-exports `three`, `OrbitControls` from `three/examples/jsm/controls/OrbitControls.js` and `RoundedBoxGeometry` from `three/examples/jsm/geometries/RoundedBoxGeometry.js`, with `esbuild entry.js --bundle --format=esm --minify --legal-comments=eof --target=es2020`. Copy the output and three's `LICENSE` into `vendor/three-<version>/`. A new version gets a new folder, so a cached old copy can never be served against new code.
 
 ## Build and deploy — what CI runs
 

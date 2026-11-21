@@ -66,7 +66,7 @@ if [ -n "$TOKEN" ]; then
   while IFS= read -r f; do
     sed -i \
       -e "s|\"/styles\.css\"|\"/styles.css?v=${TOKEN}\"|g" \
-      -e "s|\"/\([a-z-]*\)\.js\"|\"/\1.js?v=${TOKEN}\"|g" \
+      -e "s|\"/\([a-z0-9-]*\)\.js\"|\"/\1.js?v=${TOKEN}\"|g" \
       "$f"
   done < <(find "$DEST" -name "*.html")
   echo "stage: cache-busted assets with v=${TOKEN}"

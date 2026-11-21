@@ -6,6 +6,34 @@ Entries made during AI-assisted sessions record the model, because behaviour dif
 
 ---
 
+## D-026 — A real-time 3D room, with three.js and photographed textures
+
+**Date:** 2026-11-21 · **Model:** claude-opus-5-5 (Claude Code)
+
+**Context:** The studio asked whether the play tools could be made smoother and more realistic with three.js, like browser games. It chose one flagship scene with photographic textures over upgrading every tool. D-023 had rejected three.js for the earlier tools on weight and dependency grounds, and those still hold for them. This reverses that for one page only.
+
+**Built:** `/3d-room/`, a furnished living room in real-time 3D.
+- **Sunlight:** the sun is placed with the same tested NOAA maths as `/sun-path/` for Vaishali at any date and time, and shines through a window that can face any of eight directions, with real shadows from the window bars, the sofa and the room.
+- **Evening:** after sunset a pendant lamp takes over, switching itself on unless the visitor sets it.
+- **Finishes:** walls, feature wall, floor, sofa and rug use the twenty-finish palette.
+- **Controls:** orbit, zoom, eye-level and window views, turn buttons for keyboard users, play-the-day, and a PNG download.
+
+**How it stays fast:** nothing heavy loads with the page. three.js (753 KB, about 196 KB compressed) and 1.8 MB of textures are fetched only when the visitor presses "Enter the room". The page itself measured 99 performance and 100 on accessibility, best practices and SEO, at 286 KB.
+
+**How it looks real without being heavy:**
+- *Textures:* CC0 photographs from Poly Haven at 1K, with normal and roughness maps. Each was decoded and re-encoded from pixels before being committed, which validates it and strips its metadata. Plaster, linen and wool are converted to light neutral greys so a chosen colour reads as itself.
+- *Bounce light:* a real room is lit mostly by sunlight bouncing off the floor patch, which this renderer does not trace. A soft warm light placed where the sun actually lands stands in for it.
+- *Cutaway walls:* walls between the camera and the room are lifted away for the view, but keep casting shadows through a material that draws nothing, so the sun still comes in only through the window.
+
+**Choices:**
+- *Self-hosted, not a CDN.* No new third party sees visitors, so the privacy policy stays true. The version sits in the path, so upgrades cannot mix with cached copies.
+- *Kept the 2D tools.* They stay as the fast default and the fallback for browsers without WebGL, which get a plain message pointing to them.
+- *Accessibility:* a canvas cannot be read by a screen reader. Its label is rewritten with the time, the light and every finish whenever anything changes, and every control is a native input or button.
+
+**Tested:** `tools/test-tools.js` checks the sun-to-room conversion, the one piece of maths specific to this page, against the window's geometry.
+
+---
+
 ## D-025 — Four more things to play with
 
 **Date:** 2026-11-21 · **Model:** claude-opus-5-5 (Claude Code)

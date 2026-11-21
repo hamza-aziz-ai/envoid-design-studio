@@ -12,7 +12,7 @@ What must never happen in this repository, and what requires asking first. Writt
 - **Never use `<br>` to imitate text wrap.** A hard break is a guess about viewport width that is wrong at every other width. Give the heading a measure in `ch` and let `text-wrap: balance` place the break. `<br>` between two separate entries is also wrong — that is a list, and `.info__stack` exists for it.
 - **Never let a `.html` extension into a URL.** Pages live in directories and are served at `/projects/`, not `/projects.html`. Every reference in the markup is root-relative, and `tools/check_site.py` checks each canonical for equality against the published URL.
 - **Never hard-wrap prose in a Markdown file.** One paragraph is one line; the renderer wraps it. This applies to every file in `docs/` and to commit messages.
-- **Never add a runtime dependency without asking.** The site currently loads one third-party script. That number is a feature.
+- **Never add a runtime dependency without asking.** The site loads one third-party script from another origin (EmailJS, on the contact page) and one vendored library (three.js, self-hosted, fetched only when a visitor presses "Enter the room" on `/3d-room/`, added at the studio's request, D-026). Those numbers are a feature.
 - **Never disable or loosen a check in `tools/check_site.py` or `lighthouserc.js` to make a build pass.** Fix the page. Each exception already in `lighthouserc.js` carries a comment saying why; a new one needs the same.
 
 ## Always

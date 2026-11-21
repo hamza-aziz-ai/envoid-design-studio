@@ -109,4 +109,19 @@ assert.ok(!Fit.blocksDoor({ x: 5, y: 12, w: 1, d: 1 }, room, door), 'a piece bey
 assert.ok(!Fit.blocksDoor({ x: 0, y: 12, w: 0.5, d: 2 }, room, door), 'a piece behind the hinge does not');
 assert.ok(Fit.CATALOGUE.every((c) => c.w > 0 && c.d > 0 && c.name), 'every catalogue piece has a size');
 
-console.log('test-tools: sun, room, stair, game and furniture maths OK');
+// 3D room: the sun's direction in room coordinates, where the window is in the
+// x = 0 wall facing -x. Sun straight in front of the window must point back out
+// through it (-x); sun behind the window must not reach in; and the same sun and
+// window must agree with the 2D sunlight explorer on which side light lands.
+const R3 = require('../room-3d.js');
+const ahead = R3.sunInRoom({ az: 180, alt: 30 }, 180);
+near(ahead[0], -Math.cos(Math.PI / 6), 1e-9, 'sun ahead is out through the window');
+near(ahead[1], 0.5, 1e-9, 'altitude 30 degrees');
+near(ahead[2], 0, 1e-9, 'no sideways component');
+assert.ok(R3.sunInRoom({ az: 0, alt: 30 }, 180)[0] > 0, 'sun behind the window cannot shine through it');
+// Sun 45 degrees to the window's right (south-west for a south window): light then
+// lands to the left inside, which is +z here and +u in the sunlight explorer's room.
+const side = R3.sunInRoom({ az: 225, alt: 30 }, 180);
+assert.ok(side[2] < 0, 'the sun to the right of the window is towards -z');
+
+console.log('test-tools: sun, room, stair, game, furniture and 3D maths OK');

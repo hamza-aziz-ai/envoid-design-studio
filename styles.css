@@ -504,3 +504,23 @@ a{color:inherit;text-decoration:none;transition:color .3s var(--ease)}
 @media (max-width:860px){.play__stage--wide{grid-template-columns:1fr}}
 /* hidden must win over the display set on .btn and friends inside the tools */
 .play [hidden]{display:none!important}
+/* the 3D room */
+.r3__stage{position:relative;aspect-ratio:16/10;background:#141414;overflow:hidden}
+.r3__view{position:absolute;inset:0}
+.r3__view canvas{display:block;width:100%;height:100%;outline:none;touch-action:none}
+.r3__view canvas:focus-visible{box-shadow:inset 0 0 0 3px var(--brass)}
+.r3__poster{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:18px;padding:24px;text-align:center;color:var(--bone);background:radial-gradient(120% 90% at 30% 20%,rgba(184,138,82,.38),transparent 60%),linear-gradient(160deg,#2a2622,#121212)}
+.r3__poster-title{margin:0;font:400 clamp(1.4rem,3vw,2.2rem)/1.2 Fraunces,Georgia,serif;max-width:none}
+.r3__poster-note{margin:0;font-size:.85rem;color:rgba(246,243,238,.7)}
+.r3__check{display:flex!important;align-items:center;gap:10px;font:500 11px/1 Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);cursor:pointer}
+.r3__check input{width:18px;height:18px;margin:0;accent-color:var(--brass-ink)}
+.r3__finishes{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.r3__credits{font-size:.85rem;color:var(--mute)}
+@media (max-width:560px){.r3__stage{aspect-ratio:4/5}}
+/* featured 3D room card in the home-page tools band */
+.tool-feature{display:grid;gap:10px;margin:0 0 1px;padding:clamp(26px,3vw,40px);background:linear-gradient(120deg,rgba(184,138,82,.28),rgba(184,138,82,.06));border:1px solid rgba(200,160,106,.45);color:var(--bone);text-decoration:none;transition:background .35s var(--ease),border-color .35s var(--ease)}
+.tool-feature .label{margin:0;color:var(--brass-lt)}
+.tool-feature strong{font:400 clamp(1.6rem,3vw,2.3rem)/1.1 Fraunces,Georgia,serif}
+.tool-feature>span:not(.label):not(.tool-feature__go){color:rgba(246,243,238,.75)}
+.tool-feature__go{font:500 12px/1 Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--brass-lt)}
+.tool-feature:hover{background:linear-gradient(120deg,rgba(184,138,82,.42),rgba(184,138,82,.12));border-color:var(--brass-lt)}
