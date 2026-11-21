@@ -9,7 +9,7 @@ Neither file is published. `tools/stage.sh` strips `docs/` from the deployed dir
 | `enquiry.html` | the studio, `envoidstudio26@gmail.com` | `template_24jbzoi` — "Enquiry — to studio" |
 | `confirmation.html` | the person who enquired | `template_vxjz63k` — "Confirmation — to enquirer" |
 
-Both go out through one service, `service_cpailsr` ("Envoid Studio Gmail"), which is the studio's own Gmail account connected by OAuth. The identifiers are repeated in `contact.js`; they are names, not credentials.
+Both go out through one service, `service_ueaeebb` ("Envoid Studio Gmail"), which is the studio's own Gmail account connected by OAuth. The identifiers are repeated in `contact.js`; they are names, not credentials.
 
 ## Dashboard settings
 

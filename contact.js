@@ -19,8 +19,8 @@
    sends two. */
 const EMAILJS = {
   publicKey: '62buuGiVOAO8DFEZt',  // EmailJS Account > General > Public Key
-  enquiry:  { service: 'service_cpailsr', template: 'template_24jbzoi' },  // delivers to envoidstudio26@gmail.com
-  confirm:  { service: 'service_cpailsr', template: 'template_vxjz63k' },  // auto-reply to the person enquiring
+  enquiry:  { service: 'service_ueaeebb', template: 'template_24jbzoi' },  // delivers to envoidstudio26@gmail.com
+  confirm:  { service: 'service_ueaeebb', template: 'template_vxjz63k' },  // auto-reply to the person enquiring
 }
 
 const form = document.getElementById('form')
