@@ -6,6 +6,24 @@ Entries made during AI-assisted sessions record the model, because behaviour dif
 
 ---
 
+## D-024 — Publish drawing fees as "from" prices
+
+**Date:** 2026-11-21 · **Model:** claude-opus-5-5 (Claude Code)
+
+**Context:** The studio's internal quotation tool pre-fills every new quotation with the same drawing rates. A public estimator built on them was proposed, with the warning that a published figure becomes one clients hold the studio to.
+
+**Options put to the studio:** publish the rates as fees, publish them as "from" prices, or publish nothing.
+
+**Chosen by the studio:** "from" prices. `/fee-estimator/` shows each rate as a floor: floor plan from ₹2,000 per floor, structural drawings from ₹5,000, electrical and plumbing from ₹2,000, elevation and 3D from ₹4,000, extra site visits from ₹500 each. Every figure on the page is prefixed "from". The page says the fee is set in a written quotation after the free consultation.
+
+**Deliberately left out:** GST, because the quotation tool defaults it to 0% and the studio's tax position is not confirmed. The default payment terms, because publishing them is a separate commitment nobody asked for. Map approval, interiors and execution, which have no default rate. No `Offer` or price structured data, so search engines are not handed a price as fact.
+
+**Knock-on change:** the home page FAQ said "we will not quote a rate before seeing the site", which published starting prices would contradict. It now says the exact fee follows the site visit and links to the estimator, in both the visible answer and its FAQPage structured data.
+
+**To change a rate:** edit `RATES` in `fee-estimator.js` and the matching line in `tools/test-tools.js`. The test pins every rate, so a price cannot change by accident.
+
+---
+
 ## D-023 — Two interactive tools, drawn in SVG, with quantities and no prices
 
 **Date:** 2026-11-21 · **Model:** claude-opus-5-5 (Claude Code)

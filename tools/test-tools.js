@@ -65,4 +65,21 @@ for (const poly of [rect, rect.slice().reverse()]) {
   });
 }
 
-console.log('test-tools: sun and room maths OK');
+// Fee estimator. The rates are the studio's published "from" prices; a change
+// to any of them should be a deliberate edit here too, not a slip.
+const F = require('../fee-estimator.js');
+assert.deepEqual(
+  Object.fromEntries(F.RATES.map((r) => [r.id, [r.rate, r.per]])),
+  { plan: [2000, 'floor'], structure: [5000, 'project'], services: [2000, 'project'], elevation: [4000, 'project'], visit: [500, 'visit'] },
+);
+const all = new Set(['plan', 'structure', 'services', 'elevation', 'visit']);
+const defaults = new Set(F.RATES.filter((r) => r.on).map((r) => r.id));
+assert.equal(F.estimate(defaults, 1, 0).total, 2000 + 5000 + 2000 + 4000);
+assert.equal(F.estimate(defaults, 3, 0).total, 3 * 2000 + 5000 + 2000 + 4000, 'the floor plan scales with floors');
+assert.equal(F.estimate(all, 2, 4).total, 2 * 2000 + 5000 + 2000 + 4000 + 4 * 500, 'visits scale with count');
+assert.equal(F.estimate(new Set(['visit']), 1, 0).lines.length, 0, 'zero visits is no line, not a zero-rupee line');
+assert.equal(F.estimate(new Set(), 2, 2).total, 0);
+assert.equal(F.estimate(new Set(['plan']), 0, 0).total, 2000, 'a building has at least one floor');
+assert.equal(F.estimate(new Set(['plan']), 2.7, 0).total, 4000, 'floors are whole');
+
+console.log('test-tools: sun, room and fee maths OK');

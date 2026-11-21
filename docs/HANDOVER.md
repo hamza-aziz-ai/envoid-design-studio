@@ -8,7 +8,7 @@ Where things stand. Newest entry on top. Read this first; update it last.
 
 - `/room-planner/` and `/sun-path/` are live, linked from a dark "Plan your space" band on the home page, a footer column on every page, and the daylight sentence on the architecture page. Reasons and rejected options are in D-023.
 - `tools/test-tools.js` checks the sun and room maths and runs in CI. `tools/stage.sh` now cache-busts every root-level script by pattern, so a new page's script is covered without editing it. The deploy's script check covers every `*.js` at the root.
-- **Waiting on the studio:** a drawing-fee estimator is the obvious third tool. Envoid-Agent's quotation defaults (₹2,000 per floor for the plan, ₹5,000 structural, ₹2,000 electrical and plumbing, ₹4,000 elevation and 3D, ₹500 per site visit) would drive it, but publishing them makes them public prices the studio will be held to. It needs an explicit yes, or a decision to show "from" figures instead.
+- `/fee-estimator/` added at the studio's decision, showing the quotation tool's default drawing rates as "from" prices (D-024). The home FAQ was reworded so it no longer says no rate is quoted before a site visit. Rates live in `fee-estimator.js` and are pinned by `tools/test-tools.js`.
 
 ## 2026-11-21 — the enquiry form was broken, and now works
 
