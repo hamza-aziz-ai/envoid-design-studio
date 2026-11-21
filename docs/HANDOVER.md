@@ -8,6 +8,7 @@ Where things stand. Newest entry on top. Read this first; update it last.
 
 - `/room-planner/` and `/sun-path/` are live, linked from a dark "Plan your space" band on the home page, a footer column on every page, and the daylight sentence on the architecture page. Reasons and rejected options are in D-023.
 - `tools/test-tools.js` checks the sun and room maths and runs in CI. `tools/stage.sh` now cache-busts every root-level script by pattern, so a new page's script is covered without editing it. The deploy's script check covers every `*.js` at the root.
+- **Search Console:** the studio's own account, `envoid.design.architect@gmail.com`, is now a verified owner of the envoiddesign.in domain property through its own DNS TXT record at Hostinger. It is independent of the account that first verified the site, which stays an owner too.
 - Four more tools added (D-025): Will it fit?, Colour your room, Staircase designer and Guess the area. With the room calculator and sunlight explorer that makes six, linked from the home page band and a footer column on every page.
 - A drawing-fee estimator was built and withdrawn the same day: the studio does not want prices on the site, because they set expectations that conflict with the real consultation (D-024). Do not re-propose one.
 
@@ -77,7 +78,7 @@ Where things stand. Newest entry on top. Read this first; update it last.
 
 ### Do not touch
 
-- The `TXT` record on `@` — it verifies Search Console.
+- Both `TXT` records on `@`: each verifies one Google account as a Search Console owner.
 - `CNAME`, and the Pages domain setting. Both, together, are what keep the domain working.
 - `.github/workflows/automerge.yml` — never add a checkout of the pull request's code.
 - Canonical URLs, `og:url` and schema.org URLs. They name `envoiddesign.in` deliberately and CI enforces it.
