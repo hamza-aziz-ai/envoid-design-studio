@@ -6,6 +6,22 @@ Entries made during AI-assisted sessions record the model, because behaviour dif
 
 ---
 
+## D-022 — The studio is a `ProfessionalService`, because `ArchitecturalService` does not exist
+
+**Date:** 2026-11-21 · **Model:** claude-opus-5-5 (Claude Code)
+
+**Context:** While mirroring the Business Profile's opening hours onto the site, the studio node in the home page's JSON-LD turned out to be typed `ArchitecturalService`. That is not a schema.org type: `https://schema.org/ArchitecturalService` returns 404, and it was in the very first commit with no recorded reason.
+
+**What it cost:** an unknown type is not a `LocalBusiness`, so the address, telephone, geo coordinates and area served attached to it were not being read as a local business's details. Every service page points its `provider` at this node, so the defect reached all of them through one `@id`.
+
+**Options:** 1) `LocalBusiness` itself; 2) `ProfessionalService`, the `LocalBusiness` subtype for practices that sell expertise; 3) `HomeAndConstructionBusiness`, which reads as a contractor.
+
+**Chosen:** 2. schema.org has no architect type, and Google's guidance is to use the most specific subtype that is true. `ProfessionalService` is true and specific; `HomeAndConstructionBusiness` would describe the design-and-build work but misdescribe the rest of the practice.
+
+**Also added:** `openingHoursSpecification`, Monday to Saturday 10:00–17:00, taken from the studio's own Business Profile. The same hours are now visible on the contact and home pages, because structured data that describes nothing on the page is the kind Google ignores.
+
+---
+
 ## D-021 — No "Open in app" banner on the site, because neither platform hands off a typed URL
 
 **Date:** 2026-11-17 · **Model:** claude-opus-5 (Claude Code)

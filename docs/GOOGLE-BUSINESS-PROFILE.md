@@ -1,10 +1,37 @@
-# Google Business Profile — the fields, ready to paste
+# Google Business Profile
 
-Everything in this repository competes for the organic results. For "architect in Vaishali", "interior designer in Indirapuram" and almost every query this studio wants, the **map pack sits above all of them**, and only a Google Business Profile can appear there. This file exists so that creating one is twenty minutes of pasting rather than twenty minutes of deciding.
+For "architect in Vaishali", "interior designer in Indirapuram" and almost every query this studio wants, the **map pack sits above all organic results**, and only a Business Profile can appear there. Everything else in this repository competes for the positions below it.
 
-Create it at [business.google.com](https://business.google.com/). It is free. Verification is usually by postcard to the studio address and takes about a week, so start it before anything else on this list.
+## Current state — read this first
 
-Nothing below is invented. Every value is either already published on the live site or is marked **ASK THE STUDIO** because nobody has confirmed it. Do not guess at those — a Business Profile with a wrong opening time generates angry reviews, and a wrong category buries you.
+**The profile exists, is verified, and is managed by `envoid.design.architect@gmail.com`.** It has 4.9 stars from 27 Google reviews. An earlier version of this file said to create one; that was wrong, written when the profile was mistakenly believed not to exist. Edit it by signing in as that account and searching Google for the business name, or at [business.google.com](https://business.google.com/).
+
+Edited on 2026-11-21:
+
+| Field | Before | After |
+| --- | --- | --- |
+| Description | "We are leading and Best architects at Vaishali Delhi NCR having experience of 16 years…" (88 chars) | The 693-character description below. The old one made superlative and experience claims nobody had confirmed |
+| Website | `http://envoiddesign.in/` | `https://envoiddesign.in/` |
+| PIN | `201010` | `201019`, confirmed by the studio. The website was right; the profile was wrong |
+| Service areas | Delhi, National Capital Region, Faridabad, Ghaziabad | Those four plus Noida, Greater Noida, Gurugram, Meerut, Indirapuram, Vasundhara |
+| Additional categories | Interior designer | Interior designer, Architecture firm, Design agency |
+| Service descriptions | All 11 empty | Written for Architectural consultation, Architectural design services, Building code analysis and permit coordination, Sustainable and Energy Efficient Building. Façade design was typed and saved but the session lost its browser before the save could be confirmed |
+
+Edits to the description, categories and service areas go through Google's review, usually within ten minutes; the PIN applied immediately and no re-verification was requested.
+
+Already correct on the profile and left alone: primary category `Architect`, both phone numbers, WhatsApp and SMS, opening hours (Monday to Saturday 10:00–17:00, Sunday closed), opening date 1 March 2020.
+
+### Still to do
+
+- **Service descriptions** for Home building and renovations, Interior design, Project management, Site master planning, Map Approval and Vastu consultation, and confirm Façade design saved. The services table below has the wording; the profile's service names differ slightly, so match by meaning.
+- **Photographs.** See the table below. This is the largest remaining gap.
+- **Town/City reads `Vaishali`**, so the profile displays "Vaishali, Vaishali". The website says Ghaziabad. Changing it is a one-field edit, but an address change can prompt re-verification on some profiles, so it is left for the studio to decide.
+
+### A decision for the studio: the name
+
+The profile is **Envoid Design Architect Studio**. The website, its structured data and every document in this repository say **Envoid Design Studio**. Google cannot be sure two spellings are one business, and the name is the strongest of the three NAP fields.
+
+The profile's name carries the 27 reviews and is what people have been searching for, so the low-risk fix is to change the *website* to match the profile rather than the reverse: renaming a verified profile can trigger re-verification and a review of the listing. Either way it is a branding choice, not a technical one, and nothing has been changed.
 
 ## Name, address, phone
 
@@ -23,7 +50,7 @@ These three are the "NAP", and they must match the website **character for chara
 | Website | `https://envoiddesign.in/` |
 | Appointment link | `https://envoiddesign.in/contact/` |
 
-Use the business name exactly as written. Resist "Envoid Design Studio — Best Architect in Ghaziabad": keyword-stuffing the name is against Google's guidelines, competitors report it, and suspended profiles are slow to recover.
+The name in this table is the website's, and the profile currently differs — see *A decision for the studio: the name* above before changing either. Whatever is chosen, resist "Envoid Design Studio — Best Architect in Ghaziabad": keyword-stuffing the name is against Google's guidelines, competitors report it, and suspended profiles are slow to recover.
 
 ## Categories
 
@@ -58,7 +85,7 @@ Paste these as services, with these descriptions. They are the site's own wordin
 
 ## Business description (750 character limit)
 
-Paste as is — it is 718 characters.
+Now live on the profile — 693 characters.
 
 > Envoid Design Studio is a multidisciplinary architecture and interior design practice in Sector 5, Vaishali, Ghaziabad, working across Delhi NCR. We design residential, commercial and institutional projects and stay involved through execution, so the built result matches the drawing. Our work covers plot studies, concept and working drawings, structural coordination, GDA building plan sanction, interiors, and turnkey execution to handover. Engage us for a single stage or hand over the whole project. Completed and in-progress work includes residences, a marriage hall and a farm house across Ghaziabad, Noida, Lucknow, Kanpur, Hardoi and Bihar. First consultation and site visit are free.
 
@@ -99,17 +126,18 @@ Reply to every review, good or bad, in a sentence or two. Reply rate is a signal
 
 Post something every two or three weeks — a project photograph with two lines about it is enough. Dormant profiles drift down. This takes five minutes and is the cheapest ongoing thing on this list.
 
-## ASK THE STUDIO before filling these
+## Facts still unconfirmed
 
-Each of these is a real ranking or display signal and each is currently absent from the website's structured data for the same reason — nobody has confirmed it, and this project does not invent facts.
+Opening hours and the opening date turned out to be on the profile already, entered by the studio, so they are no longer open questions. The hours now appear on the website as well, both visibly on the contact and home pages and in the structured data.
 
-- **Opening hours.** Required for the profile to show "Open now". Needed per day, including whether Sunday is closed.
-- **Year established.** Shown on the profile and used in the description.
+Each of these is a real ranking or display signal and each is absent from the website for the same reason — nobody has confirmed it, and this project does not invent facts.
+
 - **Council of Architecture registration number**, if the practice or its principal holds one. On a profile competing with unregistered "designers", this is worth saying out loud.
 - **Instagram and Facebook handles.** For an architecture practice in India, Instagram is usually the strongest second profile. Once they exist, they go in the profile, in the site footer, and in the website's `sameAs` structured data.
 - **Price range**, as a band rather than a number.
+- **Experience.** The old profile description claimed 16 years; the opening date says 2020. Both can be true — the principal's career against the practice's — but the site should say which, if it says either.
 
-When any of these arrive, tell the session working on this repository: the website's schema, the footer and this file should be updated in the same sitting, and the mobile app session has asked to be told too.
+When any of these arrive, the website's schema, the footer and this file should be updated in the same sitting, and the mobile app session has asked to be told too.
 
 ## After it goes live
 
