@@ -4,6 +4,13 @@ Where things stand. Newest entry on top. Read this first; update it last.
 
 ---
 
+## 2026-11-21 — the enquiry form was broken, and now works
+
+- **`contact.js` had been sending to an EmailJS service that does not exist.** It carried `service_cpailsr`; the account lists exactly one service, "Envoid Studio Gmail", whose id is `service_ueaeebb`. Every enquiry was rejected before a template was reached, from the day the identifiers were filled until this fix. Corrected in `contact.js` and in `docs/email-templates/README.md`, deployed as `c499076`.
+- **The enquiry path is now confirmed working end to end**, by the studio submitting the live form and receiving both the enquiry and the confirmation. That closes the item that had been top of this file since the form was wired.
+- Worth keeping in mind, because it is the reason this went unnoticed for days. The form catches a send failure and offers a `mailto:` fallback, so a broken form looks like a working one to a visitor. And EmailJS's own counter read `0 / 200 requests received`, which is equally consistent with "nobody enquired" and "every enquiry failed" — it counts accepted requests, so a rejected one leaves no trace. Neither the page nor the dashboard could distinguish the two states; only a real submission could.
+- The lesson for anything similar: an identifier that is never exercised is not configured, it is merely written down. `docs/TESTING.md` holds the procedure.
+
 ## 2026-11-17 — privacy policy, app links
 
 - `/.well-known/assetlinks.json` published and verified: 200 as `application/json` with no redirect, accepted by Google's Digital Asset Links API, and confirmed on two Android devices by the app session. `www.envoiddesign.in` can never verify, because GitHub Pages 301s it to the apex and Android's verifier follows no redirects; the app stopped declaring that host rather than pretending otherwise.
@@ -28,7 +35,7 @@ Where things stand. Newest entry on top. Read this first; update it last.
 - Pipeline skips documentation-only pushes (`paths-ignore` on `push` only — a required check that never runs blocks a pull request forever).
 - Every wrap-imitating `<br>` removed from the markup; headings carry a measure plus `text-wrap: balance`, the two phone numbers became a real stack.
 - Every outbound and asset link opens in a new tab; in-site navigation deliberately does not.
-- Both EmailJS email templates written and reviewed in `docs/email-templates/`, pasted into the dashboard, and the four identifiers filled in `contact.js`. The enquiry path is live and not yet exercised end to end.
+- Both EmailJS email templates written and reviewed in `docs/email-templates/`, pasted into the dashboard, and the four identifiers filled in `contact.js`. One of those identifiers was wrong; see the 2026-11-21 entry.
 - EmailJS SDK tag now carries a Subresource Integrity hash and `crossorigin="anonymous"`.
 - URLs dropped the `.html` extension: pages moved into directories and are served at `/projects/`, `/contact/`, `/thanks/`, with every markup reference now root-relative.
 - Nine pages added for local search: a services hub, five service pages and three service-area pages, each with its own breadcrumb, `Service`, `BreadcrumbList` and `FAQPage` data. Navigation and footer changed with them, and `check_site.py` now guards the fourteen copies of the chrome against drift.
@@ -43,7 +50,7 @@ Where things stand. Newest entry on top. Read this first; update it last.
 
 ### Broken or risky
 
-- **The enquiry path has never been tested end to end.** It is wired and deployed; nobody has yet submitted the live form and watched both mails arrive. **This is the top priority**, and the procedure is in `docs/TESTING.md`.
+- ~~The enquiry path has never been tested end to end.~~ **Closed 2026-11-21.** The studio submitted the live form and confirmed both mails arrive. It was broken until that day, and the fix is in the 2026-11-21 entry.
 - **The site ranks for nothing yet, and on-page work alone will not change that.** The eight new pages are necessary and insufficient. Without a Google Business Profile and reviews, the map pack — which occupies the top of every local query — remains unreachable.
 - **Nothing watches the EmailJS quota.** Roughly 200 requests a month, two per enquiry; past that, sends fail the way an outage does.
 - **An open question the studio must answer, not us: may Google reviews be republished on this site?** The mobile app's Reviews tab reads `https://envoiddesign.in/reviews.json` if it exists. Filling that file means pulling review text through the Google Places API and keeping a copy on the studio's own domain, and the Maps Platform terms restrict exactly that — caching limits, and review content in particular. Neither session will build it without the studio accepting that exposure knowingly. The alternative costs nothing and is probably better: a button that opens the Business Profile shows real, current, complete reviews, needs no key and no sync, and sends signals that help the profile rank. The app already works that way; choosing link-out deletes four lines of its client code.
