@@ -15,10 +15,10 @@ Entries made during AI-assisted sessions record the model, because behaviour dif
 **Decided:**
 - **Consent first.** Google Analytics loads only after a visitor presses Accept on a small panel. Before that and after Decline, no Google script, request or cookie happens at all. This is stricter than Consent Mode's "advanced" setup, which sends cookieless pings before consent. India's DPDP Act asks for consent, and the old privacy promise made it a commitment. The choice can be changed from "Cookie settings" in every footer, and withdrawing deletes the `_ga` cookies.
 - **What is measured:**
-  - Page views, plus enhanced measurement: scrolls, outbound clicks, site search and file downloads.
+  - Page views, plus Google's enhanced measurement as left on: scrolls, outbound clicks, site search, video engagement, file downloads and form interactions. Form interactions report that a form was started or submitted, never what was typed in it.
   - `contact_click`, with `method` (phone, WhatsApp or email).
   - `tool_use`, the first interaction with a play tool on a page.
-  - `generate_lead` when an enquiry is sent, carrying only the service chosen. `generate_lead` is the key event.
+  - `generate_lead` when an enquiry is sent, carrying only the service chosen. `generate_lead` is the key event. Google lists an event for starring only after it has processed one, which takes up to 24 hours, so the key event is starred after that wait.
   - Never a name, phone number, email address or brief.
 - **Property settings:**
   - Measurement ID `G-95C4HE9ZZC`, property 547361214, owned by the studio account.
