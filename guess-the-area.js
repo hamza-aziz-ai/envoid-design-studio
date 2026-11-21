@@ -67,6 +67,7 @@ if (typeof module === 'object' && module.exports) module.exports = GuessArea;
   let round = 0, total = 0, room = null, answered = false;
 
   const draw = (reveal) => {
+    draw3d(reveal);
     svg.textContent = '';
     const xs = room.pts.map((p) => p[0]), ys = room.pts.map((p) => p[1]);
     const w = Math.max(...xs), h = Math.max(...ys), pad = 3.5;
@@ -92,6 +93,38 @@ if (typeof module === 'object' && module.exports) module.exports = GuessArea;
     const walls = room.pts.map((a, i) => `${fmt(edgeLen(a, room.pts[(i + 1) % room.pts.length]))} feet`).join(', ');
     svg.setAttribute('aria-label', `Floor plan of a room. Its walls, in order around the room, measure ${walls}.`);
   };
+
+  // ---- real 3D, on request -----------------------------------------------
+  // The room standing in 3D. Before the guess the floor is plain timber; the
+  // reveal lays one-foot tiles, the same squares the plan fills with, to count.
+  let p3 = null, g3 = null, M = null, framedFor = null;
+  function draw3d(reveal) {
+    if (!p3 || !room) return;
+    p3.clear(g3);
+    p3.extrudeRoom(g3, room.pts, { height: 4, thick: 0.35, floor: reveal ? M.grid : M.wood, wall: M.wall });
+    if (framedFor !== room) {
+      const xs = room.pts.map((q) => q[0]), zs = room.pts.map((q) => q[1]);
+      const w = Math.max(...xs), d = Math.max(...zs);
+      p3.frameOn(w / 2, 0, d / 2, Math.max(8, Math.hypot(w, d) / 2), { elevation: 0.95, distance: 2.6 });
+      framedFor = room;
+    }
+    p3.label(reveal ? `The room in 3D, its floor laid in one-foot squares: ${fmt(Math.abs(signedArea(room.pts)))} of them.` : 'The room in 3D. Read its walls on the plan and guess the floor area.');
+    p3.request();
+  }
+  if (typeof Play3D !== 'undefined') {
+    Play3D.mount({
+      button: $('ga-3d-go'),
+      view: $('ga-3d'),
+      status: $('ga-3d-status'),
+      label: 'The room in 3D',
+      onReady: (api) => {
+        p3 = api;
+        g3 = api.group();
+        M = { wood: api.mat.wood(1 / 6, 1 / 6), grid: api.mat.tiles(1, 1, '#efe6d6'), wall: api.mat.plaster('#efe9df') };
+        draw3d(answered);
+      },
+    });
+  }
 
   const status = () => {
     $('ga-round').textContent = `Room ${Math.min(round, ROUNDS)} of ${ROUNDS}`;

@@ -229,6 +229,7 @@ if (typeof module === 'object' && module.exports) module.exports = SunPath;
     put(facts.az, sun.alt > 0 ? `${sun.az.toFixed(0)}°, ${compass(sun.az)}` : '–');
 
     drawDial(doy, sun);
+    draw3d(doy, sun);
     const { patch, depth } = drawRoom(sun);
 
     const face = faceIn.options[faceIn.selectedIndex].text.toLowerCase();
@@ -273,6 +274,118 @@ if (typeof module === 'object' && module.exports) module.exports = SunPath;
       m += 10;
     }, 90);
   });
+
+  // ---- real 3D, on request -----------------------------------------------
+  // A two-storey house on its plot, its front facing the chosen direction, with
+  // a deep chajja over the windows. The sun is placed with the same maths as
+  // everything above, casts the house's shadow across the ground, and travels
+  // along its drawn path for the chosen day. After dark the windows glow.
+  let p3 = null, M = null, house = null, sky = null, sunBall = null, arcKey = '';
+  const R3 = 80; // radius of the drawn sky path, in feet
+  const toWorld = (alt, az) => {
+    const a = rad(alt), z = rad(az);
+    return [Math.sin(z) * Math.cos(a), Math.sin(a), -Math.cos(z) * Math.cos(a)]; // x east, z south
+  };
+  function draw3d(doy, sun) {
+    if (!p3) return;
+    const T3 = p3.THREE;
+    // The house turns so its front faces the window direction chosen above.
+    house.rotation.y = Math.PI - rad(+faceIn.value);
+    // Today's path and the two solstices, redrawn only when the date changes.
+    if (arcKey !== String(doy)) {
+      arcKey = String(doy);
+      sky.traverse((o) => { if (o.geometry) o.geometry.dispose(); });
+      sky.clear();
+      [[doy, M.today], [SUMMER, M.season], [WINTER, M.season]].forEach(([d, m]) => {
+        const pts = [];
+        for (let t = 240; t <= 1260; t += 5) {
+          const s = sunAt(d, t);
+          if (s.alt >= 0) pts.push(new T3.Vector3(...toWorld(s.alt, s.az).map((v) => v * R3)));
+        }
+        if (pts.length > 1) sky.add(new T3.Line(new T3.BufferGeometry().setFromPoints(pts), m));
+      });
+    }
+    const up = sun.alt > 0;
+    const dir = toWorld(sun.alt, sun.az);
+    sunBall.visible = up;
+    sunBall.position.set(dir[0] * R3, dir[1] * R3, dir[2] * R3);
+    if (up) p3.fitSun(0, 0, 34, dir);
+    const day = Math.max(0, Math.min(1, (sun.alt + 2) / 10));
+    p3.sun.intensity = up ? 3.2 * Math.min(1, sun.alt / 10) : 0;
+    p3.sun.color.set(sun.alt < 10 ? '#ffc58a' : '#fff3df');
+    p3.hemi.intensity = 0.15 + 0.85 * day;
+    const night = new T3.Color('#0d1322'), dusk = new T3.Color('#e7a473'), noon = new T3.Color('#a9cbe6');
+    p3.scene.background = sun.alt < -6 ? night : sun.alt < 4 ? night.clone().lerp(dusk, (sun.alt + 6) / 10) : dusk.clone().lerp(noon, Math.min(1, (sun.alt - 4) / 16));
+    M.glass.emissiveIntensity = up ? 0 : 1.4;
+    p3.label(`A two-storey house in 3D with its front facing ${faceIn.options[faceIn.selectedIndex].text.toLowerCase()}. ${up ? `The sun is ${sun.alt.toFixed(0)} degrees up in the ${compass(sun.az)}, casting the house's shadow across the ground.` : 'The sun has set and the windows are lit.'}`);
+    p3.request();
+  }
+  if (typeof Play3D !== 'undefined') {
+    Play3D.mount({
+      button: document.getElementById('sp-3d-go'),
+      view: document.getElementById('sp-3d'),
+      status: document.getElementById('sp-3d-status'),
+      label: 'A house in 3D',
+      background: '#a9cbe6',
+      onReady: (api) => {
+        p3 = api;
+        const T3 = api.THREE;
+        M = {
+          ground: api.mat.plain('#c8c1b1', 1),
+          lawn: api.mat.plain('#9fae86', 1),
+          wall: api.mat.plaster('#efe7da', 2, 2),
+          trim: api.mat.plain('#d9cfbf', 0.9),
+          glass: new T3.MeshStandardMaterial({ color: '#2c3a47', roughness: 0.15, metalness: 0.2, emissive: '#ffcf8f', emissiveIntensity: 0 }),
+          door: api.mat.wood(1, 1, '#9b7253'),
+          today: new T3.LineBasicMaterial({ color: '#b88a52' }),
+          season: new T3.LineBasicMaterial({ color: '#8a8378', transparent: true, opacity: 0.55 }),
+        };
+        // Ground and a lawn in front of the house.
+        api.box(-300, -0.2, -300, 300, 0, 300, M.ground, { cast: false });
+        house = api.group();
+        const hb = (x0, y0, z0, x1, y1, z1, m, o = {}) => api.box(x0, y0, z0, x1, y1, z1, m, { parent: house, ...o });
+        hb(-20, 0, 16, 20, 0.05, 40, M.lawn, { cast: false });
+        hb(-12, 0, -16, 12, 20, 16, M.wall);
+        hb(-12.3, 20, -16.3, 12.3, 21.5, 16.3, M.trim);
+        // Front face (+z before turning): windows on both floors, a chajja over each row, the door.
+        [[3, 7.5], [13, 17.5]].forEach(([y0, y1]) => {
+          [-8, 0, 8].forEach((x) => {
+            if (y0 === 3 && x === 0) return; // the door goes here
+            hb(x - 2, y0, 16, x + 2, y1, 16.15, M.glass);
+          });
+          hb(-11, y1 + 0.3, 16, 11, y1 + 0.6, 18.5, M.trim); // chajja, 2.5 ft deep
+        });
+        hb(-1.6, 0, 16, 1.6, 7.2, 16.2, M.door);
+        // Side windows, so the house reads from every angle.
+        [-6, 6].forEach((z) => { hb(12, 13, z - 2, 12.15, 17.5, z + 2, M.glass); hb(-12.15, 13, z - 2, -12, 17.5, z + 2, M.glass); });
+        // Compass letters on the ground, so north is never in doubt.
+        [['N', 0, -46], ['E', 46, 0], ['S', 0, 46], ['W', -46, 0]].forEach(([t, x, z]) => {
+          const c = document.createElement('canvas');
+          c.width = c.height = 128;
+          const g = c.getContext('2d');
+          g.fillStyle = '#1d1d1d';
+          g.font = '600 96px Inter, sans-serif';
+          g.textAlign = 'center';
+          g.textBaseline = 'middle';
+          g.fillText(t, 64, 70);
+          const tex = new T3.CanvasTexture(c);
+          tex.colorSpace = T3.SRGBColorSpace;
+          // A sprite always faces the camera, so the letter reads from any side.
+          const label = new T3.Sprite(new T3.SpriteMaterial({ map: tex, transparent: true }));
+          label.scale.set(7, 7, 1);
+          label.position.set(x, 3.5, z);
+          api.scene.add(label);
+        });
+        sky = api.group();
+        sunBall = new T3.Mesh(new T3.SphereGeometry(2.2, 24, 16), new T3.MeshBasicMaterial({ color: '#ffd36b' }));
+        api.scene.add(sunBall);
+        // From the north-west: in this latitude the sun is mostly to the south, so
+        // the shadow falls towards the camera and the sun is seen beyond the house.
+        api.frameOn(0, 16, 0, 48, { azimuth: -2.2, elevation: 0.3, distance: 2.7 });
+        render();
+      },
+    });
+  }
 
   render();
 })();

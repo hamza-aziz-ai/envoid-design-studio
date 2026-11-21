@@ -110,6 +110,12 @@
           </div>
         </div>
 
+        <div class="play__panel">
+          <p class="label">In 3D: a house and its shadow</p>
+          <div id="sp-3d" class="p3__view p3__view--wide" hidden></div>
+          <div class="play__btns"><button type="button" class="play__btn" id="sp-3d-go">View a house in this sun, in 3D</button></div>
+          <p id="sp-3d-status" class="play__status" role="status"></p>
+        </div>
         <dl class="play__out">
           <div><dt>Sunrise</dt><dd><output id="sp-rise"></output></dd></div>
           <div><dt>Sunset</dt><dd><output id="sp-set"></output></dd></div>
@@ -165,6 +171,7 @@
 </footer>
 
 <script src="/main.js" defer></script>
+<script src="/play-3d.js" defer></script>
 <script src="/sun-path.js" defer></script>
 </body>
 </html>

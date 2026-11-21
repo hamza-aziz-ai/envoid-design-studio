@@ -6,6 +6,31 @@ Entries made during AI-assisted sessions record the model, because behaviour dif
 
 ---
 
+## D-027 — The whole playground in 3D, through one shared lazy viewer
+
+**Date:** 2026-11-21 · **Model:** claude-opus-5-5 (Claude Code)
+
+**Context:** After the 3D room, the studio set the goal of taking the whole playground into three.js.
+
+**Built:** `play-3d.js`, one shared viewer, plus a "View in 3D" control on every tool. Each tool keeps its 2D drawing as the default and the fallback. The 3D view is drawn from the tool's own tested state and stays in sync as the visitor plays.
+- **Room calculator:** the drawn outline extruded with plaster walls, the floor laid in the chosen tile size, rebuilt on every corner drag.
+- **Will it fit?:** each piece modelled from parts, the door standing open, problems outlined in red and the selected piece in brass.
+- **Staircase:** a solid stair with timber treads, upper floor, wall, handrail and posts, and a figure at the foot, all to scale.
+- **Sunlight explorer:** a new shadow study. A two-storey house with a chajja turns to face the chosen direction and casts its shadow under the real sun. Today's sun path and both solstice paths are drawn across the sky. The windows glow after dark.
+- **Guess the area:** the room stands in 3D, and the reveal lays one-foot squares on its floor to count, matching the plan.
+- **Colour your room:** its choices travel to the 3D room in the address, and the 3D room accepts only values it offers.
+
+**Why one shared viewer:** renderer, controls, on-demand rendering, lighting with shadows, photographic materials, wall cutaway and framing are the same in every tool. Six copies would drift apart. Each tool's own code is only the part that differs: what it draws.
+
+**Found and fixed while testing:**
+- An SVG element has no `.hidden` property, so the old model must be hidden with the attribute.
+- A shadow study viewed from the sunny side shows no shadow at all, so its camera starts on the north-west.
+- Compass letters laid on the ground read mirrored from half the directions, so they are sprites that face the viewer.
+
+**Cost:** none until a visitor asks. Every tool page still measured 99 performance and 100 on accessibility, best practices and SEO, because three.js and the textures load only when a "View in 3D" button is pressed.
+
+---
+
 ## D-026 — A real-time 3D room, with three.js and photographed textures
 
 **Date:** 2026-11-21 · **Model:** claude-opus-5-5 (Claude Code)

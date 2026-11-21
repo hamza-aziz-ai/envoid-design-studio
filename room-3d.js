@@ -46,6 +46,14 @@ if (typeof module === 'object' && module.exports) module.exports = Room3D;
     rug: { label: 'Rug', options: ['linen', 'greenFabric', 'blue', 'clay'], value: 'linen' },
   };
 
+  // Finishes can arrive in the address from /colour-your-room/. Only values this
+  // room offers are taken; anything else keeps the default.
+  const params = new URLSearchParams(location.search);
+  Object.entries(GROUPS).forEach(([key, g]) => {
+    const v = params.get(key);
+    if (v && g.options.includes(v)) g.value = v;
+  });
+
   const panel = $('r3-finishes');
   Object.entries(GROUPS).forEach(([key, g]) => {
     const fs = document.createElement('fieldset');

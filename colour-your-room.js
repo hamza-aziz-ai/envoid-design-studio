@@ -138,6 +138,9 @@
     $('cr-list').textContent = '';
     chosen.forEach((line) => { const li = document.createElement('li'); li.textContent = line; $('cr-list').append(li); });
     svg.setAttribute('aria-label', `A living room in ${evening ? 'evening lamplight' : 'daylight'}. ${chosen.join('. ')}.`);
+    // Carry these finishes into the 3D room, which reads them from the address.
+    const link = $('cr-3d');
+    if (link) link.href = `/3d-room/?${new URLSearchParams({ walls: GROUPS.walls.value, feature: GROUPS.feature.value, floor: GROUPS.floor.value, sofa: GROUPS.sofa.value, rug: GROUPS.rug.value })}`;
   };
 
   const viewBox = () => {
