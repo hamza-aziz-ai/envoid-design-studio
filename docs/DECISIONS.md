@@ -26,6 +26,7 @@ Entries made during AI-assisted sessions record the model, because behaviour dif
   - Event data retention 14 months, the most the free tier allows.
   - Google signals and user-provided data off, and ad personalisation off in the tag too.
   - Linked to the `envoiddesign.in` Search Console domain property, so search queries show up in Analytics.
+- **Tag tester marker (2026-11-22).** Google's "Test your website" check never presses Accept, so it reported "Your Google tag wasn't detected". The homepage `<head>` now carries `<script type="text/plain" id="google-tag-marker">` naming the tag IDs. A `text/plain` script never runs and never loads anything, so consent is untouched; the check now passes. Keep it, and keep its type `text/plain`.
 
 **Rejected:**
 - Google Tag Manager: a second container to secure and audit for one tag.
