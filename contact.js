@@ -7,7 +7,7 @@
 
    They came from an EmailJS account holding:
      1. A service connected to the inbox the enquiries should arrive in.
-     2. An ENQUIRY template whose To is envoidstudio26@gmail.com, using
+     2. An ENQUIRY template whose To is envoid.design.architect@gmail.com, using
         {{user_name}} {{user_email}} {{user_phone}} {{user_service}}
         {{user_location}} {{user_message}}; set Reply-To to {{user_email}}.
      3. A CONFIRMATION template whose To is {{reply_to}} (the auto-reply the
@@ -19,7 +19,7 @@
    sends two. */
 const EMAILJS = {
   publicKey: '62buuGiVOAO8DFEZt',  // EmailJS Account > General > Public Key
-  enquiry:  { service: 'service_ueaeebb', template: 'template_24jbzoi' },  // delivers to envoidstudio26@gmail.com
+  enquiry:  { service: 'service_ueaeebb', template: 'template_24jbzoi' },  // delivers to envoid.design.architect@gmail.com
   confirm:  { service: 'service_ueaeebb', template: 'template_vxjz63k' },  // auto-reply to the person enquiring
 }
 

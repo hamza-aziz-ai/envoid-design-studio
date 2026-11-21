@@ -6,7 +6,7 @@ Neither file is published. `tools/stage.sh` strips `docs/` from the deployed dir
 
 | File | Goes to | EmailJS template |
 | --- | --- | --- |
-| `enquiry.html` | the studio, `envoidstudio26@gmail.com` | `template_24jbzoi` — "Enquiry — to studio" |
+| `enquiry.html` | the studio, `envoid.design.architect@gmail.com` | `template_24jbzoi` — "Enquiry — to studio" |
 | `confirmation.html` | the person who enquired | `template_vxjz63k` — "Confirmation — to enquirer" |
 
 Both go out through one service, `service_ueaeebb` ("Envoid Studio Gmail"), which is the studio's own Gmail account connected by OAuth. The identifiers are repeated in `contact.js`; they are names, not credentials.
@@ -19,7 +19,7 @@ Paste each file into its template's **HTML body**, then set the fields around it
 
 | Field | Value |
 | --- | --- |
-| To Email | `envoidstudio26@gmail.com` |
+| To Email | `envoid.design.architect@gmail.com` |
 | Reply To | `{{user_email}}` |
 | Subject | `New enquiry from {{user_name}} ({{user_phone}})` |
 
@@ -30,7 +30,7 @@ Paste each file into its template's **HTML body**, then set the fields around it
 | Field | Value |
 | --- | --- |
 | To Email | `{{reply_to}}` |
-| Reply To | `envoidstudio26@gmail.com` |
+| Reply To | `envoid.design.architect@gmail.com` |
 | Subject | `We have your enquiry, {{from_name}} — Envoid Design Studio` |
 
 ## Variables
@@ -73,7 +73,7 @@ Carried over from the equivalent templates on hamzaaziz.dev, where they were fou
 
 ## Sending from a studio address
 
-Both emails currently come from `envoidstudio26@gmail.com`, which is what the enquirer sees in their inbox. Sending from `contact@envoiddesign.in` instead would look better, and there is a trap in the obvious route.
+Both emails currently come from `envoid.design.architect@gmail.com`, which is what the enquirer sees in their inbox. Sending from `contact@envoiddesign.in` instead would look better, and there is a trap in the obvious route.
 
 Gmail has long been able to send from another address, under **Settings → Accounts and Import → Send mail as → Add another email address**, after verifying ownership. EmailJS's From Email field is honoured only when the address is already a verified identity there; otherwise Gmail silently substitutes the account's own address.
 
@@ -94,7 +94,7 @@ Both are reasonable things to try, and both end in the same place, so they are w
 
 **Adding `contact@envoiddesign.in` as an alternate email on the account.** An alternate address lets you sign in and receive account notices. It does not make Gmail send from it; that is "Send as", which is the feature with the January 2027 end date above.
 
-Nothing is broken today. Sending from `envoidstudio26@gmail.com` keeps working indefinitely; this only matters when the studio wants its own domain on outbound mail.
+Nothing is broken today. Sending from `envoid.design.architect@gmail.com` keeps working indefinitely; this only matters when the studio wants its own domain on outbound mail.
 
 Sources: [Send emails from a different address or alias](https://support.google.com/mail/answer/22370) · [Changes to third-party email account support in Gmail](https://support.google.com/mail/answer/17101213) · [Change your Google Account email](https://support.google.com/accounts/answer/19870) · [Manage your email addresses](https://support.google.com/accounts/answer/6316959)
 

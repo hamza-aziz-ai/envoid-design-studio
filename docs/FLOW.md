@@ -68,14 +68,14 @@ Step 8 is deliberate: the auto-reply is a courtesy, and failing it must never te
 Not live. While any `EMAILJS` identifier is blank, `contact.js` attaches no submit handler at all, and the browser performs the form's own `action` instead:
 
 ```
-POST https://formsubmit.co/envoidstudio26@gmail.com
+POST https://formsubmit.co/envoid.design.architect@gmail.com
   ├─ _subject, _template   presentation of the email FormSubmit sends
   ├─ _next                 https://envoiddesign.in/thanks/
   ├─ _honey                FormSubmit's own honeypot convention
   └─ Name, Phone, Email, Service, Location, Brief
 ```
 
-**FormSubmit requires a one-time activation click** on a mail it sends to `envoidstudio26@gmail.com` on the very first submission. Until someone clicks it, submissions are accepted by the browser and delivered nowhere. See `docs/FAILURE.md`.
+**FormSubmit requires a one-time activation click** on a mail it sends to `envoid.design.architect@gmail.com` on the very first submission. Until someone clicks it, submissions are accepted by the browser and delivered nowhere. See `docs/FAILURE.md`.
 
 ## Deploy
 

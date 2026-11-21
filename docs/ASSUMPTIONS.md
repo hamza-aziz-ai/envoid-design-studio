@@ -22,7 +22,7 @@ Status is one of **verified** (checked, with the check named), **unverified** (b
 
 | Assumption | Risk if wrong | How to settle it |
 | --- | --- | --- |
-| **`envoidstudio26@gmail.com` is monitored by the studio** | Every enquiry lands somewhere nobody reads | Ask, and send a test enquiry |
+| **`envoid.design.architect@gmail.com` is monitored by the studio** | Every enquiry lands somewhere nobody reads | Ask, and send a test enquiry |
 | **FormSubmit has never been activated** | Believed true; if false the fallback already works | Submit the live form once and watch that inbox |
 | **The EmailJS free tier is enough** | Sends stop silently past roughly 100 enquiries in a month | Watch the request counter in the dashboard |
 | **The studio's opening hours** | Absent from the structured data, so the Business Profile and the map pack have less to show | Ask, then add `openingHoursSpecification` |

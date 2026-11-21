@@ -10,7 +10,7 @@ Two things take its place, and both are quiet by nature.
 
 **The quota.** The free tier is roughly 200 requests a month and each enquiry spends two, so enquiry 101 in a month fails with the same "service error" a visitor would see during an outage. The counter is on the EmailJS dashboard and nothing here watches it.
 
-**The fallback is still unactivated.** If anyone empties an identifier, the form silently reverts to the FormSubmit path, which still needs a one-time activation click on a mail sent to `envoidstudio26@gmail.com`. Removing an identifier therefore does not degrade the form, it disables it.
+**The fallback is still unactivated.** If anyone empties an identifier, the form silently reverts to the FormSubmit path, which still needs a one-time activation click on a mail sent to `envoid.design.architect@gmail.com`. Removing an identifier therefore does not degrade the form, it disables it.
 
 **How you would notice either:** you would not. Nothing in CI or the smoke test exercises a real submission, and a lost lead is silent. The manual path in `docs/TESTING.md` is the only check there is.
 
