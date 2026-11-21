@@ -40,7 +40,6 @@ PAGES = {
     "privacy/index.html": "/privacy/",
     "room-planner/index.html": "/room-planner/",
     "sun-path/index.html": "/sun-path/",
-    "fee-estimator/index.html": "/fee-estimator/",
     "thanks/index.html": "/thanks/",
     "404.html": None,
 }

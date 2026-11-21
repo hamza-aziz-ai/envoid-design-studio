@@ -6,21 +6,17 @@ Entries made during AI-assisted sessions record the model, because behaviour dif
 
 ---
 
-## D-024 — Publish drawing fees as "from" prices
+## D-024 — No fee estimator on the site
 
 **Date:** 2026-11-21 · **Model:** claude-opus-5-5 (Claude Code)
 
-**Context:** The studio's internal quotation tool pre-fills every new quotation with the same drawing rates. A public estimator built on them was proposed, with the warning that a published figure becomes one clients hold the studio to.
+**Context:** A drawing-fee estimator showing the quotation tool's default rates as "from" prices was built and published, then withdrawn the same day at the studio's request.
 
-**Options put to the studio:** publish the rates as fees, publish them as "from" prices, or publish nothing.
+**Why it was withdrawn:** the interactive pages exist for visitors to play with and learn from. A price calculator is a different thing: it sets an expectation before the consultation, and any figure on the site becomes the number a client brings to the meeting and argues from when the real scope, and the real fee, turn out different. The studio would rather the fee conversation start at the consultation, where the scope is understood.
 
-**Chosen by the studio:** "from" prices. `/fee-estimator/` shows each rate as a floor: floor plan from ₹2,000 per floor, structural drawings from ₹5,000, electrical and plumbing from ₹2,000, elevation and 3D from ₹4,000, extra site visits from ₹500 each. Every figure on the page is prefixed "from". The page says the fee is set in a written quotation after the free consultation.
+**What this rules out:** prices, rates or fee ranges anywhere on the site, including inside an interactive tool, unless the studio decides otherwise. The home FAQ goes back to saying the studio does not quote a rate before seeing the site.
 
-**Deliberately left out:** GST, because the quotation tool defaults it to 0% and the studio's tax position is not confirmed. The default payment terms, because publishing them is a separate commitment nobody asked for. Map approval, interiors and execution, which have no default rate. No `Offer` or price structured data, so search engines are not handed a price as fact.
-
-**Knock-on change:** the home page FAQ said "we will not quote a rate before seeing the site", which published starting prices would contradict. It now says the exact fee follows the site visit and links to the estimator, in both the visible answer and its FAQPage structured data.
-
-**To change a rate:** edit `RATES` in `fee-estimator.js` and the matching line in `tools/test-tools.js`. The test pins every rate, so a price cannot change by accident.
+**State after withdrawal:** the page, its script, its rate test, its sitemap entry and every link to it are gone. `/fee-estimator/` now serves the site's 404. It was submitted to IndexNow while live and will drop out of those indexes as crawlers find it missing.
 
 ---
 
