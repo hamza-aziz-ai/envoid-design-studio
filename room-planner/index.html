@@ -80,7 +80,10 @@
           <div class="play__panel">
             <p class="label">Model · drag to turn</p>
             <svg id="view" class="v3" role="img" aria-label="3D view of the room"></svg>
-            <label class="play__range">Turn the model <input id="pl-rot" type="range" min="0" max="359" value="35"></label>
+            <div id="pl-3d" class="p3__view" hidden></div>
+            <label class="play__range" id="pl-rot-wrap">Turn the model <input id="pl-rot" type="range" min="0" max="359" value="35"></label>
+            <button type="button" class="play__btn" id="pl-3d-go">View in real 3D</button>
+            <p id="pl-3d-status" class="play__status" role="status"></p>
           </div>
         </div>
 
@@ -180,6 +183,7 @@
 </footer>
 
 <script src="/main.js" defer></script>
+<script src="/play-3d.js" defer></script>
 <script src="/room-planner.js" defer></script>
 </body>
 </html>

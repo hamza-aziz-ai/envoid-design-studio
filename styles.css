@@ -524,3 +524,9 @@ a{color:inherit;text-decoration:none;transition:color .3s var(--ease)}
 .tool-feature>span:not(.label):not(.tool-feature__go){color:rgba(246,243,238,.75)}
 .tool-feature__go{font:500 12px/1 Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--brass-lt)}
 .tool-feature:hover{background:linear-gradient(120deg,rgba(184,138,82,.42),rgba(184,138,82,.12));border-color:var(--brass-lt)}
+/* shared 3D views inside the play tools */
+.p3__view{position:relative;aspect-ratio:1;background:#ece7df;overflow:hidden}
+.p3__view--wide{aspect-ratio:16/10}
+.p3__view canvas{position:absolute;inset:0;width:100%;height:100%;display:block;outline:none;touch-action:none}
+.p3__view canvas:focus-visible{box-shadow:inset 0 0 0 3px var(--brass)}
+@media (max-width:560px){.p3__view--wide{aspect-ratio:4/3}}

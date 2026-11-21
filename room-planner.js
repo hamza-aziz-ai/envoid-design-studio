@@ -340,6 +340,41 @@ if (typeof module === 'object' && module.exports) module.exports = RoomGeometry;
     drawPlan();
     drawView(height);
     view.setAttribute('aria-label', `3D view of the room: ${fmt(area)} square feet, ${pts.length} walls, ${fmt(height)} feet high.`);
+    draw3d(height, area);
+  }
+
+  // ---- real 3D, on request -----------------------------------------------
+  // The same outline extruded with three.js: plastered walls, and a floor laid
+  // in the tile size chosen below, one tile per tile.
+  let p3 = null, p3group = null, p3wall = null;
+  function draw3d(height, area) {
+    if (!p3) return;
+    p3.clear(p3group);
+    const [tw, tl] = document.getElementById('pl-tile').value.split('x').map(Number);
+    p3.extrudeRoom(p3group, pts, { height, floor: p3.mat.tiles(tw, tl, '#e4ddd0'), wall: p3wall });
+    p3.label(`The room in 3D: ${fmt(area)} square feet, ${pts.length} walls, ${fmt(height)} feet high, floored in ${tw} by ${tl} foot tiles.`);
+    p3.request();
+  }
+  if (typeof Play3D !== 'undefined') {
+    Play3D.mount({
+      button: document.getElementById('pl-3d-go'),
+      view: document.getElementById('pl-3d'),
+      status: document.getElementById('pl-3d-status'),
+      label: 'The room in 3D',
+      onReady: (api) => {
+        p3 = api;
+        p3group = api.group();
+        p3wall = api.mat.plaster('#efe9df');
+        view.setAttribute('hidden', ''); // an SVG element has no .hidden property; only the attribute hides it
+        document.getElementById('pl-rot-wrap').hidden = true;
+        render();
+        // Frame the outline's bounding box: a vertex average drifts towards the
+        // busy side of an L or a T and pushes the room off-centre.
+        const xs = pts.map((p) => p[0]), zs = pts.map((p) => p[1]);
+        const cx = (Math.min(...xs) + Math.max(...xs)) / 2, cz = (Math.min(...zs) + Math.max(...zs)) / 2;
+        api.frameOn(cx, 2, cz, Math.max(8, Math.hypot(Math.max(...xs) - Math.min(...xs), Math.max(...zs) - Math.min(...zs)) / 2));
+      },
+    });
   }
 
   document.getElementById('pl-form').addEventListener('input', (e) => { if (e.target !== rot) render(); });

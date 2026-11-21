@@ -89,6 +89,12 @@
             </div>
           </div>
         </div>
+        <div class="play__panel">
+          <p class="label">In 3D</p>
+          <div id="fp-3d" class="p3__view p3__view--wide" hidden></div>
+          <div class="play__btns"><button type="button" class="play__btn" id="fp-3d-go">View the room in 3D</button></div>
+          <p id="fp-3d-status" class="play__status" role="status"></p>
+        </div>
         <dl class="play__out">
           <div><dt>Floor area</dt><dd><output id="o-floor"></output></dd></div>
           <div><dt>Under furniture</dt><dd><output id="o-covered"></output></dd></div>
@@ -141,6 +147,7 @@
 </footer>
 
 <script src="/main.js" defer></script>
+<script src="/play-3d.js" defer></script>
 <script src="/furniture-planner.js" defer></script>
 </body>
 </html>

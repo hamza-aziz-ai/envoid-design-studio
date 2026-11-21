@@ -211,6 +211,141 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
     $('fp-issues').dataset.tone = issues ? 'bad' : 'good';
     $('fp-rotate').disabled = $('fp-remove').disabled = selected < 0;
     svg.setAttribute('aria-label', `Plan of a ${fmt(r.w)} by ${fmt(r.l)} foot room with ${items.length} piece${items.length === 1 ? '' : 's'} of furniture.`);
+    draw3d(r, doorNow, trouble, issues);
+  }
+
+  // ---- real 3D, on request -----------------------------------------------
+  // The same room and pieces, modelled: beds with mattress, headboard and
+  // pillows, sofas with back and arms, full-height wardrobes, tables on legs.
+  // A piece with a problem gets a red outline, the selected one a brass one.
+  let p3 = null, g3 = null, M = null, floorKey = '';
+  const WALL_H = 9;
+
+  function model(a, parent) {
+    const box = (x0, y0, z0, x1, y1, z1, m, round) => p3.box(x0, y0, z0, x1, y1, z1, m, { parent, round });
+    const x0 = a.x, z0 = a.y, x1 = a.x + a.w, z1 = a.y + a.d;
+    const wide = a.w >= a.d; // long side runs along x
+    const id = a.name.toLowerCase();
+    const legs = (h, inset = 0.25) => [[x0 + inset, z0 + inset], [x1 - inset, z0 + inset], [x0 + inset, z1 - inset], [x1 - inset, z1 - inset]]
+      .forEach(([x, z]) => box(x - 0.07, 0, z - 0.07, x + 0.07, h, z + 0.07, M.metal));
+    if (id.includes('bed') && !id.includes('bedside')) {
+      box(x0, 0, z0, x1, 1.1, z1, M.frame, 0.08);
+      box(x0 + 0.15, 1.1, z0 + 0.15, x1 - 0.15, 1.8, z1 - 0.15, M.mattress, 0.18);
+      // Headboard on a short end; pillows against it.
+      if (!wide || a.w === a.d) {
+        box(x0, 0, z0, x1, 3.6, z0 + 0.3, M.head, 0.1);
+        const n = a.w >= 4 ? 2 : 1, pw = (a.w - 0.6) / n;
+        for (let i = 0; i < n; i++) box(x0 + 0.3 + i * pw + 0.08, 1.8, z0 + 0.45, x0 + 0.3 + (i + 1) * pw - 0.08, 2.2, z0 + 1.6, M.mattress, 0.15);
+      } else {
+        box(x0, 0, z0, x0 + 0.3, 3.6, z1, M.head, 0.1);
+        const n = a.d >= 4 ? 2 : 1, pw = (a.d - 0.6) / n;
+        for (let i = 0; i < n; i++) box(x0 + 0.45, 1.8, z0 + 0.3 + i * pw + 0.08, x0 + 1.6, 2.2, z0 + 0.3 + (i + 1) * pw - 0.08, M.mattress, 0.15);
+      }
+      return 3.6;
+    }
+    if (id.includes('sofa') || id.includes('armchair')) {
+      legs(0.4, 0.2);
+      box(x0, 0.4, z0, x1, 1.5, z1, M.sofa, 0.18);
+      if (wide) {
+        box(x0, 1.4, z0, x1, 3, z0 + 0.8, M.sofa, 0.2);
+        box(x0, 0.4, z0, x0 + 0.5, 2.2, z1, M.sofa, 0.18);
+        box(x1 - 0.5, 0.4, z0, x1, 2.2, z1, M.sofa, 0.18);
+        box(x0 + 0.55, 1.5, z0 + 0.8, x1 - 0.55, 1.8, z1 - 0.05, M.sofa, 0.14);
+      } else {
+        box(x0, 1.4, z0, x0 + 0.8, 3, z1, M.sofa, 0.2);
+        box(x0, 0.4, z0, x1, 2.2, z0 + 0.5, M.sofa, 0.18);
+        box(x0, 0.4, z1 - 0.5, x1, 2.2, z1, M.sofa, 0.18);
+        box(x0 + 0.8, 1.5, z0 + 0.55, x1 - 0.05, 1.8, z1 - 0.55, M.sofa, 0.14);
+      }
+      return 3;
+    }
+    if (id.includes('wardrobe')) {
+      box(x0, 0, z0, x1, 7, z1, M.cabinet, 0.04);
+      return 7;
+    }
+    if (id.includes('bedside')) {
+      box(x0, 0, z0, x1, 2, z1, M.cabinet, 0.05);
+      return 2;
+    }
+    if (id.includes('tv')) {
+      box(x0, 0, z0, x1, 1.6, z1, M.cabinet, 0.05);
+      if (wide) box(x0 + 0.6, 1.9, z0 + 0.2, x1 - 0.6, 4.6, z0 + 0.35, M.screen);
+      else box(x0 + 0.2, 1.9, z0 + 0.6, x0 + 0.35, 4.6, z1 - 0.6, M.screen);
+      box((x0 + x1) / 2 - 0.4, 1.6, (z0 + z1) / 2 - 0.15, (x0 + x1) / 2 + 0.4, 1.9, (z0 + z1) / 2 + 0.15, M.metal);
+      return 4.6;
+    }
+    const top = id.includes('coffee') ? 1.4 : 2.55;
+    legs(top - 0.15);
+    box(x0, top - 0.15, z0, x1, top, z1, M.top, 0.05);
+    return top;
+  }
+
+  function draw3d(r, door, trouble, issues) {
+    if (!p3) return;
+    p3.clear(g3);
+    const key = `${r.w}x${r.l}`;
+    if (key !== floorKey) { M.floor = p3.mat.wood(r.w / 6, r.l / 6); floorKey = key; }
+    const box = (x0, y0, z0, x1, y1, z1, m, o = {}) => p3.box(x0, y0, z0, x1, y1, z1, m, { parent: g3, ...o });
+    box(0, -0.1, 0, r.w, 0, r.l, M.floor, { cast: false });
+    const T = 0.35, dx = Math.min(door.x, r.w - door.w);
+    // Walls, each lifted away when it stands between the camera and the room.
+    const wall = (x0, z0, x1, z1, nx, nz, y0 = 0, y1 = WALL_H) => {
+      const m = box(x0, y0, z0, x1, y1, z1, M.wall);
+      p3.cutaway(m, nx, nz, (x0 + x1) / 2, (z0 + z1) / 2);
+    };
+    wall(-T, -T, 0, r.l + T, -1, 0);
+    wall(r.w, -T, r.w + T, r.l + T, 1, 0);
+    wall(-T, -T, r.w + T, 0, 0, -1);
+    wall(-T, r.l, dx, r.l + T, 0, 1);
+    wall(dx + door.w, r.l, r.w + T, r.l + T, 0, 1);
+    wall(dx, r.l, dx + door.w, r.l + T, 0, 1, 7, WALL_H);
+    // The door, standing open into the room along its swing.
+    box(dx, 0, r.l - door.w, dx + 0.14, 6.95, r.l, M.door, { round: 0.03 });
+
+    const T3 = p3.THREE;
+    items.forEach((a, i) => {
+      const h = model(a, g3);
+      const bad = trouble[i] && (trouble[i].outside || trouble[i].overlaps || trouble[i].door);
+      if (bad || i === selected) {
+        const edges = new T3.LineSegments(new T3.EdgesGeometry(new T3.BoxGeometry(a.w + 0.1, h + 0.1, a.d + 0.1)), bad ? M.badLine : M.selLine);
+        edges.position.set(a.x + a.w / 2, h / 2, a.y + a.d / 2);
+        g3.add(edges);
+      }
+    });
+    p3.label(`The room in 3D, ${fmt(r.w)} by ${fmt(r.l)} feet, with ${items.length} piece${items.length === 1 ? '' : 's'}: ${items.map((a) => a.name.toLowerCase()).join(', ') || 'empty'}. ${issues ? `${issues} piece${issues > 1 ? 's' : ''} to fix.` : 'Everything fits.'}`);
+    p3.request();
+  }
+
+  if (typeof Play3D !== 'undefined') {
+    Play3D.mount({
+      button: $('fp-3d-go'),
+      view: $('fp-3d'),
+      status: $('fp-3d-status'),
+      label: 'The room in 3D',
+      onReady: (api) => {
+        p3 = api;
+        g3 = api.group();
+        const L = api.THREE;
+        M = {
+          wall: api.mat.plaster('#efe9df'),
+          frame: api.mat.wood(1, 1, '#b48f6c'),
+          head: api.mat.fabric('#b9a58b', 1.5),
+          mattress: api.mat.fabric('#f3eee6', 1.5),
+          sofa: api.mat.fabric('#5f7c6d', 1.4),
+          cabinet: api.mat.wood(1, 1, '#f3e7d8'),
+          top: api.mat.wood(1, 1, '#d8b896'),
+          door: api.mat.wood(1, 1, '#c9a27c'),
+          metal: api.mat.metal('#2f3436'),
+          screen: api.mat.plain('#121314', 0.25),
+          badLine: new L.LineBasicMaterial({ color: '#c0392b' }),
+          selLine: new L.LineBasicMaterial({ color: '#b88a52' }),
+        };
+        const r = room();
+        render();
+        // High enough to see over a seven-foot wardrobe standing near the camera.
+        api.frameOn(r.w / 2, 1.5, r.l / 2, Math.hypot(r.w, r.l) / 2, { azimuth: 0.95, elevation: 1.0, distance: 2.7 });
+      },
+    });
   }
 
   // Dragging.
