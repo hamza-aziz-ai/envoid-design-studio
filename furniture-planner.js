@@ -83,13 +83,24 @@ const Fit = (() => {
     return { x, y, w: Math.max(...f.map((r) => r.x + r.w)) - x, d: Math.max(...f.map((r) => r.y + r.d)) - y };
   };
 
-  // A piece is in trouble if it crosses a wall, overlaps another, or blocks the door.
+  // Raised beds need room to sit up: the ceiling at least 3 ft above the top
+  // mattress, which is at 4.6 ft on a bunk and 5.6 ft on a loft bed (the 3D
+  // models are built from these too). So 7.6 ft and 8.6 ft of ceiling.
+  const TOP_MATTRESS = { bunk: 4.6, loft: 5.6 }, HEADROOM = 3;
+  const raised = (name) => Object.keys(TOP_MATTRESS).find((k) => name.toLowerCase().includes(k));
+  const ceilingFor = (name) => (raised(name) ? TOP_MATTRESS[raised(name)] + HEADROOM : 0);
+
+  // A piece is in trouble if it crosses a wall, overlaps another, blocks the
+  // door, or (a raised bed) leaves too little headroom. A room without a
+  // height (`h`) skips that last check.
   const problems = (items, room, door) =>
     items.map((a, i) => ({
       outside: !feet(a).every((f) => inside(f, room)),
       overlaps: items.some((b, j) => j !== i && feet(a).some((f) => feet(b).some((g) => overlap(f, g)))),
       door: feet(a).some((f) => blocksDoor(f, room, door)),
+      low: room.h !== undefined && room.h < ceilingFor(a.name),
     }));
+  const troubled = (t) => t.outside || t.overlaps || t.door || t.low;
 
   // ---- suggested layouts -----------------------------------------------------
   // Rules, not guesswork. A piece stands against a wall facing into the room
@@ -141,7 +152,7 @@ const Fit = (() => {
   // Zones are { r, owner, allow }: no piece but its owner, or one whose id is
   // `allow`, may stand in one.
   const valid = (L, room, door) =>
-    problems(L.items, room, door).every((t) => !t.outside && !t.overlaps && !t.door) &&
+    problems(L.items, room, door).every((t) => !troubled(t)) &&
     L.zones.every((z) => inside(z.r, room) && L.items.every((a, i) => i === z.owner || a.id === z.allow || !overlap(a, z.r)));
 
   // Add a piece at the first spot that keeps the layout valid, or report false.
@@ -445,7 +456,7 @@ const Fit = (() => {
     .filter(Boolean)
     .map((L) => ({ ...L, text: L.text.charAt(0).toUpperCase() + L.text.slice(1) }));
 
-  return { CATALOGUE, TYPES, overlap, inside, gaps, gapsAt, blocksDoor, problems, suggest, valid, pulledOut, extent };
+  return { CATALOGUE, TYPES, TOP_MATTRESS, ceilingFor, troubled, overlap, inside, gaps, gapsAt, blocksDoor, problems, suggest, valid, pulledOut, extent };
 })();
 if (typeof module === 'object' && module.exports) module.exports = Fit;
 
@@ -468,7 +479,7 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
   const snap = (v) => Math.round(v / SNAP) * SNAP;
   const num = (id, lo, hi) => Math.min(hi, Math.max(lo, parseFloat($(id).value) || lo));
 
-  const room = () => ({ w: num('fp-w', 6, 40), l: num('fp-l', 6, 40) });
+  const room = () => ({ w: num('fp-w', 6, 40), l: num('fp-l', 6, 40), h: num('fp-h', 7, 16) });
   const door = () => ({ x: num('fp-door-x', 0, 40), w: num('fp-door-w', 2, 5) });
 
   let items = [];
@@ -554,11 +565,11 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
     const trouble = problems(items, r, doorNow);
     items.forEach((a, i) => {
       const t = trouble[i];
-      const bad = t.outside || t.overlaps || t.door;
+      const bad = Fit.troubled(t);
       const g = el('g', {
         class: `fp__item${bad ? ' is-bad' : ''}${i === selected ? ' is-on' : ''}`,
         tabindex: 0, role: 'button', 'data-i': i,
-        'aria-label': `${describe(i)}${t.outside ? ' Crosses a wall.' : ''}${t.overlaps ? ' Overlaps another piece.' : ''}${t.door ? ' Blocks the door.' : ''}${a.out ? ' Trundle pulled out.' : ''} Arrow keys move it, R turns it, Delete removes it.`,
+        'aria-label': `${describe(i)}${t.outside ? ' Crosses a wall.' : ''}${t.overlaps ? ' Overlaps another piece.' : ''}${t.door ? ' Blocks the door.' : ''}${t.low ? ` Needs a ceiling of at least ${fmt(Fit.ceilingFor(a.name))} ft.` : ''}${a.out ? ' Trundle pulled out.' : ''} Arrow keys move it, R turns it, Delete removes it.`,
       }, svg);
       el('rect', { x: a.x, y: a.y, width: a.w, height: a.d }, g);
       if (a.out) { const o = Fit.pulledOut(a); el('rect', { x: o.x, y: o.y, width: o.w, height: o.d, class: 'fp__out' }, g); }
@@ -591,7 +602,7 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
     // Totals.
     const covered = items.reduce((s, a) => s + a.w * a.d, 0);
     const floor = r.w * r.l;
-    const issues = trouble.filter((t) => t.outside || t.overlaps || t.door).length;
+    const issues = trouble.filter(Fit.troubled).length;
     $('o-floor').textContent = `${fmt(floor)} sq ft`;
     $('o-covered').textContent = `${fmt(covered)} sq ft`;
     $('o-free').textContent = `${fmt(Math.max(0, floor - covered))} sq ft`;
@@ -612,7 +623,6 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
   // A piece with a problem gets a red outline, the selected one a brass one.
   let p3 = null, g3 = null, M = null, floorKey = '';
   const TRUNDLE_3D = 2.75; // as Fit's pulled-out trundle
-  const WALL_H = 9;
 
   function model(a, parent) {
     const box = (x0, y0, z0, x1, y1, z1, m, round) => p3.box(x0, y0, z0, x1, y1, z1, m, { parent, round });
@@ -651,14 +661,14 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
       if (id.includes('bunk')) {
         posts(5.8);
         deck(0.4);
-        deck(3.6);
+        deck(Fit.TOP_MATTRESS.bunk - 1);
         part(headEnd, ladder(5.4), depth - 0.12, depth, 5.1, 5.25, M.frame);
         return 5.8;
       }
       if (id.includes('loft')) {
         // The bed at 5 ft, and a desk or a wardrobe against the wall underneath.
         posts(6.4);
-        deck(4.6);
+        deck(Fit.TOP_MATTRESS.loft - 1);
         part(headEnd, ladder(6.1), depth - 0.12, depth, 5.95, 6.1, M.frame);
         const end = headEnd - toHead * 4.2;
         if (id.includes('wardrobe')) {
@@ -778,7 +788,8 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
     box(0, -0.1, 0, r.w, 0, r.l, M.floor, { cast: false });
     const T = 0.35, dx = Math.min(door.x, r.w - door.w);
     // Walls, each lifted away when it stands between the camera and the room.
-    const wall = (x0, z0, x1, z1, nx, nz, y0 = 0, y1 = WALL_H) => {
+    const H = r.h; // walls stand to the ceiling height entered
+    const wall = (x0, z0, x1, z1, nx, nz, y0 = 0, y1 = H) => {
       const m = box(x0, y0, z0, x1, y1, z1, M.wall);
       p3.cutaway(m, nx, nz, (x0 + x1) / 2, (z0 + z1) / 2);
     };
@@ -787,14 +798,14 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
     wall(-T, -T, r.w + T, 0, 0, -1);
     wall(-T, r.l, dx, r.l + T, 0, 1);
     wall(dx + door.w, r.l, r.w + T, r.l + T, 0, 1);
-    wall(dx, r.l, dx + door.w, r.l + T, 0, 1, 7, WALL_H);
+    wall(dx, r.l, dx + door.w, r.l + T, 0, 1, 7, H);
     // The door, standing open into the room along its swing.
     box(dx, 0, r.l - door.w, dx + 0.14, 6.95, r.l, M.door, { round: 0.03 });
 
     const T3 = p3.THREE;
     items.forEach((a, i) => {
       const h = placed(a, g3);
-      const bad = trouble[i] && (trouble[i].outside || trouble[i].overlaps || trouble[i].door);
+      const bad = trouble[i] && Fit.troubled(trouble[i]);
       if (bad || i === selected) {
         const edges = new T3.LineSegments(new T3.EdgesGeometry(new T3.BoxGeometry(a.w + 0.1, h + 0.1, a.d + 0.1)), bad ? M.badLine : M.selLine);
         edges.position.set(a.x + a.w / 2, h / 2, a.y + a.d / 2);
@@ -918,8 +929,13 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
   $('fp-suggest').addEventListener('click', () => {
     const r = room(), d = door(), dr = { x: Math.min(d.x, r.w - d.w), w: d.w };
     const kind = Fit.TYPES.find((t) => t.id === type.value);
-    const key = `${kind.id} ${r.w} ${r.l} ${dr.x} ${dr.w}`;
+    const key = `${kind.id} ${r.w} ${r.l} ${r.h} ${dr.x} ${dr.w}`;
     if (key !== ideaFor) { ideas = Fit.suggest(kind.id, r, dr); idea = -1; ideaFor = key; }
+    const bed = { 'kids-bunk': 'Bunk bed', 'kids-loft': 'Loft bed', 'kids-loft-robe': 'Loft bed' }[kind.id];
+    if (bed && r.h < Fit.ceilingFor(bed)) {
+      say(`A ${bed.toLowerCase()} needs a ceiling of at least ${fmt(Fit.ceilingFor(bed))} ft, for 3 ft of sitting headroom above the top mattress. This room's is ${fmt(r.h)} ft.`);
+      return;
+    }
     if (!ideas.length) {
       say(`No layout keeps enough clear floor for a ${kind.name.toLowerCase()} ${fmt(r.w)} by ${fmt(r.l)} feet with the door there. Try a bigger room, move the door, or place pieces by hand.`);
       return;
