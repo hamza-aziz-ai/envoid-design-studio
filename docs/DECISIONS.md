@@ -6,6 +6,25 @@ Entries made during AI-assisted sessions record the model, because behaviour dif
 
 ---
 
+## D-029 — Suggested furniture layouts in "Will it fit?", by rule
+
+**Date:** 2026-11-22 · **Model:** claude-opus-5-5 (Claude Code)
+
+**Context:** The studio asked whether visitors could submit a floor plan and get suggested 3D layouts, then chose to have it as a playground feature.
+
+**Built:** a "Suggest a layout" control on `/furniture-planner/`. The visitor picks Bedroom, Living room or Living and dining; the room's size and door come from the fields already there. Each press shows the next arrangement, one per wall the bed or sofa can back onto, in the existing 2D plan and 3D view, and every piece can then be dragged as before. The rules live in `Fit.suggest` and `Fit.valid` beside the existing checks:
+- Pieces stand against a wall facing into the room and keep clear floor in use: 2 ft beside and beyond a bed (bedside tables may sit in it), 2.5 ft in front of a wardrobe, desk or TV, 1.5 ft in front of a sofa, 2 ft in front of an armchair, 2.5 ft round a dining table for its chairs.
+- The TV is within 1 ft of square to the sofa, 6 to 11 ft from its front, with nothing between them but the coffee table.
+- Every bed or sofa position along a wall is tried, nearest the centre first, and the first giving the fullest set (both bedside tables and a desk; coffee table and armchair) is kept. Nothing is offered that fails the hand-placed checks, and if nothing fits the tool says so.
+- A suggested piece records the wall it backs onto, so the 3D model faces into the room on all four walls, square pieces included. Turning a piece by hand clears it.
+- The 3D camera now re-frames when the room size changes, which a 20 ft room needed.
+
+**Rejected:** reading an uploaded plan image or PDF. Walls, doors and dimensions cannot be read reliably from the plans people actually have, it needs a server and an AI model the static site does not have, it would be AI-generated design advice under the studio's name (D-024), and visitors' plans would go to a third party. Windows, switches and columns are not modelled either; the page says so.
+
+**Proof:** `tools/test-tools.js` runs every type over rooms from 8 to 22 ft each way with the door at three positions, and asserts every offered layout passes `Fit.valid`, has its key pieces and has the TV square to the sofa (over 500 layouts), plus a hand-built bad layout that must fail. Checked in a browser in 2D and 3D on all four walls, and at phone width with no sideways scroll.
+
+---
+
 ## D-028 — Google Analytics 4, opt-in only, with no form content
 
 **Date:** 2026-11-21 · **Model:** claude-opus-5-5 (Claude Code)

@@ -59,7 +59,167 @@ const Fit = (() => {
       door: blocksDoor(a, room, door),
     }));
 
-  return { CATALOGUE, overlap, inside, gaps, blocksDoor, problems };
+  // ---- suggested layouts -----------------------------------------------------
+  // Rules, not guesswork. A piece stands against a wall facing into the room
+  // (catalogue w along the wall, d away from it) and keeps clear floor for use:
+  // 2 ft beside and beyond a bed, 2.5 ft in front of a wardrobe, desk or TV,
+  // 1.5 ft in front of a sofa, 2.5 ft round a dining table for its chairs, and
+  // a TV square to the sofa, 6 to 11 ft from it, with nothing between but the
+  // coffee table. A layout is offered only if every piece passes the same
+  // checks as one placed by hand and every clear zone lies inside the room,
+  // free of other pieces.
+  // Walls: top is the far wall, bottom holds the door.
+  const TYPES = [
+    { id: 'bedroom', name: 'Bedroom' },
+    { id: 'living', name: 'Living room' },
+    { id: 'living-dining', name: 'Living and dining' },
+  ];
+  const WALLS = ['top', 'left', 'right', 'bottom'];
+  const WALL_NAME = { top: 'the far wall', left: 'the left wall', right: 'the right wall', bottom: 'the door wall' };
+  const OPPOSITE = { top: 'bottom', bottom: 'top', left: 'right', right: 'left' };
+  const STEP = 0.5;
+  const byId = (id) => CATALOGUE.find((c) => c.id === id);
+  const short = (a) => a.name.split(',')[0].toLowerCase();
+  const across = (wall) => wall === 'top' || wall === 'bottom';
+  const wallLen = (wall, room) => (across(wall) ? room.w : room.l);
+
+  const onWall = (c, wall, t, room) => {
+    const w = across(wall) ? c.w : c.d, d = across(wall) ? c.d : c.w;
+    const x = wall === 'left' ? 0 : wall === 'right' ? room.w - w : t;
+    const y = wall === 'top' ? 0 : wall === 'bottom' ? room.l - d : t;
+    return { id: c.id, name: c.name, w, d, x, y, back: wall };
+  };
+  const rect = (x, y, w, d) => ({ x, y, w, d });
+  const front = (a, n) => ({
+    top: rect(a.x, a.y + a.d, a.w, n), bottom: rect(a.x, a.y - n, a.w, n),
+    left: rect(a.x + a.w, a.y, n, a.d), right: rect(a.x - n, a.y, n, a.d),
+  })[a.back];
+  const sides = (a, n) => (across(a.back)
+    ? [rect(a.x - n, a.y, n, a.d), rect(a.x + a.w, a.y, n, a.d)]
+    : [rect(a.x, a.y - n, a.w, n), rect(a.x, a.y + a.d, a.w, n)]);
+  const ring = (a, n) => [rect(a.x - n, a.y - n, a.w + 2 * n, n), rect(a.x - n, a.y + a.d, a.w + 2 * n, n), rect(a.x - n, a.y, n, a.d), rect(a.x + a.w, a.y, n, a.d)];
+
+  // Zones are { r, owner, allow }: no piece but its owner, or one whose id is
+  // `allow`, may stand in one.
+  const valid = (L, room, door) =>
+    problems(L.items, room, door).every((t) => !t.outside && !t.overlaps && !t.door) &&
+    L.zones.every((z) => inside(z.r, room) && L.items.every((a, i) => i === z.owner || a.id === z.allow || !overlap(a, z.r)));
+
+  // Add a piece at the first spot that keeps the layout valid, or report false.
+  const tryAdd = (L, room, door, spots, keep) => {
+    for (const a of spots) {
+      const i = L.items.length;
+      const next = { items: [...L.items, a], zones: [...L.zones, ...keep(a).map((z) => ({ owner: i, ...z }))] };
+      if (valid(next, room, door)) { L.items = next.items; L.zones = next.zones; return a; }
+    }
+    return false;
+  };
+  // Every spot along the given walls, nearest the wall's centre or its corners first.
+  const along = (c, walls, room, order) => walls.flatMap((wall) => {
+    const span = wallLen(wall, room) - (across(wall) ? c.w : c.d);
+    const ts = [];
+    for (let t = 0; t <= span + 1e-9; t += STEP) ts.push(t);
+    const mid = Math.round(span / 2 / STEP) * STEP;
+    ts.sort((p, q) => (order === 'centre' ? Math.abs(p - mid) - Math.abs(q - mid) : Math.min(p, span - p) - Math.min(q, span - q)));
+    return ts.map((t) => onWall(c, wall, t, room));
+  });
+  // Free-standing: every spot on the grid, both ways round.
+  const anywhere = (c, room) => {
+    const out = [];
+    for (const [w, d] of [[c.w, c.d], [c.d, c.w]]) {
+      for (let y = 0; y + d <= room.l; y += STEP) for (let x = 0; x + w <= room.w; x += STEP) out.push({ id: c.id, name: c.name, w, d, x, y });
+    }
+    return out;
+  };
+  const first = (L, room, door, ids, spotsFor, keep) => {
+    for (const id of ids) { const a = tryAdd(L, room, door, spotsFor(byId(id)), keep); if (a) return a; }
+    return false;
+  };
+
+  // Every bed position along the wall, nearest the centre first; keep the first
+  // that gets both bedside tables and a desk, or else the fullest one.
+  const bedroom = (wall, room, door) => {
+    const bs = byId('bedside'), others = WALLS.filter((w) => w !== wall);
+    for (const bedId of ['king', 'queen', 'single']) {
+      let best = null;
+      for (const spot of along(byId(bedId), [wall], room, 'centre')) {
+        const L = { items: [], zones: [] };
+        const bed = tryAdd(L, room, door, [spot], (a) => [...sides(a, 2).map((r) => ({ r, allow: 'bedside' })), { r: front(a, 2) }]);
+        if (!bed) continue;
+        const t = across(wall) ? bed.x : bed.y, span = across(wall) ? bed.w : bed.d;
+        const tables = [t - bs.w, t + span].filter((at) => tryAdd(L, room, door, [onWall(bs, wall, at, room)], () => [])).length;
+        const robe = first(L, room, door, ['wardrobe4', 'wardrobe2'], (c) => along(c, others, room, 'corner'), (a) => [{ r: front(a, 2.5) }]);
+        if (!robe) continue;
+        const desk = tryAdd(L, room, door, along(byId('desk'), others, room, 'corner'), (a) => [{ r: front(a, 2.5) }]);
+        const score = tables * 2 + (desk ? 1 : 0);
+        if (!best || score > best.score) best = { L, score, bed, robe, desk };
+        if (score === 5) break;
+      }
+      if (!best) continue;
+      const { bed, robe, desk } = best;
+      const parts = [`${bed.name.toLowerCase()} against ${WALL_NAME[wall]}`, `${short(robe)} on ${WALL_NAME[robe.back]}`];
+      if (desk) parts.push(`desk on ${WALL_NAME[desk.back]}`);
+      return { ...best.L, text: parts.join(', ') };
+    }
+    return null;
+  };
+
+  // Every sofa position along the wall, nearest the centre first; keep the
+  // first with a coffee table and an armchair (and the dining table, when one
+  // is asked for), or else the fullest.
+  const living = (wall, room, door, dining) => {
+    const tvc = byId('tv'), ct = byId('coffee');
+    const sideWalls = WALLS.filter((w) => w !== wall && w !== OPPOSITE[wall]);
+    for (const sofaId of ['sofa3', 'sofa2']) {
+      let best = null;
+      for (const spot of along(byId(sofaId), [wall], room, 'centre')) {
+        const L = { items: [], zones: [] };
+        const sofa = tryAdd(L, room, door, [spot], (a) => [{ r: front(a, 1.5) }]);
+        if (!sofa) continue;
+        // The TV on the facing wall, as square to the sofa as it will go.
+        const centre = (a) => (across(wall) ? a.x + a.w / 2 : a.y + a.d / 2);
+        const tvSpots = along(tvc, [OPPOSITE[wall]], room, 'centre').sort((p, q) => Math.abs(centre(p) - centre(sofa)) - Math.abs(centre(q) - centre(sofa)));
+        const tv = tryAdd(L, room, door, tvSpots, (a) => [{ r: front(a, 2.5) }]);
+        if (!tv) continue;
+        // Nothing but the coffee table between the sofa and the screen.
+        const lo = (k, n) => Math.min(sofa[k] + sofa[n], tv[k] + tv[n]), hi = (k) => Math.max(sofa[k], tv[k]);
+        // Watchable: the screen within a foot of square, 6 to 11 ft from the seat's front.
+        const view = across(wall) ? hi('y') - lo('y', 'd') : hi('x') - lo('x', 'w');
+        if (Math.abs(centre(tv) - centre(sofa)) > 1 || view < 6 || view > 11) continue;
+        L.zones.push({ owner: 0, allow: 'coffee', r: across(wall) ? rect(sofa.x, lo('y', 'd'), sofa.w, hi('y') - lo('y', 'd')) : rect(lo('x', 'w'), sofa.y, hi('x') - lo('x', 'w'), sofa.d) });
+        // The coffee table 1.5 ft in front of the sofa, centred on it.
+        const cw = across(wall) ? ct.w : ct.d, cd = across(wall) ? ct.d : ct.w, fz = front(sofa, 1.5);
+        const cx = across(wall) ? sofa.x + (sofa.w - cw) / 2 : wall === 'left' ? fz.x + fz.w : fz.x - cw;
+        const cy = across(wall) ? (wall === 'top' ? fz.y + fz.d : fz.y - cd) : sofa.y + (sofa.d - cd) / 2;
+        const coffee = tryAdd(L, room, door, [{ id: ct.id, name: ct.name, w: cw, d: cd, x: cx, y: cy }], () => []);
+        let table = false;
+        if (dining) {
+          table = first(L, room, door, ['dining6', 'dining4'], (c) => anywhere(c, room), (a) => ring(a, 2.5).map((r) => ({ r })));
+          if (!table) continue;
+        }
+        const chair = tryAdd(L, room, door, along(byId('armchair'), sideWalls, room, 'centre'), (a) => [{ r: front(a, 2) }]);
+        const score = (coffee ? 2 : 0) + (chair ? 1 : 0);
+        if (!best || score > best.score) best = { L, score, sofa, tv, coffee, chair, table };
+        if (score === 3) break;
+      }
+      if (!best) continue;
+      const { sofa, tv, coffee, chair, table } = best;
+      const parts = [`${short(sofa)} against ${WALL_NAME[wall]}`, `TV unit facing it on ${WALL_NAME[tv.back]}`];
+      if (coffee) parts.push('coffee table between');
+      if (chair) parts.push(`armchair on ${WALL_NAME[chair.back]}`);
+      if (table) parts.push(`${table.name.split(', ')[1].replace(' seats', '-seat')} dining table with room for its chairs`);
+      return { ...best.L, text: parts.join(', ') };
+    }
+    return null;
+  };
+
+  // Up to one layout per wall the main piece can stand on.
+  const suggest = (type, room, door) => WALLS
+    .map((wall) => (type === 'bedroom' ? bedroom(wall, room, door) : living(wall, room, door, type === 'living-dining')))
+    .filter(Boolean)
+    .map((L) => ({ ...L, text: L.text.charAt(0).toUpperCase() + L.text.slice(1) }));
+
+  return { CATALOGUE, TYPES, overlap, inside, gaps, blocksDoor, problems, suggest, valid };
 })();
 if (typeof module === 'object' && module.exports) module.exports = Fit;
 
@@ -134,6 +294,7 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
     const a = items[i];
     const cx = a.x + a.w / 2, cy = a.y + a.d / 2;
     [a.w, a.d] = [a.d, a.w];
+    delete a.back; // a turned piece no longer faces away from a wall
     a.x = snap(cx - a.w / 2);
     a.y = snap(cy - a.d / 2);
   };
@@ -225,6 +386,8 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
     const box = (x0, y0, z0, x1, y1, z1, m, round) => p3.box(x0, y0, z0, x1, y1, z1, m, { parent, round });
     const x0 = a.x, z0 = a.y, x1 = a.x + a.w, z1 = a.y + a.d;
     const wide = a.w >= a.d; // long side runs along x
+    // A suggested piece knows which wall it backs onto; that settles square ones too.
+    const backTop = a.back ? a.back === 'top' || a.back === 'bottom' : null;
     const id = a.name.toLowerCase();
     const legs = (h, inset = 0.25) => [[x0 + inset, z0 + inset], [x1 - inset, z0 + inset], [x0 + inset, z1 - inset], [x1 - inset, z1 - inset]]
       .forEach(([x, z]) => box(x - 0.07, 0, z - 0.07, x + 0.07, h, z + 0.07, M.metal));
@@ -232,7 +395,7 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
       box(x0, 0, z0, x1, 1.1, z1, M.frame, 0.08);
       box(x0 + 0.15, 1.1, z0 + 0.15, x1 - 0.15, 1.8, z1 - 0.15, M.mattress, 0.18);
       // Headboard on a short end; pillows against it.
-      if (!wide || a.w === a.d) {
+      if (backTop ?? (!wide || a.w === a.d)) {
         box(x0, 0, z0, x1, 3.6, z0 + 0.3, M.head, 0.1);
         const n = a.w >= 4 ? 2 : 1, pw = (a.w - 0.6) / n;
         for (let i = 0; i < n; i++) box(x0 + 0.3 + i * pw + 0.08, 1.8, z0 + 0.45, x0 + 0.3 + (i + 1) * pw - 0.08, 2.2, z0 + 1.6, M.mattress, 0.15);
@@ -246,7 +409,7 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
     if (id.includes('sofa') || id.includes('armchair')) {
       legs(0.4, 0.2);
       box(x0, 0.4, z0, x1, 1.5, z1, M.sofa, 0.18);
-      if (wide) {
+      if (backTop ?? wide) {
         box(x0, 1.4, z0, x1, 3, z0 + 0.8, M.sofa, 0.2);
         box(x0, 0.4, z0, x0 + 0.5, 2.2, z1, M.sofa, 0.18);
         box(x1 - 0.5, 0.4, z0, x1, 2.2, z1, M.sofa, 0.18);
@@ -269,7 +432,7 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
     }
     if (id.includes('tv')) {
       box(x0, 0, z0, x1, 1.6, z1, M.cabinet, 0.05);
-      if (wide) box(x0 + 0.6, 1.9, z0 + 0.2, x1 - 0.6, 4.6, z0 + 0.35, M.screen);
+      if (backTop ?? wide) box(x0 + 0.6, 1.9, z0 + 0.2, x1 - 0.6, 4.6, z0 + 0.35, M.screen);
       else box(x0 + 0.2, 1.9, z0 + 0.6, x0 + 0.35, 4.6, z1 - 0.6, M.screen);
       box((x0 + x1) / 2 - 0.4, 1.6, (z0 + z1) / 2 - 0.15, (x0 + x1) / 2 + 0.4, 1.9, (z0 + z1) / 2 + 0.15, M.metal);
       return 4.6;
@@ -280,11 +443,30 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
     return top;
   }
 
+  // The models face the top or the left wall. A suggested piece backed against
+  // the right or bottom wall is built the same way and turned a half turn.
+  function placed(a, parent) {
+    if (a.back !== 'right' && a.back !== 'bottom') return model(a, parent);
+    const T3 = p3.THREE, outer = new T3.Group(), inner = new T3.Group();
+    outer.position.set(a.x + a.w / 2, 0, a.y + a.d / 2);
+    outer.rotation.y = Math.PI;
+    inner.position.set(-(a.x + a.w / 2), 0, -(a.y + a.d / 2));
+    outer.add(inner);
+    parent.add(outer);
+    return model(a, inner);
+  }
+
   function draw3d(r, door, trouble, issues) {
     if (!p3) return;
     p3.clear(g3);
     const key = `${r.w}x${r.l}`;
-    if (key !== floorKey) { M.floor = p3.mat.wood(r.w / 6, r.l / 6); floorKey = key; }
+    if (key !== floorKey) {
+      // A new room size: new floor boards, and the camera re-fitted to the room,
+      // high enough to see over a seven-foot wardrobe standing near it.
+      M.floor = p3.mat.wood(r.w / 6, r.l / 6);
+      floorKey = key;
+      p3.frameOn(r.w / 2, 1.5, r.l / 2, Math.hypot(r.w, r.l) / 2, { azimuth: 0.95, elevation: 1.0, distance: 2.7 });
+    }
     const box = (x0, y0, z0, x1, y1, z1, m, o = {}) => p3.box(x0, y0, z0, x1, y1, z1, m, { parent: g3, ...o });
     box(0, -0.1, 0, r.w, 0, r.l, M.floor, { cast: false });
     const T = 0.35, dx = Math.min(door.x, r.w - door.w);
@@ -304,7 +486,7 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
 
     const T3 = p3.THREE;
     items.forEach((a, i) => {
-      const h = model(a, g3);
+      const h = placed(a, g3);
       const bad = trouble[i] && (trouble[i].outside || trouble[i].overlaps || trouble[i].door);
       if (bad || i === selected) {
         const edges = new T3.LineSegments(new T3.EdgesGeometry(new T3.BoxGeometry(a.w + 0.1, h + 0.1, a.d + 0.1)), bad ? M.badLine : M.selLine);
@@ -340,10 +522,7 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
           badLine: new L.LineBasicMaterial({ color: '#c0392b' }),
           selLine: new L.LineBasicMaterial({ color: '#b88a52' }),
         };
-        const r = room();
-        render();
-        // High enough to see over a seven-foot wardrobe standing near the camera.
-        api.frameOn(r.w / 2, 1.5, r.l / 2, Math.hypot(r.w, r.l) / 2, { azimuth: 0.95, elevation: 1.0, distance: 2.7 });
+        render(); // the first render also frames the camera
       },
     });
   }
@@ -414,6 +593,26 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
   $('fp-remove').addEventListener('click', () => { if (selected >= 0) remove(selected); });
   $('fp-clear').addEventListener('click', () => { items = []; selected = -1; render(); say('Room cleared.'); });
   $('fp-room').addEventListener('input', render);
+
+  // Suggested layouts for the room as set. Each press shows the next one.
+  const type = $('fp-type');
+  Fit.TYPES.forEach((t) => type.append(new Option(t.name, t.id)));
+  let ideas = [], idea = -1, ideaFor = '';
+  $('fp-suggest').addEventListener('click', () => {
+    const r = room(), d = door(), dr = { x: Math.min(d.x, r.w - d.w), w: d.w };
+    const kind = Fit.TYPES.find((t) => t.id === type.value);
+    const key = `${kind.id} ${r.w} ${r.l} ${dr.x} ${dr.w}`;
+    if (key !== ideaFor) { ideas = Fit.suggest(kind.id, r, dr); idea = -1; ideaFor = key; }
+    if (!ideas.length) {
+      say(`No layout keeps enough clear floor for a ${kind.name.toLowerCase()} ${fmt(r.w)} by ${fmt(r.l)} feet with the door there. Try a bigger room, move the door, or place pieces by hand.`);
+      return;
+    }
+    idea = (idea + 1) % ideas.length;
+    items = ideas[idea].items.map((a) => ({ ...a, key: ++seq }));
+    selected = -1;
+    render();
+    say(`Layout ${idea + 1} of ${ideas.length}: ${ideas[idea].text}.${ideas.length > 1 ? ' Press again for another.' : ''} Drag any piece to change it.`);
+  });
 
   // Start with a furnished bedroom so there is something to push around.
   ['queen', 'bedside', 'bedside', 'wardrobe4'].forEach((id) => {

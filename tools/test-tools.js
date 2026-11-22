@@ -109,6 +109,30 @@ assert.ok(!Fit.blocksDoor({ x: 5, y: 12, w: 1, d: 1 }, room, door), 'a piece bey
 assert.ok(!Fit.blocksDoor({ x: 0, y: 12, w: 0.5, d: 2 }, room, door), 'a piece behind the hinge does not');
 assert.ok(Fit.CATALOGUE.every((c) => c.w > 0 && c.d > 0 && c.name), 'every catalogue piece has a size');
 
+// Suggested layouts: every one offered, across many rooms and door positions,
+// passes the hand-placed checks and keeps its clear zones, and has its key pieces.
+const need = { bedroom: [/bed$/i, /wardrobe/i], living: [/sofa/i, /tv/i], 'living-dining': [/sofa/i, /tv/i, /dining/i] };
+let offered = 0;
+for (const { id } of Fit.TYPES) {
+  for (let w = 8; w <= 22; w += 1.5) for (let l = 8; l <= 22; l += 1.5) for (const dx of [0, 3, w - 3]) {
+    const r = { w, l }, d = { x: Math.min(dx, w - 3), w: 3 };
+    for (const L of Fit.suggest(id, r, d)) {
+      offered++;
+      assert.ok(Fit.valid(L, r, d), `${id} ${w}x${l} door ${d.x}: ${L.text}`);
+      if (id !== 'bedroom') { const s = L.items[0], t = L.items[1]; assert.ok(Math.abs((s.x + s.w / 2) - (t.x + t.w / 2)) <= 1 || Math.abs((s.y + s.d / 2) - (t.y + t.d / 2)) <= 1, `TV not square to the sofa: ${L.text}`); }
+      for (const re of need[id]) assert.ok(L.items.some((a) => re.test(a.name)), `${id} layout lacks ${re}: ${L.text}`);
+    }
+  }
+}
+assert.ok(offered > 500, `too few layouts offered: ${offered}`);
+assert.ok(Fit.suggest('bedroom', room, door).length >= 2, 'a 12 by 14 bedroom gets a choice');
+assert.ok(Fit.suggest('living', { w: 12, l: 16 }, door).length >= 1, 'a 12 by 16 living room gets one');
+assert.equal(Fit.suggest('living-dining', { w: 9, l: 9 }, door).length, 0, 'a 9 by 9 room is not a living and dining room');
+// The rules bite: a wardrobe in front of a bed's foot is not a layout.
+const bed = { id: 'queen', name: 'Queen bed', w: 5, d: 6.5, x: 3.5, y: 0, back: 'top' };
+const tight = { items: [bed, { id: 'wardrobe4', name: 'Wardrobe, 4-door', w: 6, d: 2, x: 3, y: 7.5, back: 'bottom' }], zones: [{ owner: 0, r: { x: 3.5, y: 6.5, w: 5, d: 2 } }] };
+assert.ok(!Fit.valid(tight, room, door), 'a wardrobe in the clear zone beyond the bed is rejected');
+
 // 3D room: the sun's direction in room coordinates, where the window is in the
 // x = 0 wall facing -x. Sun straight in front of the window must point back out
 // through it (-x); sun behind the window must not reach in; and the same sun and
