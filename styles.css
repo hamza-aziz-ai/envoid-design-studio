@@ -474,6 +474,11 @@ a{color:inherit;text-decoration:none;transition:color .3s var(--ease)}
 .fp__fan circle{fill:none;stroke:var(--mute);stroke-width:1px;stroke-dasharray:3 3;vector-effect:non-scaling-stroke}
 .fp__fan .fp__fan-clear{stroke-opacity:.45}
 .fp__fan .fp__fan-hub{fill:var(--mute);stroke:none}
+.fp__fan{cursor:grab}
+.fp__fan:focus{outline:none}
+.fp__fan circle{pointer-events:none}
+.fp__fan .fp__fan-grip{fill:rgba(0,0,0,0);stroke:none;pointer-events:all}
+.fp__fan:focus-visible circle{stroke:var(--brass-ink);stroke-width:2.5px;stroke-opacity:1}
 .play fieldset label.play__check{display:flex;align-items:center;gap:10px}
 .play__check input{width:18px;height:18px;margin:0;accent-color:var(--brass-ink)}
 .fp__item{cursor:grab}

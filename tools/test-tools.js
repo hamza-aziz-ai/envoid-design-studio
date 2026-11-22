@@ -184,6 +184,15 @@ for (const id of ['kids-bunk', 'kids-loft', 'kids-loft-robe']) {
   assert.ok(L.every((x) => Fit.valid(x, { ...fanRoom, h: 10 }, door)), `${id}: every layout keeps clear of the fan`);
 }
 assert.equal(Fit.suggest('kids-bunk', { w: 9, l: 10, fan: true }, door).length, 0, 'a 9 by 10 room has nowhere for a bunk clear of a centre fan');
+// A moved fan: the check follows it.
+assert.deepEqual(Fit.fanAt({ w: 12, l: 12, fan: { x: 2, y: 9 } }), { x: 2, y: 9 });
+assert.deepEqual(Fit.fanAt({ w: 12, l: 12, fan: true }), { x: 6, y: 6 }, 'true means the middle');
+const cornerBunk = { ...bunk, x: 0, y: 0, w: 6.5, d: 3 };
+assert.ok(Fit.problems([cornerBunk], { w: 12, l: 12, fan: { x: 3, y: 4 } }, door)[0].fan, 'a fan moved over the corner bunk flags it');
+const movedFan = { w: 9, l: 10, fan: { x: 6, y: 7.5 } };
+const away = Fit.suggest('kids-bunk', movedFan, door);
+assert.ok(away.length >= 1, 'with the fan moved towards the door wall, a 9 by 10 room takes a bunk');
+assert.ok(away.every((x) => Fit.valid(x, movedFan, door)), 'and every bunk layout keeps clear of it');
 assert.ok(Fit.suggest('kids-loft', { w: 9, l: 10 }, door).length >= 2, 'a 9 by 10 room takes a loft bed');
 assert.ok(Fit.suggest('kids-twin', { w: 10, l: 11 }, door).length >= 2, 'a 10 by 11 room takes twin beds two ways');
 assert.ok(Fit.suggest('kids-bunk', { w: 9, l: 10 }, door).length >= 1, 'a 9 by 10 room takes a bunk bed');

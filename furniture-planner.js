@@ -89,11 +89,11 @@ const Fit = (() => {
   const TOP_MATTRESS = { bunk: 4.6, loft: 5.6 }, HEADROOM = 3;
   const raised = (name) => Object.keys(TOP_MATTRESS).find((k) => name.toLowerCase().includes(k));
   const ceilingFor = (name) => (raised(name) ? TOP_MATTRESS[raised(name)] + HEADROOM : 0);
-  // A ceiling fan in the middle of the room (`room.fan`), the usual 1200 mm
-  // size: its blades sweep a circle 2 ft in radius. Someone on a raised bed is
+  // A ceiling fan (`room.fan`: its { x, y } on the plan, or true for the middle
+  // of the room), the usual 1200 mm size: its blades sweep a circle 2 ft in radius. Someone on a raised bed is
   // within reach of it, so a bunk or loft bed keeps 1 ft clear of the sweep.
   const FAN = { r: 2, clear: 1 };
-  const fanAt = (room) => ({ x: room.w / 2, y: room.l / 2 });
+  const fanAt = (room) => (typeof room.fan === 'object' ? room.fan : { x: room.w / 2, y: room.l / 2 });
   const toRect = (p, a) => Math.hypot(Math.max(a.x - p.x, 0, p.x - (a.x + a.w)), Math.max(a.y - p.y, 0, p.y - (a.y + a.d)));
   const underFan = (a, room) => Boolean(room.fan && raised(a.name) && toRect(fanAt(room), a) < FAN.r + FAN.clear);
 
@@ -487,7 +487,14 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
   const snap = (v) => Math.round(v / SNAP) * SNAP;
   const num = (id, lo, hi) => Math.min(hi, Math.max(lo, parseFloat($(id).value) || lo));
 
-  const room = () => ({ w: num('fp-w', 6, 40), l: num('fp-l', 6, 40), h: num('fp-h', 7, 16), fan: $('fp-fan').checked });
+  // The fan sits in the middle until it is moved, and stays inside the room.
+  let fanPos = null;
+  const room = () => {
+    const w = num('fp-w', 6, 40), l = num('fp-l', 6, 40);
+    const fan = fanPos ? { x: Math.min(w, Math.max(0, fanPos.x)), y: Math.min(l, Math.max(0, fanPos.y)) } : { x: w / 2, y: l / 2 };
+    return { w, l, h: num('fp-h', 7, 16), fan: $('fp-fan').checked && fan };
+  };
+  const fanSay = (f) => `Ceiling fan, ${fmt(f.x)} ft from the left wall and ${fmt(f.y)} ft from the far wall.`;
   const door = () => ({ x: num('fp-door-x', 0, 40), w: num('fp-door-w', 2, 5) });
 
   let items = [];
@@ -561,13 +568,6 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
     svg.textContent = '';
 
     const grid = el('g', { class: 'fp__grid' }, svg);
-    if (r.fan) {
-      // The fan's sweep, and the 1 ft a raised bed keeps clear of it.
-      const f = Fit.fanAt(r), fan = el('g', { class: 'fp__fan', 'aria-hidden': 'true' }, svg);
-      el('circle', { cx: f.x, cy: f.y, r: Fit.FAN.r + Fit.FAN.clear, class: 'fp__fan-clear' }, fan);
-      el('circle', { cx: f.x, cy: f.y, r: Fit.FAN.r }, fan);
-      el('circle', { cx: f.x, cy: f.y, r: 0.3, class: 'fp__fan-hub' }, fan);
-    }
     for (let x = 1; x < r.w; x++) el('line', { x1: x, y1: 0, x2: x, y2: r.l }, grid);
     for (let y = 1; y < r.l; y++) el('line', { x1: 0, y1: y, x2: r.w, y2: y }, grid);
 
@@ -596,6 +596,18 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
       size = Math.min(size, (a.w * 0.9) / (text.length * 0.56));
       el('text', { x: a.x + a.w / 2, y: a.y + a.d / 2 + size * 0.35, 'text-anchor': 'middle', style: `font-size:${size.toFixed(2)}px` }, g).textContent = text;
     });
+
+    if (r.fan) {
+      // The fan's sweep and the 1 ft a raised bed keeps clear of it, drawn over
+      // the furniture so it shows where it falls; only the hub is grabbed, so a
+      // piece under the sweep can still be dragged.
+      const f = Fit.fanAt(r);
+      const fan = el('g', { class: 'fp__fan', tabindex: 0, role: 'button', 'data-fan': '', 'aria-label': `${fanSay(f)} Drag it, or use the arrow keys, to where the fan point is in your room.` }, svg);
+      el('circle', { cx: f.x, cy: f.y, r: Fit.FAN.r + Fit.FAN.clear, class: 'fp__fan-clear' }, fan);
+      el('circle', { cx: f.x, cy: f.y, r: Fit.FAN.r, class: 'fp__fan-sweep' }, fan);
+      el('circle', { cx: f.x, cy: f.y, r: 0.3, class: 'fp__fan-hub' }, fan);
+      el('circle', { cx: f.x, cy: f.y, r: 0.7, class: 'fp__fan-grip' }, fan);
+    }
 
     // Gaps around the selected piece, drawn as dimension lines.
     if (selected >= 0 && items[selected]) {
@@ -887,6 +899,13 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
   };
   svg.addEventListener('pointerdown', (e) => {
     const g = e.target.closest('[data-i]');
+    if (!g && e.target.closest('[data-fan]')) {
+      const p = toPlan(e), f = room().fan;
+      drag = { fan: true, dx: p.x - f.x, dy: p.y - f.y };
+      svg.setPointerCapture(e.pointerId);
+      e.preventDefault();
+      return;
+    }
     if (!g) return;
     selected = +g.dataset.i;
     const p = toPlan(e), a = items[selected];
@@ -895,7 +914,17 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
     e.preventDefault();
     render();
   });
+  const moveFan = (x, y) => {
+    const r = room();
+    fanPos = { x: Math.min(r.w, Math.max(0, snap(x))), y: Math.min(r.l, Math.max(0, snap(y))) };
+    render();
+  };
   svg.addEventListener('pointermove', (e) => {
+    if (drag && drag.fan) {
+      const p = toPlan(e), f = room().fan;
+      if (snap(p.x - drag.dx) !== f.x || snap(p.y - drag.dy) !== f.y) moveFan(p.x - drag.dx, p.y - drag.dy);
+      return;
+    }
     if (!drag || selected < 0) return;
     const p = toPlan(e), a = items[selected], r = room();
     const x = Math.min(r.w - a.w + 2, Math.max(-2, snap(p.x - drag.dx)));
@@ -903,7 +932,8 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
     if (x !== a.x || y !== a.y) { a.x = x; a.y = y; render(); }
   });
   const endDrag = () => {
-    if (drag && selected >= 0) say(describe(selected));
+    if (drag && drag.fan) say(fanSay(room().fan));
+    else if (drag && selected >= 0) say(describe(selected));
     drag = null;
   };
   svg.addEventListener('pointerup', endDrag);
@@ -911,10 +941,20 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
 
   // Keyboard.
   svg.addEventListener('keydown', (e) => {
+    const step = e.shiftKey ? 2 : SNAP;
+    const moves = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] };
+    if (e.target.closest('[data-fan]')) {
+      if (!moves[e.key]) return;
+      e.preventDefault();
+      const f = room().fan;
+      moveFan(f.x + moves[e.key][0], f.y + moves[e.key][1]);
+      svg.querySelector('[data-fan]').focus({ preventScroll: true });
+      say(fanSay(room().fan));
+      return;
+    }
     const g = e.target.closest('[data-i]');
     if (!g) return;
-    const i = +g.dataset.i, a = items[i], step = e.shiftKey ? 2 : SNAP;
-    const moves = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] };
+    const i = +g.dataset.i, a = items[i];
     selected = i;
     if (moves[e.key]) {
       e.preventDefault();
@@ -958,7 +998,7 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
   $('fp-suggest').addEventListener('click', () => {
     const r = room(), d = door(), dr = { x: Math.min(d.x, r.w - d.w), w: d.w };
     const kind = Fit.TYPES.find((t) => t.id === type.value);
-    const key = `${kind.id} ${r.w} ${r.l} ${r.h} ${r.fan} ${dr.x} ${dr.w}`;
+    const key = `${kind.id} ${r.w} ${r.l} ${r.h} ${r.fan && `${r.fan.x},${r.fan.y}`} ${dr.x} ${dr.w}`;
     if (key !== ideaFor) { ideas = Fit.suggest(kind.id, r, dr); idea = -1; ideaFor = key; }
     const bed = { 'kids-bunk': 'Bunk bed', 'kids-loft': 'Loft bed', 'kids-loft-robe': 'Loft bed' }[kind.id];
     if (bed && r.h < Fit.ceilingFor(bed)) {
@@ -966,7 +1006,7 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
       return;
     }
     if (bed && !ideas.length && r.fan && Fit.suggest(kind.id, { ...r, fan: false }, dr).length) {
-      say(`Every place a ${bed.toLowerCase()} fits in this room is within a foot of the ceiling fan's blades, which a child on the top bed could reach. Choose a single or trundle bed, or, if the fan point in your room can be moved off the middle, untick the fan and plan the bed where the new point will be clear of it.`);
+      say(`Every place a ${bed.toLowerCase()} fits in this room is within a foot of the ceiling fan's blades, which a child on the top bed could reach. Choose a single or trundle bed, or, if the fan point in your room is somewhere else, drag the fan there on the plan and try again.`);
       return;
     }
     if (!ideas.length) {
