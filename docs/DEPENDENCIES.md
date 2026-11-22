@@ -9,6 +9,7 @@ Every dependency is code somebody else wrote and nobody here will read. Each one
 | `@emailjs/browser` via `cdn.jsdelivr.net` | `3.12.1` | Sends the enquiry and the auto-reply without a backend | Exact version **and** an SRI hash | Executes in the page with access to the form, but tampered bytes fail closed — see `docs/THREAT.md` |
 | Google Fonts — Fraunces, Inter | unversioned CSS endpoint | The two typefaces the design is built on | No | Visitor IP and user agent reach Google. Blocked or slow, fallback fonts render and layout holds |
 | Google Maps embed | iframe, contact page | Shows the studio's verified business listing | No | `loading="lazy"` and `referrerpolicy="strict-origin-when-cross-origin"`; blocked, an empty box |
+| Cloudflare Web Analytics beacon | unversioned, `static.cloudflareinsights.com` | Cookieless visit count for every visitor (D-028) | No, and no SRI: Cloudflare updates it in place | Runs in every page, the contact form included; blocked, the count just misses that visit |
 | `cloudflare-dns.com` DNS-over-HTTPS | — | MX/A lookup for a typed email domain | No | Fails open after a 4-second timeout |
 | `formsubmit.co` | — | Fallback form target while EmailJS is unconfigured | No | Receives the full enquiry on the fallback path only |
 | `wa.me` | — | WhatsApp deep links | No | Outbound link only; `rel="noopener"` |

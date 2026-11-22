@@ -46,6 +46,7 @@ Who could behave badly, what they can reach, and what stops them. Known gaps are
 | EmailJS | The full enquiry, both sends | It is the delivery mechanism; this is its purpose |
 | FormSubmit | The full enquiry, on the fallback path only | Same, and it is the degraded path, not the normal one |
 | Cloudflare DNS | The domain part of a typed email | Documented above |
+| Cloudflare Web Analytics | Page address, referrer, user agent, load timings and IP, on every page | Cookieless and identifier-free. Its script runs in the page unpinned and without SRI, so it could in principle read the form; accepted as the cost of counting the visitors who never press Accept. Disclosed in `/privacy/` |
 | Google Fonts | Visitor IP and user agent | Standard web-font cost; no consent banner exists because nothing is stored |
 | Google Maps (iframe, contact page) | Visitor IP, and the referrer | `referrerpolicy="strict-origin-when-cross-origin"` limits the referrer to the origin; `loading="lazy"` means it is not contacted until scrolled to |
 

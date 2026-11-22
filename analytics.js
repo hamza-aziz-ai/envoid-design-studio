@@ -1,4 +1,5 @@
-// Google Analytics 4, and only with the visitor's consent.
+// Google Analytics 4, and only with the visitor's consent. Plus Cloudflare's
+// cookieless visit count, which needs none (below).
 //
 // Consent Mode v2, basic implementation: until a visitor presses Accept,
 // nothing from Google loads, no request is made and no cookie is set. Decline
@@ -31,6 +32,17 @@
     history.replaceState(null, '', location.pathname + (rest ? `?${rest}` : '') + location.hash);
   }
   const internal = (() => { try { return localStorage.getItem(INTERNAL) === '1'; } catch { return false; } })();
+
+  // Cloudflare Web Analytics: a plain visit count with no cookie, no browser
+  // storage and no identifier, so it needs no consent and runs for everyone
+  // except the studio's own devices. Classic script, not a module: the beacon
+  // finds its token through document.currentScript.
+  if (!internal) {
+    const cf = document.createElement('script');
+    cf.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+    cf.dataset.cfBeacon = '{"token": "e48710685f964756a7954895aee966d8"}';
+    document.head.append(cf);
+  }
 
   window.dataLayer = window.dataLayer || [];
   function gtag() { window.dataLayer.push(arguments); } // eslint-disable-line prefer-rest-params
@@ -83,7 +95,7 @@
     banner.setAttribute('role', 'region');
     banner.setAttribute('aria-label', 'Cookie consent');
     const p = document.createElement('p');
-    p.textContent = 'May we use Google Analytics to see which pages and tools people use? It sets cookies and sends usage data to Google. Nothing is collected unless you accept.';
+    p.textContent = 'May we use Google Analytics to see which pages and tools people use? It sets cookies and sends usage data to Google. Google Analytics collects nothing unless you accept.';
     // In the button row, not the sentence: links here are never underlined,
     // and a bare coloured link inside text fails link-in-text-block.
     const more = document.createElement('a');

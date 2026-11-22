@@ -39,6 +39,8 @@ Visitor
   ├─ fonts.googleapis.com / fonts.gstatic.com   (stylesheet + font files)
   ├─ www.google.com/maps/embed                  (iframe, contact page only)
   ├─ cdn.jsdelivr.net                           (EmailJS browser SDK 3.12.1)
+  ├─ static.cloudflareinsights.com             (cookieless visit counter, every page)
+  ├─ www.googletagmanager.com                   (Google Analytics, only after Accept)
   │
   └─ enquiry form
        ├─ cloudflare-dns.com/dns-query   MX/A lookup for the typed email domain
