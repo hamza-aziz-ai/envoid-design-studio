@@ -478,6 +478,7 @@ a{color:inherit;text-decoration:none;transition:color .3s var(--ease)}
 .fp__item.is-on rect{fill:#d9b98a;stroke-width:2.5px}
 .fp__item:focus-visible rect{stroke:var(--brass-ink);stroke-width:4px}
 .fp__item.is-bad rect{fill:#f1c4bd;stroke:#a3352c}
+.fp__item rect.fp__out{fill:rgba(233,220,198,.5);stroke-dasharray:4 3}
 .fp__dims line{stroke:var(--brass-ink);stroke-width:1px;stroke-dasharray:3 3;vector-effect:non-scaling-stroke}
 .fp__dims text{font:700 .75px Inter,sans-serif;fill:var(--brass-ink)}
 #fp-catalogue .play__btn{letter-spacing:.06em;text-transform:none;font-size:13px}

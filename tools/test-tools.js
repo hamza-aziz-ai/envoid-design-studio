@@ -111,7 +111,7 @@ assert.ok(Fit.CATALOGUE.every((c) => c.w > 0 && c.d > 0 && c.name), 'every catal
 
 // Suggested layouts: every one offered, across many rooms and door positions,
 // passes the hand-placed checks and keeps its clear zones, and has its key pieces.
-const need = { bedroom: [/bed$/i, /wardrobe/i], living: [/sofa/i, /tv/i], 'living-dining': [/sofa/i, /tv/i, /dining/i], kids: [/single bed/i, /wardrobe/i, /desk/i], 'kids-twin': [/single bed/i, /wardrobe/i], 'kids-bunk': [/bunk bed/i, /wardrobe/i, /desk/i], 'kids-loft': [/loft bed/i, /wardrobe/i], 'kids-trundle': [/trundle bed/i, /wardrobe/i, /desk/i], kitchen: [/fridge/i, /sink/i, /hob/i] };
+const need = { bedroom: [/bed$/i, /wardrobe/i], living: [/sofa/i, /tv/i], 'living-dining': [/sofa/i, /tv/i, /dining/i], kids: [/single bed/i, /wardrobe/i, /desk/i], 'kids-twin': [/single bed/i, /wardrobe/i], 'kids-bunk': [/bunk bed/i, /wardrobe/i, /desk/i], 'kids-loft': [/loft bed/i, /wardrobe/i], 'kids-loft-robe': [/loft bed with wardrobe/i, /desk/i], 'kids-trundle': [/trundle bed/i, /wardrobe/i, /desk/i], kitchen: [/fridge/i, /sink/i, /hob/i] };
 const centre = (a) => [a.x + a.w / 2, a.y + a.d / 2];
 let offered = 0;
 for (const { id } of Fit.TYPES) {
@@ -130,13 +130,20 @@ for (const { id } of Fit.TYPES) {
       if (id === 'kids-twin') assert.equal(L.items.filter((a) => a.id === 'single').length, 2, `twin beds: ${L.text}`);
       if (id === 'kids-trundle') assert.ok(L.zones.some((z) => z.owner === 0 && Math.min(z.r.w, z.r.d) === 3), `no room to pull the trundle out: ${L.text}`);
       if (id === 'kids-loft') assert.ok(!L.items.some((a) => a.id === 'desk'), 'a loft bed has its desk built in');
-      if (['kids', 'kids-bunk', 'kids-loft', 'kids-trundle'].includes(id)) assert.ok(L.zones.some((z) => z.owner === -1 && z.r.w === 4 && z.r.d === 4), 'a kids room keeps 4 by 4 ft to play');
+      if (id === 'kids-loft-robe') assert.ok(!L.items.some((a) => /^wardrobe/.test(a.id)), 'a loft bed with a wardrobe needs no other');
+      if (id === 'kids-trundle') assert.ok(Fit.valid({ ...L, items: L.items.map((a) => (a.id === 'trundle' ? { ...a, out: true } : a)) }, r, d), `the trundle cannot be pulled out: ${L.text}`);
+      if (['kids', 'kids-bunk', 'kids-loft', 'kids-loft-robe', 'kids-trundle'].includes(id)) assert.ok(L.zones.some((z) => z.owner === -1 && z.r.w === 4 && z.r.d === 4), 'a kids room keeps 4 by 4 ft to play');
       if (id === 'living' || id === 'living-dining') { const s = L.items[0], t = L.items[1]; assert.ok(Math.abs((s.x + s.w / 2) - (t.x + t.w / 2)) <= 1 || Math.abs((s.y + s.d / 2) - (t.y + t.d / 2)) <= 1, `TV not square to the sofa: ${L.text}`); }
       for (const re of need[id]) assert.ok(L.items.some((a) => re.test(a.name)), `${id} layout lacks ${re}: ${L.text}`);
     }
   }
 }
-assert.ok(offered > 1600, `too few layouts offered: ${offered}`);
+assert.ok(offered > 1900, `too few layouts offered: ${offered}`);
+// A pulled-out trundle takes the floor beside its bed; pushed in, it does not.
+const tb = { id: 'trundle', name: 'Trundle bed', w: 6.5, d: 3, x: 0, y: 0, back: 'top' }, nearDesk = { name: 'Study desk', w: 4, d: 2, x: 1, y: 4 };
+assert.ok(!Fit.problems([tb, nearDesk], room, door)[1].overlaps, 'a trundle pushed in leaves the floor free');
+assert.ok(Fit.problems([{ ...tb, out: true }, nearDesk], room, door)[1].overlaps, 'a pulled-out trundle takes the floor beside the bed');
+assert.ok(Fit.problems([{ ...tb, out: true, x: 0, y: 11 }], room, door)[0].outside, 'a trundle pulled out through a wall is caught');
 assert.ok(Fit.suggest('kids-loft', { w: 9, l: 10 }, door).length >= 2, 'a 9 by 10 room takes a loft bed');
 assert.ok(Fit.suggest('kids-twin', { w: 10, l: 11 }, door).length >= 2, 'a 10 by 11 room takes twin beds two ways');
 assert.ok(Fit.suggest('kids-bunk', { w: 9, l: 10 }, door).length >= 1, 'a 9 by 10 room takes a bunk bed');

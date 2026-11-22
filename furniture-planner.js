@@ -12,6 +12,7 @@ const Fit = (() => {
     { id: 'single', name: 'Single bed', w: 3, d: 6.5 },
     { id: 'bunk', name: 'Bunk bed', w: 3, d: 6.5 },
     { id: 'loft', name: 'Loft bed with desk', w: 3, d: 6.5 },
+    { id: 'loft-robe', name: 'Loft bed with wardrobe', w: 3, d: 6.5 },
     { id: 'trundle', name: 'Trundle bed', w: 3, d: 6.5 },
     { id: 'bedside', name: 'Bedside table', w: 1.5, d: 1.5 },
     { id: 'wardrobe2', name: 'Wardrobe, 2-door', w: 3, d: 2 },
@@ -58,12 +59,18 @@ const Fit = (() => {
     return Math.hypot(px - hx, py - hy) < door.w;
   };
 
+  // A trundle pulled out (`out`) takes the floor along its bed's open side, the
+  // side away from the wall it backs onto, so it is checked like a piece too.
+  const TRUNDLE_OUT = 2.75;
+  const pulledOut = (a) => front({ ...a, back: a.back || (a.w >= a.d ? 'top' : 'left') }, TRUNDLE_OUT);
+  const feet = (a) => (a.out ? [a, pulledOut(a)] : [a]);
+
   // A piece is in trouble if it crosses a wall, overlaps another, or blocks the door.
   const problems = (items, room, door) =>
     items.map((a, i) => ({
-      outside: !inside(a, room),
-      overlaps: items.some((b, j) => j !== i && overlap(a, b)),
-      door: blocksDoor(a, room, door),
+      outside: !feet(a).every((f) => inside(f, room)),
+      overlaps: items.some((b, j) => j !== i && feet(a).some((f) => feet(b).some((g) => overlap(f, g)))),
+      door: feet(a).some((f) => blocksDoor(f, room, door)),
     }));
 
   // ---- suggested layouts -----------------------------------------------------
@@ -84,6 +91,7 @@ const Fit = (() => {
     { id: 'kids-twin', name: 'Kids’ room, twin beds' },
     { id: 'kids-bunk', name: 'Kids’ room, bunk bed' },
     { id: 'kids-loft', name: 'Kids’ room, loft bed with desk' },
+    { id: 'kids-loft-robe', name: 'Kids’ room, loft bed with wardrobe' },
     { id: 'kids-trundle', name: 'Kids’ room, trundle bed' },
     { id: 'kitchen', name: 'Kitchen' },
   ];
@@ -237,16 +245,17 @@ const Fit = (() => {
     return null;
   };
   // Wardrobe, desk and play space, after the beds. With one bed all three are
-  // required; twin beds take most of a small room's floor, so there only the
+  // required, less whichever a loft bed has built in (`built`: 'desk' or
+  // 'robe'); twin beds take most of a small room's floor, so there only the
   // wardrobe is, and the desk and play space come if they fit.
-  const kidsRest = (L, room, door, strict, withDesk = true) => {
-    const robe = first(L, room, door, ['wardrobe4', 'wardrobe2'], (c) => along(c, WALLS, room, 'corner'), (a) => [{ r: front(a, 2.5) }]);
-    if (!robe) return null;
-    const desk = withDesk && tryAdd(L, room, door, along(byId('desk'), WALLS, room, 'corner'), (a) => [{ r: front(a, 2.5) }]);
-    if (strict && withDesk && !desk) return null;
+  const kidsRest = (L, room, door, strict, built = null) => {
+    const robe = built !== 'robe' && first(L, room, door, ['wardrobe4', 'wardrobe2'], (c) => along(c, WALLS, room, 'corner'), (a) => [{ r: front(a, 2.5) }]);
+    if (built !== 'robe' && !robe) return null;
+    const desk = built !== 'desk' && tryAdd(L, room, door, along(byId('desk'), WALLS, room, 'corner'), (a) => [{ r: front(a, 2.5) }]);
+    if (strict && built !== 'desk' && !desk) return null;
     const play = playSpace(L, room, door);
     if (strict && !play) return null;
-    return [`${short(robe)} on ${WALL_NAME[robe.back]}`, desk && `desk on ${WALL_NAME[desk.back]}`, play && 'and 4 by 4 ft of clear floor to play on'].filter(Boolean).join(', ');
+    return [robe && `${short(robe)} on ${WALL_NAME[robe.back]}`, desk && `desk on ${WALL_NAME[desk.back]}`, play && 'and 4 by 4 ft of clear floor to play on'].filter(Boolean).join(', ');
   };
   // A bed lengthwise against a wall, in the corner at its start (t = 0) or end.
   const cornerBed = (id, wall, t, room) => {
@@ -256,21 +265,26 @@ const Fit = (() => {
   const corners = (id, wall, room) => { const span = wallLen(wall, room) - byId(id).d; return span < 0 ? [] : span === 0 ? [0] : [0, span]; };
 
   // One bed in a corner, with clear floor along its open side: 2 ft for a
-  // single or bunk bed, 2.5 ft for the chair at a loft bed's built-in desk
-  // (so no separate desk), 3 ft for a trundle to pull out into.
+  // single or bunk bed, 2.5 ft for the chair at a loft bed's built-in desk or
+  // the doors of its built-in wardrobe (so no separate one), 3 ft for a
+  // trundle to pull out into.
   const KID_BED = {
     single: { clear: 2, say: 'single bed' },
     bunk: { clear: 2, say: 'bunk bed' },
-    loft: { clear: 2.5, say: 'loft bed with a desk under it', builtInDesk: true },
+    loft: { clear: 2.5, say: 'loft bed with a desk under it', built: 'desk' },
+    'loft-robe': { clear: 2.5, say: 'loft bed with a wardrobe under it', built: 'robe' },
     trundle: { clear: 3, say: 'trundle bed', note: ', with 3 ft clear beside it to pull the trundle out' },
   };
   const kids = (wall, room, door, id) => {
     const k = KID_BED[id];
     for (const t of corners(id, wall, room)) {
       const L = { items: [], zones: [] };
-      if (!tryAdd(L, room, door, [cornerBed(id, wall, t, room)], (a) => [{ r: front(a, k.clear) }])) continue;
-      const rest = kidsRest(L, room, door, true, !k.builtInDesk);
-      if (rest) return { ...L, text: `${k.say} in a corner of ${WALL_NAME[wall]}${k.note || ''}, ${rest}` };
+      // A trundle is laid out pulled out, so the door and every other check see
+      // the floor it takes, then handed over pushed in.
+      const bed = { ...cornerBed(id, wall, t, room), ...(id === 'trundle' && { out: true }) };
+      if (!tryAdd(L, room, door, [bed], (a) => [{ r: front(a, k.clear) }])) continue;
+      const rest = kidsRest(L, room, door, true, k.built);
+      if (rest) return { ...L, items: L.items.map(({ out, ...a }) => a), text: `${k.say} in a corner of ${WALL_NAME[wall]}${k.note || ''}, ${rest}` };
     }
     return null;
   };
@@ -405,7 +419,7 @@ const Fit = (() => {
   // Up to one layout per wall the main piece can stand on (one per shape for a kitchen).
   const suggest = (type, room, door) => (type === 'kitchen' ? kitchens(room, door) : WALLS.flatMap((wall) => {
     if (type === 'bedroom') return [bedroom(wall, room, door)];
-    const kid = { kids: 'single', 'kids-bunk': 'bunk', 'kids-loft': 'loft', 'kids-trundle': 'trundle' }[type];
+    const kid = { kids: 'single', 'kids-bunk': 'bunk', 'kids-loft': 'loft', 'kids-loft-robe': 'loft-robe', 'kids-trundle': 'trundle' }[type];
     if (kid) return [kids(wall, room, door, kid)];
     if (type === 'kids-twin') return twin(wall, room, door);
     return [living(wall, room, door, type === 'living-dining')];
@@ -413,7 +427,7 @@ const Fit = (() => {
     .filter(Boolean)
     .map((L) => ({ ...L, text: L.text.charAt(0).toUpperCase() + L.text.slice(1) }));
 
-  return { CATALOGUE, TYPES, overlap, inside, gaps, blocksDoor, problems, suggest, valid };
+  return { CATALOGUE, TYPES, overlap, inside, gaps, blocksDoor, problems, suggest, valid, pulledOut };
 })();
 if (typeof module === 'object' && module.exports) module.exports = Fit;
 
@@ -526,9 +540,10 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
       const g = el('g', {
         class: `fp__item${bad ? ' is-bad' : ''}${i === selected ? ' is-on' : ''}`,
         tabindex: 0, role: 'button', 'data-i': i,
-        'aria-label': `${describe(i)}${t.outside ? ' Crosses a wall.' : ''}${t.overlaps ? ' Overlaps another piece.' : ''}${t.door ? ' Blocks the door.' : ''} Arrow keys move it, R turns it, Delete removes it.`,
+        'aria-label': `${describe(i)}${t.outside ? ' Crosses a wall.' : ''}${t.overlaps ? ' Overlaps another piece.' : ''}${t.door ? ' Blocks the door.' : ''}${a.out ? ' Trundle pulled out.' : ''} Arrow keys move it, R turns it, Delete removes it.`,
       }, svg);
       el('rect', { x: a.x, y: a.y, width: a.w, height: a.d }, g);
+      if (a.out) { const o = Fit.pulledOut(a); el('rect', { x: o.x, y: o.y, width: o.w, height: o.d, class: 'fp__out' }, g); }
       // Label: the full name if it fits across the piece, else its first word,
       // shrunk until it does. 0.56 is roughly Inter's average glyph width.
       let text = a.name.split(',')[0];
@@ -566,6 +581,9 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
     $('o-issues').textContent = issues ? `${issues} piece${issues > 1 ? 's' : ''} to fix` : items.length ? 'Everything fits' : 'Add some furniture';
     $('fp-issues').dataset.tone = issues ? 'bad' : 'good';
     $('fp-rotate').disabled = $('fp-remove').disabled = selected < 0;
+    const sel = items[selected], tr = $('fp-trundle');
+    tr.hidden = !(sel && /trundle/i.test(sel.name));
+    if (!tr.hidden) tr.textContent = sel.out ? 'Push the trundle in' : 'Pull the trundle out';
     svg.setAttribute('aria-label', `Plan of a ${fmt(r.w)} by ${fmt(r.l)} foot room with ${items.length} piece${items.length === 1 ? '' : 's'} of furniture.`);
     draw3d(r, doorNow, trouble, issues);
   }
@@ -575,6 +593,7 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
   // pillows, sofas with back and arms, full-height wardrobes, tables on legs.
   // A piece with a problem gets a red outline, the selected one a brass one.
   let p3 = null, g3 = null, M = null, floorKey = '';
+  const TRUNDLE_3D = 2.75; // as Fit's pulled-out trundle
   const WALL_H = 9;
 
   function model(a, parent) {
@@ -619,13 +638,17 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
         return 5.8;
       }
       if (id.includes('loft')) {
-        // The bed at 5 ft, and a desk against the wall underneath it.
+        // The bed at 5 ft, and a desk or a wardrobe against the wall underneath.
         posts(6.4);
         deck(4.6);
         part(headEnd, ladder(6.1), depth - 0.12, depth, 5.95, 6.1, M.frame);
-        const deskEnd = headEnd - toHead * 4.2;
-        part(headEnd - toHead * 0.2, deskEnd, 0, 2, 2.4, 2.52, M.top, 0.03);
-        part(deskEnd, deskEnd + toHead * 0.1, 0, 2, 0, 2.4, M.cabinet);
+        const end = headEnd - toHead * 4.2;
+        if (id.includes('wardrobe')) {
+          part(headEnd - toHead * 0.2, end, 0, 2, 0, 4.4, M.cabinet, 0.03);
+        } else {
+          part(headEnd - toHead * 0.2, end, 0, 2, 2.4, 2.52, M.top, 0.03);
+          part(end, end + toHead * 0.1, 0, 2, 0, 2.4, M.cabinet);
+        }
         return 6.4;
       }
       // Trundle: a bed with a second one in a low drawer on the open side.
@@ -633,7 +656,13 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
       part(u0 + 0.12, u1 - 0.12, 0.12, depth - 0.12, 1.2, 1.8, M.mattress, 0.15);
       part(headEnd, headEnd - toHead * 0.3, 0, depth, 0, 3.3, M.head, 0.08);
       part(headEnd - toHead * 0.45, headEnd - toHead * 1.6, 0.4, depth - 0.4, 1.8, 2.2, M.mattress, 0.15);
-      part(u0 + 0.3, u1 - 0.3, depth - 0.1, depth, 0.08, 0.5, M.cabinet, 0.03);
+      if (a.out) {
+        // Pulled out: the second bed on its low frame beside the first.
+        part(u0 + 0.3, u1 - 0.3, depth, depth + TRUNDLE_3D, 0.08, 0.5, M.cabinet, 0.03);
+        part(u0 + 0.4, u1 - 0.4, depth + 0.1, depth + TRUNDLE_3D - 0.1, 0.5, 0.95, M.mattress, 0.12);
+      } else {
+        part(u0 + 0.3, u1 - 0.3, depth - 0.1, depth, 0.08, 0.5, M.cabinet, 0.03);
+      }
       return 3.3;
     }
     if (id.includes('bed') && !id.includes('bedside')) {
@@ -854,6 +883,13 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
 
   $('fp-rotate').addEventListener('click', () => { if (selected >= 0) { rotate(selected); render(); say(describe(selected)); } });
   $('fp-remove').addEventListener('click', () => { if (selected >= 0) remove(selected); });
+  $('fp-trundle').addEventListener('click', () => {
+    const a = items[selected];
+    if (!a) return;
+    a.out = !a.out;
+    render();
+    say(a.out ? `Trundle pulled out: it takes 2¾ ft beside the bed, and anything in that space turns red.` : 'Trundle pushed back in.');
+  });
   $('fp-clear').addEventListener('click', () => { items = []; selected = -1; render(); say('Room cleared.'); });
   $('fp-room').addEventListener('input', render);
 
