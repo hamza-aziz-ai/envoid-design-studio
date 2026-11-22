@@ -34,10 +34,13 @@ const Fit = (() => {
   const overlap = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.d && b.y < a.y + a.d;
   const inside = (a, room) => a.x >= 0 && a.y >= 0 && a.x + a.w <= room.w && a.y + a.d <= room.l;
 
-  // Clear distance from a piece to the nearest wall or piece facing it on each side.
-  const gaps = (a, others, room) => {
+  // Clear distance from a piece to the nearest wall or piece facing it on each
+  // side. A bed with its trundle pulled out measures from the pair, and a
+  // pulled-out trundle elsewhere counts as an obstacle.
+  const gaps = (piece, others, room) => {
+    const a = extent(piece);
     const g = { left: a.x, right: room.w - (a.x + a.w), top: a.y, bottom: room.l - (a.y + a.d) };
-    for (const b of others) {
+    for (const b of others.flatMap(feet)) {
       if (a.y < b.y + b.d && b.y < a.y + a.d) { // side by side
         if (b.x + b.w <= a.x) g.left = Math.min(g.left, a.x - (b.x + b.w));
         if (b.x >= a.x + a.w) g.right = Math.min(g.right, b.x - (a.x + a.w));
@@ -64,6 +67,11 @@ const Fit = (() => {
   const TRUNDLE_OUT = 2.75;
   const pulledOut = (a) => front({ ...a, back: a.back || (a.w >= a.d ? 'top' : 'left') }, TRUNDLE_OUT);
   const feet = (a) => (a.out ? [a, pulledOut(a)] : [a]);
+  // The floor a piece takes, as one rectangle (a bed and its pulled-out trundle side by side).
+  const extent = (a) => {
+    const f = feet(a), x = Math.min(...f.map((r) => r.x)), y = Math.min(...f.map((r) => r.y));
+    return { x, y, w: Math.max(...f.map((r) => r.x + r.w)) - x, d: Math.max(...f.map((r) => r.y + r.d)) - y };
+  };
 
   // A piece is in trouble if it crosses a wall, overlaps another, or blocks the door.
   const problems = (items, room, door) =>
@@ -427,7 +435,7 @@ const Fit = (() => {
     .filter(Boolean)
     .map((L) => ({ ...L, text: L.text.charAt(0).toUpperCase() + L.text.slice(1) }));
 
-  return { CATALOGUE, TYPES, overlap, inside, gaps, blocksDoor, problems, suggest, valid, pulledOut };
+  return { CATALOGUE, TYPES, overlap, inside, gaps, blocksDoor, problems, suggest, valid, pulledOut, extent };
 })();
 if (typeof module === 'object' && module.exports) module.exports = Fit;
 
@@ -555,8 +563,8 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
 
     // Gaps around the selected piece, drawn as dimension lines.
     if (selected >= 0 && items[selected]) {
-      const a = items[selected];
-      const gp = gaps(a, items.filter((_, j) => j !== selected), r);
+      const a = Fit.extent(items[selected]);
+      const gp = gaps(items[selected], items.filter((_, j) => j !== selected), r);
       const dim = el('g', { class: 'fp__dims', 'aria-hidden': 'true' }, svg);
       const cx = a.x + a.w / 2, cy = a.y + a.d / 2;
       const line = (x1, y1, x2, y2, v, tx, ty) => {

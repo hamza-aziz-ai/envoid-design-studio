@@ -144,6 +144,13 @@ const tb = { id: 'trundle', name: 'Trundle bed', w: 6.5, d: 3, x: 0, y: 0, back:
 assert.ok(!Fit.problems([tb, nearDesk], room, door)[1].overlaps, 'a trundle pushed in leaves the floor free');
 assert.ok(Fit.problems([{ ...tb, out: true }, nearDesk], room, door)[1].overlaps, 'a pulled-out trundle takes the floor beside the bed');
 assert.ok(Fit.problems([{ ...tb, out: true, x: 0, y: 11 }], room, door)[0].outside, 'a trundle pulled out through a wall is caught');
+// Gaps measure from the bed and its pulled-out trundle together, and a pulled-out
+// trundle is in the way of other pieces' gaps. The 6.5 by 3 bed at the top wall
+// pulls out to y = 5.75; the desk below it starts at y = 9.
+const farDesk = { name: 'Study desk', w: 4, d: 2, x: 1, y: 9 };
+assert.equal(Fit.gaps(tb, [farDesk], room).bottom, 6, 'pushed in: from the bed');
+assert.equal(Fit.gaps({ ...tb, out: true }, [farDesk], room).bottom, 3.25, 'pulled out: from the trundle');
+assert.equal(Fit.gaps(farDesk, [{ ...tb, out: true }], room).top, 3.25, 'a pulled-out trundle is an obstacle');
 assert.ok(Fit.suggest('kids-loft', { w: 9, l: 10 }, door).length >= 2, 'a 9 by 10 room takes a loft bed');
 assert.ok(Fit.suggest('kids-twin', { w: 10, l: 11 }, door).length >= 2, 'a 10 by 11 room takes twin beds two ways');
 assert.ok(Fit.suggest('kids-bunk', { w: 9, l: 10 }, door).length >= 1, 'a 9 by 10 room takes a bunk bed');
