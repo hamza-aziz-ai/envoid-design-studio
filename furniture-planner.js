@@ -35,22 +35,32 @@ const Fit = (() => {
   const inside = (a, room) => a.x >= 0 && a.y >= 0 && a.x + a.w <= room.w && a.y + a.d <= room.l;
 
   // Clear distance from a piece to the nearest wall or piece facing it on each
-  // side. A bed with its trundle pulled out measures from the pair, and a
-  // pulled-out trundle elsewhere counts as an obstacle.
-  const gaps = (piece, others, room) => {
-    const a = extent(piece);
-    const g = { left: a.x, right: room.w - (a.x + a.w), top: a.y, bottom: room.l - (a.y + a.d) };
+  // side, and where along that side to draw it: through the middle of the
+  // stretch the two pieces share, or the middle of the piece for a wall. A bed
+  // with its trundle pulled out measures from the pair, and a pulled-out
+  // trundle elsewhere counts as an obstacle.
+  const gapsAt = (piece, others, room) => {
+    const a = extent(piece), cx = a.x + a.w / 2, cy = a.y + a.d / 2;
+    const g = { left: { v: a.x, at: cy }, right: { v: room.w - (a.x + a.w), at: cy }, top: { v: a.y, at: cx }, bottom: { v: room.l - (a.y + a.d), at: cx } };
+    const take = (side, v, at) => { if (v < g[side].v) g[side] = { v, at }; };
+    const mid = (p0, p1, q0, q1) => (Math.max(p0, q0) + Math.min(p1, q1)) / 2;
     for (const b of others.flatMap(feet)) {
       if (a.y < b.y + b.d && b.y < a.y + a.d) { // side by side
-        if (b.x + b.w <= a.x) g.left = Math.min(g.left, a.x - (b.x + b.w));
-        if (b.x >= a.x + a.w) g.right = Math.min(g.right, b.x - (a.x + a.w));
+        const at = mid(a.y, a.y + a.d, b.y, b.y + b.d);
+        if (b.x + b.w <= a.x) take('left', a.x - (b.x + b.w), at);
+        if (b.x >= a.x + a.w) take('right', b.x - (a.x + a.w), at);
       }
       if (a.x < b.x + b.w && b.x < a.x + a.w) { // one in front of the other
-        if (b.y + b.d <= a.y) g.top = Math.min(g.top, a.y - (b.y + b.d));
-        if (b.y >= a.y + a.d) g.bottom = Math.min(g.bottom, b.y - (a.y + a.d));
+        const at = mid(a.x, a.x + a.w, b.x, b.x + b.w);
+        if (b.y + b.d <= a.y) take('top', a.y - (b.y + b.d), at);
+        if (b.y >= a.y + a.d) take('bottom', b.y - (a.y + a.d), at);
       }
     }
     return g;
+  };
+  const gaps = (piece, others, room) => {
+    const g = gapsAt(piece, others, room);
+    return { left: g.left.v, right: g.right.v, top: g.top.v, bottom: g.bottom.v };
   };
 
   // The door is in the bottom wall, hinged at `door.x`, swinging into the room
@@ -435,7 +445,7 @@ const Fit = (() => {
     .filter(Boolean)
     .map((L) => ({ ...L, text: L.text.charAt(0).toUpperCase() + L.text.slice(1) }));
 
-  return { CATALOGUE, TYPES, overlap, inside, gaps, blocksDoor, problems, suggest, valid, pulledOut, extent };
+  return { CATALOGUE, TYPES, overlap, inside, gaps, gapsAt, blocksDoor, problems, suggest, valid, pulledOut, extent };
 })();
 if (typeof module === 'object' && module.exports) module.exports = Fit;
 
@@ -564,18 +574,18 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
     // Gaps around the selected piece, drawn as dimension lines.
     if (selected >= 0 && items[selected]) {
       const a = Fit.extent(items[selected]);
-      const gp = gaps(items[selected], items.filter((_, j) => j !== selected), r);
+      const { left, right, top, bottom } = Fit.gapsAt(items[selected], items.filter((_, j) => j !== selected), r);
       const dim = el('g', { class: 'fp__dims', 'aria-hidden': 'true' }, svg);
-      const cx = a.x + a.w / 2, cy = a.y + a.d / 2;
       const line = (x1, y1, x2, y2, v, tx, ty) => {
         if (v <= 0.05) return;
         el('line', { x1, y1, x2, y2 }, dim);
         el('text', { x: tx, y: ty, 'text-anchor': 'middle' }, dim).textContent = `${fmt(v)}′`;
       };
-      line(a.x - gp.left, cy, a.x, cy, gp.left, a.x - gp.left / 2, cy - 0.3);
-      line(a.x + a.w, cy, a.x + a.w + gp.right, cy, gp.right, a.x + a.w + gp.right / 2, cy - 0.3);
-      line(cx, a.y - gp.top, cx, a.y, gp.top, cx + 0.2, a.y - gp.top / 2 + 0.25);
-      line(cx, a.y + a.d, cx, a.y + a.d + gp.bottom, gp.bottom, cx + 0.2, a.y + a.d + gp.bottom / 2 + 0.25);
+      // Each line runs where the gap is, so it ends on the piece that sets it.
+      line(a.x - left.v, left.at, a.x, left.at, left.v, a.x - left.v / 2, left.at - 0.3);
+      line(a.x + a.w, right.at, a.x + a.w + right.v, right.at, right.v, a.x + a.w + right.v / 2, right.at - 0.3);
+      line(top.at, a.y - top.v, top.at, a.y, top.v, top.at + 0.2, a.y - top.v / 2 + 0.25);
+      line(bottom.at, a.y + a.d, bottom.at, a.y + a.d + bottom.v, bottom.v, bottom.at + 0.2, a.y + a.d + bottom.v / 2 + 0.25);
     }
 
     // Totals.

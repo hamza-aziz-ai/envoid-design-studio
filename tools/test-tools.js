@@ -151,6 +151,13 @@ const farDesk = { name: 'Study desk', w: 4, d: 2, x: 1, y: 9 };
 assert.equal(Fit.gaps(tb, [farDesk], room).bottom, 6, 'pushed in: from the bed');
 assert.equal(Fit.gaps({ ...tb, out: true }, [farDesk], room).bottom, 3.25, 'pulled out: from the trundle');
 assert.equal(Fit.gaps(farDesk, [{ ...tb, out: true }], room).top, 3.25, 'a pulled-out trundle is an obstacle');
+// Gap lines run through the stretch the two pieces share, so they touch the one
+// that sets the gap: a wardrobe from y = 3 to 9 beside the pulled-out pair
+// (y = 0 to 5.75) is met at y = 4.375; a wall gap stays centred on the piece.
+const sideRobe = { name: 'Wardrobe, 4-door', w: 2, d: 6, x: 8, y: 3 };
+const at = Fit.gapsAt({ ...tb, out: true }, [sideRobe], room);
+assert.deepEqual([at.right.v, at.right.at], [1.5, 4.375], 'right gap meets the wardrobe');
+assert.deepEqual([at.left.v, at.left.at], [0, 5.75 / 2], 'a wall gap stays centred');
 assert.ok(Fit.suggest('kids-loft', { w: 9, l: 10 }, door).length >= 2, 'a 9 by 10 room takes a loft bed');
 assert.ok(Fit.suggest('kids-twin', { w: 10, l: 11 }, door).length >= 2, 'a 10 by 11 room takes twin beds two ways');
 assert.ok(Fit.suggest('kids-bunk', { w: 9, l: 10 }, door).length >= 1, 'a 9 by 10 room takes a bunk bed');
