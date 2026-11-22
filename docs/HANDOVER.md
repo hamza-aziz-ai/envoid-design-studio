@@ -72,11 +72,11 @@ Where things stand. Newest entry on top. Read this first; update it last.
 ### Next
 
 1. Submit the live form once and confirm both mails arrive, following the manual path in `docs/TESTING.md`.
-2. **Create the Google Business Profile.** Every field is written out ready to paste in [GOOGLE-BUSINESS-PROFILE.md](GOOGLE-BUSINESS-PROFILE.md), including the five facts that need the studio to confirm them. For "architect in Vaishali" or "interior designer in Indirapuram" the map pack sits above every organic result, and nothing in this repository can compete with it. Verify the Sector 5 address, set the categories to Architect and Interior Designer, add the service areas, post the project photographs that are already in `assets/`, and then ask every past client for a review. This single item outweighs all of the on-page work below it.
+2. **Finish the Google Business Profile.** It exists, is verified and Google rates it 100% complete (22 November 2026): categories, service areas, services, hours, description and the tagged website link are done. What is left needs the studio, as [GOOGLE-BUSINESS-PROFILE.md](GOOGLE-BUSINESS-PROFILE.md) explains: upload the project photographs from `assets/` by hand, a few at a time (Google's uploader cannot be driven from automation); describe or delete the three blank services; decide on the Town/City field and on the name; and ask every past client for a review. Reviews move the map pack more than anything else on this list.
 3. **Supply the facts the pages had to leave out.** Opening hours, a price band, the Instagram handle, and any Council of Architecture registration. Each is a ranking or display signal currently missing from the structured data, and each needs a human to confirm it rather than a model to guess — see `docs/ASSUMPTIONS.md`.
 4. Turn on domain auto-renewal in hPanel.
 5. Confirm the project titles and locations with the studio.
-6. Submit `https://envoiddesign.in/contact/` in Search Console — it is the one URL the daily quota cut off on 2026-11-16. Everything else is submitted. Then leave it alone: expect weeks, not days, before a new domain settles, and resubmitting a URL does not improve its queue position.
+6. ~~Submit `/contact/` in Search Console.~~ Not needed: URL Inspection on 22 November 2026 reports it indexed. Every page is submitted; leave Search Console alone for a few weeks, since resubmitting does not improve queue position.
 7. Build links the honest way: a Google Business Profile, Instagram and a Justdial or IndiaMART listing that all carry the same name, address and phone number, exactly as the site writes them. Inconsistent address formatting across directories is the most common self-inflicted local-SEO wound.
 
 ### Do not touch
