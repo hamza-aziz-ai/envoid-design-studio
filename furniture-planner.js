@@ -21,6 +21,10 @@ const Fit = (() => {
     { id: 'dining4', name: 'Dining table, 4 seats', w: 4, d: 3 },
     { id: 'dining6', name: 'Dining table, 6 seats', w: 6, d: 3 },
     { id: 'desk', name: 'Study desk', w: 4, d: 2 },
+    { id: 'fridge', name: 'Fridge', w: 2.5, d: 2 },
+    { id: 'sink', name: 'Sink unit', w: 2.5, d: 2 },
+    { id: 'hob', name: 'Hob unit', w: 2.5, d: 2 },
+    { id: 'counter', name: 'Counter', w: 2, d: 2 },
   ];
 
   const overlap = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.d && b.y < a.y + a.d;
@@ -73,6 +77,8 @@ const Fit = (() => {
     { id: 'bedroom', name: 'Bedroom' },
     { id: 'living', name: 'Living room' },
     { id: 'living-dining', name: 'Living and dining' },
+    { id: 'kids', name: 'Kids’ room' },
+    { id: 'kitchen', name: 'Kitchen' },
   ];
   const WALLS = ['top', 'left', 'right', 'bottom'];
   const WALL_NAME = { top: 'the far wall', left: 'the left wall', right: 'the right wall', bottom: 'the door wall' };
@@ -213,9 +219,134 @@ const Fit = (() => {
     return null;
   };
 
-  // Up to one layout per wall the main piece can stand on.
-  const suggest = (type, room, door) => WALLS
-    .map((wall) => (type === 'bedroom' ? bedroom(wall, room, door) : living(wall, room, door, type === 'living-dining')))
+  // Kids' room: a single bed lengthwise in a corner, open along one long side
+  // (2 ft clear), a wardrobe and a desk (2.5 ft clear in front of each), and
+  // 4 ft by 4 ft of clear floor to play on, out of the door's swing.
+  const playSpace = (L, room, door) => {
+    for (let y = 0; y + 4 <= room.l; y += STEP) for (let x = 0; x + 4 <= room.w; x += STEP) {
+      const r = rect(x, y, 4, 4);
+      if (!blocksDoor(r, room, door) && L.items.every((a) => !overlap(a, r))) { L.zones.push({ owner: -1, r }); return r; }
+    }
+    return null;
+  };
+  const kids = (wall, room, door) => {
+    const s = byId('single'), lengthwise = { ...s, w: s.d, d: s.w };
+    const span = wallLen(wall, room) - lengthwise.w;
+    for (const t of span < 0 ? [] : [0, span]) {
+      const L = { items: [], zones: [] };
+      const head = t === 0 ? (across(wall) ? 'left' : 'top') : (across(wall) ? 'right' : 'bottom');
+      const bed = tryAdd(L, room, door, [{ ...onWall(lengthwise, wall, t, room), head }], (a) => [{ r: front(a, 2) }]);
+      if (!bed) continue;
+      const robe = first(L, room, door, ['wardrobe4', 'wardrobe2'], (c) => along(c, WALLS, room, 'corner'), (a) => [{ r: front(a, 2.5) }]);
+      const desk = robe && tryAdd(L, room, door, along(byId('desk'), WALLS, room, 'corner'), (a) => [{ r: front(a, 2.5) }]);
+      if (!desk || !playSpace(L, room, door)) continue;
+      return { ...L, text: `single bed in a corner of ${WALL_NAME[wall]}, ${short(robe)} on ${WALL_NAME[robe.back]}, desk on ${WALL_NAME[desk.back]}, and 4 by 4 ft of clear floor to play on` };
+    }
+    return null;
+  };
+
+  // Kitchen: counters 2 ft deep along the chosen walls, a 3.5 ft clear aisle
+  // in front of them, the fridge at an open end of a run, 1.5 ft of counter
+  // each side of the hob and beside the sink and fridge, and the fridge, sink
+  // and hob 4 to 9 ft apart with the three legs 26 ft at most: the usual
+  // work-triangle guideline. One layout per shape, the most compact.
+  const SHAPES = [
+    ['L-shaped', [['top', 'left'], ['top', 'right'], ['bottom', 'left'], ['bottom', 'right']]],
+    ['parallel', [['top', 'bottom'], ['left', 'right']]],
+    ['U-shaped', [['left', 'top', 'right'], ['top', 'right', 'bottom'], ['left', 'bottom', 'right'], ['top', 'left', 'bottom']]],
+    ['straight', [['top'], ['left'], ['right'], ['bottom']]],
+  ];
+  const K = { depth: 2, aisle: 3.5, landing: 1.5, unit: 2.5, legMin: 4, legMax: 9, sumMax: 26 };
+  // Runs of counter, each { wall, t0, t1, open0, open1 } along its wall. The far
+  // and door walls own the corners; an end that meets another run is not open.
+  const runsFor = (walls, room, door) => {
+    const has = (w) => walls.includes(w), runs = [];
+    if (has('bottom') && ((has('left') && door.x < K.depth) || (has('right') && room.w - door.x - door.w < K.depth))) return null;
+    for (const wall of walls) {
+      if (wall === 'top') runs.push({ wall, t0: 0, t1: room.w, open0: !has('left'), open1: !has('right') });
+      if (wall === 'bottom') {
+        runs.push({ wall, t0: 0, t1: door.x, open0: !has('left'), open1: true });
+        runs.push({ wall, t0: door.x + door.w, t1: room.w, open0: true, open1: !has('right') });
+      }
+      if (wall === 'left' || wall === 'right') {
+        const r = { wall, t0: has('top') ? K.depth : 0, t1: has('bottom') ? room.l - K.depth : room.l, open0: !has('top'), open1: !has('bottom') };
+        const x = wall === 'left' ? 0 : room.w - K.depth;
+        while (r.t1 > r.t0 && blocksDoor(rect(x, r.t0, K.depth, r.t1 - r.t0), room, door)) { r.t1 -= STEP; r.open1 = true; }
+        runs.push(r);
+      }
+    }
+    return runs.filter((r) => r.t1 - r.t0 >= K.depth);
+  };
+  const unitAt = (id, run, t, len, room) => {
+    const c = byId(id), a = across(run.wall);
+    return { id, name: c.name, w: a ? len : K.depth, d: a ? K.depth : len,
+      x: a ? t : run.wall === 'left' ? 0 : room.w - K.depth, y: a ? (run.wall === 'top' ? 0 : room.l - K.depth) : t, back: run.wall };
+  };
+  const kitchen = (walls, room, door) => {
+    const runs = runsFor(walls, room, door);
+    if (!runs || !runs.length) return null;
+    // Appliance spots: anywhere along a run outside the corner squares; the
+    // fridge only at an open end.
+    const spot = (r, t) => { const a = unitAt('counter', runs[r], t, K.unit, room); return { r, t0: t, t1: t + K.unit, cx: a.x + a.w / 2, cy: a.y + a.d / 2 }; };
+    const lo = (R) => R.t0 + (across(R.wall) && !R.open0 ? K.depth : 0), hi = (R) => R.t1 - (across(R.wall) && !R.open1 ? K.depth : 0);
+    const free = [], fridges = [];
+    runs.forEach((R, r) => {
+      for (let t = lo(R); t + K.unit <= hi(R) + 1e-9; t += STEP) free.push(spot(r, t));
+      if (R.open0) fridges.push(spot(r, R.t0));
+      if (R.open1 && R.t1 - K.unit >= R.t0) fridges.push(spot(r, R.t1 - K.unit));
+    });
+    const leg = (p, q) => Math.hypot(p.cx - q.cx, p.cy - q.cy);
+    const okLeg = (p, q) => { const d = leg(p, q); return d >= K.legMin && d <= K.legMax; };
+    const clash = (p, q) => p.r === q.r && p.t0 < q.t1 && q.t0 < p.t1;
+    // Counter of at least `landing` beside p on that side, clear of the others.
+    const side = (p, others, dir) => {
+      const R = runs[p.r], a = dir < 0 ? p.t0 - K.landing : p.t1, b = dir < 0 ? p.t0 : p.t1 + K.landing;
+      return a >= R.t0 - 1e-9 && b <= R.t1 + 1e-9 && others.every((q) => q.r !== p.r || q.t1 <= a || q.t0 >= b);
+    };
+    let best = null;
+    for (const f of fridges) for (const s of free) {
+      if (clash(f, s) || !okLeg(f, s)) continue;
+      for (const h of free) {
+        if (clash(h, s) || clash(h, f) || !okLeg(h, s) || !okLeg(h, f)) continue;
+        const sum = leg(f, s) + leg(s, h) + leg(h, f);
+        if (sum > K.sumMax || (best && sum >= best.sum)) continue;
+        if (!(side(h, [f, s], -1) && side(h, [f, s], 1))) continue;
+        if (!(side(s, [f, h], -1) || side(s, [f, h], 1))) continue;
+        if (!(side(f, [s, h], -1) || side(f, [s, h], 1))) continue;
+        best = { f, s, h, sum };
+      }
+    }
+    if (!best) return null;
+    const items = [], zones = [];
+    const placedAt = [[best.f, 'fridge'], [best.s, 'sink'], [best.h, 'hob']];
+    runs.forEach((R, r) => {
+      const mine = placedAt.filter(([p]) => p.r === r).sort((p, q) => p[0].t0 - q[0].t0);
+      let t = R.t0;
+      for (const [p, id] of mine) {
+        if (p.t0 - t > 0.01) items.push(unitAt('counter', R, t, p.t0 - t, room));
+        items.push(unitAt(id, R, p.t0, K.unit, room));
+        t = p.t1;
+      }
+      if (R.t1 - t > 0.01) items.push(unitAt('counter', R, t, R.t1 - t, room));
+      // The aisle in front of the run, short of corner squares another run's aisle covers.
+      const a0 = lo(R), a1 = hi(R);
+      zones.push({ owner: -1, r: front(unitAt('counter', R, a0, a1 - a0, room), K.aisle) });
+    });
+    const L = { items, zones };
+    return valid(L, room, door) ? { ...L, sum: best.sum, legs: [leg(best.f, best.s), leg(best.s, best.h), leg(best.h, best.f)] } : null;
+  };
+  const kitchens = (room, door) => SHAPES.map(([shape, sets]) => {
+    let best = null, on = null;
+    for (const walls of sets) { const L = kitchen(walls, room, door); if (L && (!best || L.sum < best.sum)) { best = L; on = walls; } }
+    if (!best) return null;
+    const names = on.map((w) => WALL_NAME[w].replace('the ', '').replace(' wall', ''));
+    const where = names.length === 1 ? `the ${names[0]} wall` : `the ${names.slice(0, -1).join(', ')} and ${names[names.length - 1]} walls`;
+    return { ...best, text: `${shape} kitchen on ${where}: fridge, sink and hob ${Math.round(Math.min(...best.legs))} to ${Math.round(Math.max(...best.legs))} ft apart, a ${Math.round(best.sum)} ft work triangle` };
+  });
+
+  // Up to one layout per wall the main piece can stand on (one per shape for a kitchen).
+  const suggest = (type, room, door) => (type === 'kitchen' ? kitchens(room, door) : WALLS
+    .map((wall) => (type === 'bedroom' ? bedroom(wall, room, door) : type === 'kids' ? kids(wall, room, door) : living(wall, room, door, type === 'living-dining'))))
     .filter(Boolean)
     .map((L) => ({ ...L, text: L.text.charAt(0).toUpperCase() + L.text.slice(1) }));
 
@@ -295,6 +426,7 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
     const cx = a.x + a.w / 2, cy = a.y + a.d / 2;
     [a.w, a.d] = [a.d, a.w];
     delete a.back; // a turned piece no longer faces away from a wall
+    delete a.head;
     a.x = snap(cx - a.w / 2);
     a.y = snap(cy - a.d / 2);
   };
@@ -395,7 +527,7 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
       box(x0, 0, z0, x1, 1.1, z1, M.frame, 0.08);
       box(x0 + 0.15, 1.1, z0 + 0.15, x1 - 0.15, 1.8, z1 - 0.15, M.mattress, 0.18);
       // Headboard on a short end; pillows against it.
-      if (backTop ?? (!wide || a.w === a.d)) {
+      if (a.head ? a.head === 'top' || a.head === 'bottom' : backTop ?? (!wide || a.w === a.d)) {
         box(x0, 0, z0, x1, 3.6, z0 + 0.3, M.head, 0.1);
         const n = a.w >= 4 ? 2 : 1, pw = (a.w - 0.6) / n;
         for (let i = 0; i < n; i++) box(x0 + 0.3 + i * pw + 0.08, 1.8, z0 + 0.45, x0 + 0.3 + (i + 1) * pw - 0.08, 2.2, z0 + 1.6, M.mattress, 0.15);
@@ -422,6 +554,20 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
       }
       return 3;
     }
+    if (id.includes('fridge')) {
+      box(x0, 0, z0, x1, 6, z1, M.steel, 0.06);
+      return 6;
+    }
+    if (id.includes('counter') || id.includes('sink') || id.includes('hob')) {
+      // Base cabinet, worktop, and the basin or glass hob set into it.
+      box(x0, 0, z0, x1, 2.75, z1, M.cabinet, 0.03);
+      box(x0, 2.75, z0, x1, 2.9, z1, M.worktop, 0.02);
+      const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2, l = Math.min(a.w, a.d) / 2 - 0.25, m = Math.max(a.w, a.d) / 2 - 0.35;
+      const [hx, hz] = wide ? [m, l] : [l, m];
+      if (id.includes('sink')) box(cx - hx, 2.9, cz - hz, cx + hx, 2.92, cz + hz, M.basin);
+      if (id.includes('hob')) box(cx - hx, 2.9, cz - hz, cx + hx, 2.95, cz + hz, M.screen);
+      return 2.95;
+    }
     if (id.includes('wardrobe')) {
       box(x0, 0, z0, x1, 7, z1, M.cabinet, 0.04);
       return 7;
@@ -446,7 +592,8 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
   // The models face the top or the left wall. A suggested piece backed against
   // the right or bottom wall is built the same way and turned a half turn.
   function placed(a, parent) {
-    if (a.back !== 'right' && a.back !== 'bottom') return model(a, parent);
+    const turn = a.head || a.back; // a corner bed turns by its headboard, not its long side
+    if (turn !== 'right' && turn !== 'bottom') return model(a, parent);
     const T3 = p3.THREE, outer = new T3.Group(), inner = new T3.Group();
     outer.position.set(a.x + a.w / 2, 0, a.y + a.d / 2);
     outer.rotation.y = Math.PI;
@@ -518,6 +665,9 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
           top: api.mat.wood(1, 1, '#d8b896'),
           door: api.mat.wood(1, 1, '#c9a27c'),
           metal: api.mat.metal('#2f3436'),
+          steel: api.mat.plain('#d9dcde', 0.35),
+          basin: api.mat.plain('#9ea4a8', 0.3),
+          worktop: api.mat.plain('#d8d2c8', 0.5),
           screen: api.mat.plain('#121314', 0.25),
           badLine: new L.LineBasicMaterial({ color: '#c0392b' }),
           selLine: new L.LineBasicMaterial({ color: '#b88a52' }),
