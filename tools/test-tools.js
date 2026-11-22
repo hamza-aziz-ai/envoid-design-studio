@@ -111,7 +111,7 @@ assert.ok(Fit.CATALOGUE.every((c) => c.w > 0 && c.d > 0 && c.name), 'every catal
 
 // Suggested layouts: every one offered, across many rooms and door positions,
 // passes the hand-placed checks and keeps its clear zones, and has its key pieces.
-const need = { bedroom: [/bed$/i, /wardrobe/i], living: [/sofa/i, /tv/i], 'living-dining': [/sofa/i, /tv/i, /dining/i], kids: [/single bed/i, /wardrobe/i, /desk/i], 'kids-twin': [/single bed/i, /wardrobe/i], 'kids-bunk': [/bunk bed/i, /wardrobe/i, /desk/i], kitchen: [/fridge/i, /sink/i, /hob/i] };
+const need = { bedroom: [/bed$/i, /wardrobe/i], living: [/sofa/i, /tv/i], 'living-dining': [/sofa/i, /tv/i, /dining/i], kids: [/single bed/i, /wardrobe/i, /desk/i], 'kids-twin': [/single bed/i, /wardrobe/i], 'kids-bunk': [/bunk bed/i, /wardrobe/i, /desk/i], 'kids-loft': [/loft bed/i, /wardrobe/i], 'kids-trundle': [/trundle bed/i, /wardrobe/i, /desk/i], kitchen: [/fridge/i, /sink/i, /hob/i] };
 const centre = (a) => [a.x + a.w / 2, a.y + a.d / 2];
 let offered = 0;
 for (const { id } of Fit.TYPES) {
@@ -128,13 +128,16 @@ for (const { id } of Fit.TYPES) {
         assert.ok(L.items.every((a) => a.w > 0 && a.d > 0), 'no empty counter pieces');
       }
       if (id === 'kids-twin') assert.equal(L.items.filter((a) => a.id === 'single').length, 2, `twin beds: ${L.text}`);
-      if (id === 'kids' || id === 'kids-bunk') assert.ok(L.zones.some((z) => z.owner === -1 && z.r.w === 4 && z.r.d === 4), 'a kids room keeps 4 by 4 ft to play');
+      if (id === 'kids-trundle') assert.ok(L.zones.some((z) => z.owner === 0 && Math.min(z.r.w, z.r.d) === 3), `no room to pull the trundle out: ${L.text}`);
+      if (id === 'kids-loft') assert.ok(!L.items.some((a) => a.id === 'desk'), 'a loft bed has its desk built in');
+      if (['kids', 'kids-bunk', 'kids-loft', 'kids-trundle'].includes(id)) assert.ok(L.zones.some((z) => z.owner === -1 && z.r.w === 4 && z.r.d === 4), 'a kids room keeps 4 by 4 ft to play');
       if (id === 'living' || id === 'living-dining') { const s = L.items[0], t = L.items[1]; assert.ok(Math.abs((s.x + s.w / 2) - (t.x + t.w / 2)) <= 1 || Math.abs((s.y + s.d / 2) - (t.y + t.d / 2)) <= 1, `TV not square to the sofa: ${L.text}`); }
       for (const re of need[id]) assert.ok(L.items.some((a) => re.test(a.name)), `${id} layout lacks ${re}: ${L.text}`);
     }
   }
 }
-assert.ok(offered > 1200, `too few layouts offered: ${offered}`);
+assert.ok(offered > 1600, `too few layouts offered: ${offered}`);
+assert.ok(Fit.suggest('kids-loft', { w: 9, l: 10 }, door).length >= 2, 'a 9 by 10 room takes a loft bed');
 assert.ok(Fit.suggest('kids-twin', { w: 10, l: 11 }, door).length >= 2, 'a 10 by 11 room takes twin beds two ways');
 assert.ok(Fit.suggest('kids-bunk', { w: 9, l: 10 }, door).length >= 1, 'a 9 by 10 room takes a bunk bed');
 assert.ok(Fit.suggest('kitchen', { w: 8, l: 10 }, door).length >= 2, 'an 8 by 10 kitchen gets a choice of shapes');

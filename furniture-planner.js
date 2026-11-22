@@ -11,6 +11,8 @@ const Fit = (() => {
     { id: 'queen', name: 'Queen bed', w: 5, d: 6.5 },
     { id: 'single', name: 'Single bed', w: 3, d: 6.5 },
     { id: 'bunk', name: 'Bunk bed', w: 3, d: 6.5 },
+    { id: 'loft', name: 'Loft bed with desk', w: 3, d: 6.5 },
+    { id: 'trundle', name: 'Trundle bed', w: 3, d: 6.5 },
     { id: 'bedside', name: 'Bedside table', w: 1.5, d: 1.5 },
     { id: 'wardrobe2', name: 'Wardrobe, 2-door', w: 3, d: 2 },
     { id: 'wardrobe4', name: 'Wardrobe, 4-door', w: 6, d: 2 },
@@ -81,6 +83,8 @@ const Fit = (() => {
     { id: 'kids', name: 'Kids’ room, one bed' },
     { id: 'kids-twin', name: 'Kids’ room, twin beds' },
     { id: 'kids-bunk', name: 'Kids’ room, bunk bed' },
+    { id: 'kids-loft', name: 'Kids’ room, loft bed with desk' },
+    { id: 'kids-trundle', name: 'Kids’ room, trundle bed' },
     { id: 'kitchen', name: 'Kitchen' },
   ];
   const WALLS = ['top', 'left', 'right', 'bottom'];
@@ -235,11 +239,11 @@ const Fit = (() => {
   // Wardrobe, desk and play space, after the beds. With one bed all three are
   // required; twin beds take most of a small room's floor, so there only the
   // wardrobe is, and the desk and play space come if they fit.
-  const kidsRest = (L, room, door, strict) => {
+  const kidsRest = (L, room, door, strict, withDesk = true) => {
     const robe = first(L, room, door, ['wardrobe4', 'wardrobe2'], (c) => along(c, WALLS, room, 'corner'), (a) => [{ r: front(a, 2.5) }]);
     if (!robe) return null;
-    const desk = tryAdd(L, room, door, along(byId('desk'), WALLS, room, 'corner'), (a) => [{ r: front(a, 2.5) }]);
-    if (strict && !desk) return null;
+    const desk = withDesk && tryAdd(L, room, door, along(byId('desk'), WALLS, room, 'corner'), (a) => [{ r: front(a, 2.5) }]);
+    if (strict && withDesk && !desk) return null;
     const play = playSpace(L, room, door);
     if (strict && !play) return null;
     return [`${short(robe)} on ${WALL_NAME[robe.back]}`, desk && `desk on ${WALL_NAME[desk.back]}`, play && 'and 4 by 4 ft of clear floor to play on'].filter(Boolean).join(', ');
@@ -251,13 +255,22 @@ const Fit = (() => {
   };
   const corners = (id, wall, room) => { const span = wallLen(wall, room) - byId(id).d; return span < 0 ? [] : span === 0 ? [0] : [0, span]; };
 
-  // One bed, single or bunk, in a corner.
+  // One bed in a corner, with clear floor along its open side: 2 ft for a
+  // single or bunk bed, 2.5 ft for the chair at a loft bed's built-in desk
+  // (so no separate desk), 3 ft for a trundle to pull out into.
+  const KID_BED = {
+    single: { clear: 2, say: 'single bed' },
+    bunk: { clear: 2, say: 'bunk bed' },
+    loft: { clear: 2.5, say: 'loft bed with a desk under it', builtInDesk: true },
+    trundle: { clear: 3, say: 'trundle bed', note: ', with 3 ft clear beside it to pull the trundle out' },
+  };
   const kids = (wall, room, door, id) => {
+    const k = KID_BED[id];
     for (const t of corners(id, wall, room)) {
       const L = { items: [], zones: [] };
-      if (!tryAdd(L, room, door, [cornerBed(id, wall, t, room)], (a) => [{ r: front(a, 2) }])) continue;
-      const rest = kidsRest(L, room, door, true);
-      if (rest) return { ...L, text: `${short(byId(id))} in a corner of ${WALL_NAME[wall]}, ${rest}` };
+      if (!tryAdd(L, room, door, [cornerBed(id, wall, t, room)], (a) => [{ r: front(a, k.clear) }])) continue;
+      const rest = kidsRest(L, room, door, true, !k.builtInDesk);
+      if (rest) return { ...L, text: `${k.say} in a corner of ${WALL_NAME[wall]}${k.note || ''}, ${rest}` };
     }
     return null;
   };
@@ -392,7 +405,8 @@ const Fit = (() => {
   // Up to one layout per wall the main piece can stand on (one per shape for a kitchen).
   const suggest = (type, room, door) => (type === 'kitchen' ? kitchens(room, door) : WALLS.flatMap((wall) => {
     if (type === 'bedroom') return [bedroom(wall, room, door)];
-    if (type === 'kids' || type === 'kids-bunk') return [kids(wall, room, door, type === 'kids' ? 'single' : 'bunk')];
+    const kid = { kids: 'single', 'kids-bunk': 'bunk', 'kids-loft': 'loft', 'kids-trundle': 'trundle' }[type];
+    if (kid) return [kids(wall, room, door, kid)];
     if (type === 'kids-twin') return twin(wall, room, door);
     return [living(wall, room, door, type === 'living-dining')];
   }))
@@ -572,31 +586,55 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
     const id = a.name.toLowerCase();
     const legs = (h, inset = 0.25) => [[x0 + inset, z0 + inset], [x1 - inset, z0 + inset], [x0 + inset, z1 - inset], [x1 - inset, z1 - inset]]
       .forEach(([x, z]) => box(x - 0.07, 0, z - 0.07, x + 0.07, h, z + 0.07, M.metal));
-    if (id.includes('bunk')) {
-      // Two decks on four posts, a ladder at the foot of the open long side,
-      // and a guard rail along the top deck up to the ladder.
+    if (/bunk|loft|trundle/.test(id)) {
+      // These beds orient themselves from the wall they back onto and the end
+      // their head is at. part() takes a box along the bed (u, from either
+      // end), out from the wall (v, 0 at the wall), and up (y).
       const back = a.back || (wide ? 'top' : 'left'), head = a.head || (wide ? 'left' : 'top');
-      [[x0 + 0.1, z0 + 0.1], [x1 - 0.1, z0 + 0.1], [x0 + 0.1, z1 - 0.1], [x1 - 0.1, z1 - 0.1]]
-        .forEach(([x, z]) => box(x - 0.09, 0, z - 0.09, x + 0.09, 5.8, z + 0.09, M.frame));
-      for (const y of [0.4, 3.6]) {
-        box(x0, y, z0, x1, y + 0.6, z1, M.frame, 0.05);
-        box(x0 + 0.12, y + 0.6, z0 + 0.12, x1 - 0.12, y + 1.1, z1 - 0.12, M.mattress, 0.15);
-      }
-      const alongX = back === 'top' || back === 'bottom';
-      const e = alongX ? (back === 'top' ? z1 - 0.06 : z0 + 0.06) : (back === 'left' ? x1 - 0.06 : x0 + 0.06);
-      const bar = (ua, ub, ya, yb, t = 0.06) => {
-        const [p, q] = [Math.min(ua, ub), Math.max(ua, ub)];
-        return alongX ? box(p, ya, e - t, q, yb, e + t, M.frame) : box(e - t, ya, p, e + t, yb, q, M.frame);
-      };
+      const alongX = back === 'top' || back === 'bottom', depth = alongX ? z1 - z0 : x1 - x0;
       const footAtEnd = alongX ? head !== 'right' : head !== 'bottom';
       const [u0, u1] = alongX ? [x0, x1] : [z0, z1];
-      const foot = footAtEnd ? u1 : u0, inward = footAtEnd ? -1 : 1;
-      const r1 = foot + inward * 0.3, r2 = foot + inward * 1.5;
-      bar(r1 - 0.06, r1 + 0.06, 0, 5.4);
-      bar(r2 - 0.06, r2 + 0.06, 0, 5.4);
-      for (let y = 1.2; y < 5; y += 0.9) bar(r1, r2, y, y + 0.1);
-      bar(footAtEnd ? u0 : u1, r2, 5.1, 5.25);
-      return 5.8;
+      const foot = footAtEnd ? u1 : u0, headEnd = footAtEnd ? u0 : u1, toHead = footAtEnd ? -1 : 1;
+      const part = (ua, ub, va, vb, ya, yb, m, round) => {
+        const [p, q] = [Math.min(ua, ub), Math.max(ua, ub)];
+        const w0 = back === 'top' || back === 'left' ? (alongX ? z0 : x0) + va : (alongX ? z1 : x1) - vb;
+        return alongX ? box(p, ya, w0, q, yb, w0 + vb - va, m, round) : box(w0, ya, p, w0 + vb - va, yb, q, m, round);
+      };
+      const posts = (h) => [[0.02, 0.2], [depth - 0.2, depth - 0.02]].forEach(([va, vb]) =>
+        [[u0 + 0.02, u0 + 0.2], [u1 - 0.2, u1 - 0.02]].forEach(([ua, ub]) => part(ua, ub, va, vb, 0, h, M.frame)));
+      const deck = (y) => { part(u0, u1, 0, depth, y, y + 0.5, M.frame, 0.05); part(u0 + 0.12, u1 - 0.12, 0.12, depth - 0.12, y + 0.5, y + 1, M.mattress, 0.15); };
+      // A ladder at the foot of the open side; returns where it ends, for the guard rail.
+      const ladder = (top) => {
+        const r1 = foot + toHead * 0.3, r2 = foot + toHead * 1.5, v0 = depth - 0.12;
+        part(r1 - 0.06, r1 + 0.06, v0, depth, 0, top, M.frame);
+        part(r2 - 0.06, r2 + 0.06, v0, depth, 0, top, M.frame);
+        for (let y = 1.2; y < top - 0.3; y += 0.9) part(r1, r2, v0, depth, y, y + 0.1, M.frame);
+        return r2;
+      };
+      if (id.includes('bunk')) {
+        posts(5.8);
+        deck(0.4);
+        deck(3.6);
+        part(headEnd, ladder(5.4), depth - 0.12, depth, 5.1, 5.25, M.frame);
+        return 5.8;
+      }
+      if (id.includes('loft')) {
+        // The bed at 5 ft, and a desk against the wall underneath it.
+        posts(6.4);
+        deck(4.6);
+        part(headEnd, ladder(6.1), depth - 0.12, depth, 5.95, 6.1, M.frame);
+        const deskEnd = headEnd - toHead * 4.2;
+        part(headEnd - toHead * 0.2, deskEnd, 0, 2, 2.4, 2.52, M.top, 0.03);
+        part(deskEnd, deskEnd + toHead * 0.1, 0, 2, 0, 2.4, M.cabinet);
+        return 6.4;
+      }
+      // Trundle: a bed with a second one in a low drawer on the open side.
+      part(u0, u1, 0, depth, 0.55, 1.2, M.frame, 0.06);
+      part(u0 + 0.12, u1 - 0.12, 0.12, depth - 0.12, 1.2, 1.8, M.mattress, 0.15);
+      part(headEnd, headEnd - toHead * 0.3, 0, depth, 0, 3.3, M.head, 0.08);
+      part(headEnd - toHead * 0.45, headEnd - toHead * 1.6, 0.4, depth - 0.4, 1.8, 2.2, M.mattress, 0.15);
+      part(u0 + 0.3, u1 - 0.3, depth - 0.1, depth, 0.08, 0.5, M.cabinet, 0.03);
+      return 3.3;
     }
     if (id.includes('bed') && !id.includes('bedside')) {
       box(x0, 0, z0, x1, 1.1, z1, M.frame, 0.08);
@@ -668,7 +706,7 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
   // the right or bottom wall is built the same way and turned a half turn.
   function placed(a, parent) {
     const turn = a.head || a.back; // a corner bed turns by its headboard, not its long side
-    if ((turn !== 'right' && turn !== 'bottom') || a.name.toLowerCase().includes('bunk')) return model(a, parent); // a bunk orients itself
+    if ((turn !== 'right' && turn !== 'bottom') || /bunk|loft|trundle/i.test(a.name)) return model(a, parent); // these orient themselves
     const T3 = p3.THREE, outer = new T3.Group(), inner = new T3.Group();
     outer.position.set(a.x + a.w / 2, 0, a.y + a.d / 2);
     outer.rotation.y = Math.PI;

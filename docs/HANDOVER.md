@@ -13,7 +13,7 @@ Where things stand. Newest entry on top. Read this first; update it last.
 - Every play tool now has a "View in 3D" mode through the shared `play-3d.js` (D-027). The 2D versions remain the default and the fallback.
 - `/3d-room/` added (D-026): a furnished room in real-time 3D, lit by the real sun, with photographed textures. three.js 0.187.0 is vendored under `vendor/`; how to rebuild it is in `docs/DEPENDENCIES.md`.
 - Four more tools added (D-025): Will it fit?, Colour your room, Staircase designer and Guess the area. With the room calculator and sunlight explorer that makes six, linked from the home page band and a footer column on every page.
-- "Will it fit?" suggests furniture layouts for a bedroom, kids' room (one bed, twin beds or a bunk bed), living room, living and dining room, or kitchen of the visitor's size, by clearance rules, in 2D and 3D (D-029). Not from an uploaded plan, on purpose.
+- "Will it fit?" suggests furniture layouts for a bedroom, kids' room (single, twin, bunk, loft or trundle bed), living room, living and dining room, or kitchen of the visitor's size, by clearance rules, in 2D and 3D (D-029). Not from an uploaded plan, on purpose.
 - A drawing-fee estimator was built and withdrawn the same day: the studio does not want prices on the site, because they set expectations that conflict with the real consultation (D-024). Do not re-propose one.
 
 ## 2026-11-21 — the enquiry form was broken, and now works
