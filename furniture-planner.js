@@ -89,6 +89,13 @@ const Fit = (() => {
   const TOP_MATTRESS = { bunk: 4.6, loft: 5.6 }, HEADROOM = 3;
   const raised = (name) => Object.keys(TOP_MATTRESS).find((k) => name.toLowerCase().includes(k));
   const ceilingFor = (name) => (raised(name) ? TOP_MATTRESS[raised(name)] + HEADROOM : 0);
+  // A ceiling fan in the middle of the room (`room.fan`), the usual 1200 mm
+  // size: its blades sweep a circle 2 ft in radius. Someone on a raised bed is
+  // within reach of it, so a bunk or loft bed keeps 1 ft clear of the sweep.
+  const FAN = { r: 2, clear: 1 };
+  const fanAt = (room) => ({ x: room.w / 2, y: room.l / 2 });
+  const toRect = (p, a) => Math.hypot(Math.max(a.x - p.x, 0, p.x - (a.x + a.w)), Math.max(a.y - p.y, 0, p.y - (a.y + a.d)));
+  const underFan = (a, room) => Boolean(room.fan && raised(a.name) && toRect(fanAt(room), a) < FAN.r + FAN.clear);
 
   // A piece is in trouble if it crosses a wall, overlaps another, blocks the
   // door, or (a raised bed) leaves too little headroom. A room without a
@@ -99,8 +106,9 @@ const Fit = (() => {
       overlaps: items.some((b, j) => j !== i && feet(a).some((f) => feet(b).some((g) => overlap(f, g)))),
       door: feet(a).some((f) => blocksDoor(f, room, door)),
       low: room.h !== undefined && room.h < ceilingFor(a.name),
+      fan: underFan(a, room),
     }));
-  const troubled = (t) => t.outside || t.overlaps || t.door || t.low;
+  const troubled = (t) => t.outside || t.overlaps || t.door || t.low || t.fan;
 
   // ---- suggested layouts -----------------------------------------------------
   // Rules, not guesswork. A piece stands against a wall facing into the room
@@ -456,7 +464,7 @@ const Fit = (() => {
     .filter(Boolean)
     .map((L) => ({ ...L, text: L.text.charAt(0).toUpperCase() + L.text.slice(1) }));
 
-  return { CATALOGUE, TYPES, TOP_MATTRESS, ceilingFor, troubled, overlap, inside, gaps, gapsAt, blocksDoor, problems, suggest, valid, pulledOut, extent };
+  return { CATALOGUE, TYPES, TOP_MATTRESS, FAN, fanAt, ceilingFor, troubled, overlap, inside, gaps, gapsAt, blocksDoor, problems, suggest, valid, pulledOut, extent };
 })();
 if (typeof module === 'object' && module.exports) module.exports = Fit;
 
@@ -479,7 +487,7 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
   const snap = (v) => Math.round(v / SNAP) * SNAP;
   const num = (id, lo, hi) => Math.min(hi, Math.max(lo, parseFloat($(id).value) || lo));
 
-  const room = () => ({ w: num('fp-w', 6, 40), l: num('fp-l', 6, 40), h: num('fp-h', 7, 16) });
+  const room = () => ({ w: num('fp-w', 6, 40), l: num('fp-l', 6, 40), h: num('fp-h', 7, 16), fan: $('fp-fan').checked });
   const door = () => ({ x: num('fp-door-x', 0, 40), w: num('fp-door-w', 2, 5) });
 
   let items = [];
@@ -553,6 +561,13 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
     svg.textContent = '';
 
     const grid = el('g', { class: 'fp__grid' }, svg);
+    if (r.fan) {
+      // The fan's sweep, and the 1 ft a raised bed keeps clear of it.
+      const f = Fit.fanAt(r), fan = el('g', { class: 'fp__fan', 'aria-hidden': 'true' }, svg);
+      el('circle', { cx: f.x, cy: f.y, r: Fit.FAN.r + Fit.FAN.clear, class: 'fp__fan-clear' }, fan);
+      el('circle', { cx: f.x, cy: f.y, r: Fit.FAN.r }, fan);
+      el('circle', { cx: f.x, cy: f.y, r: 0.3, class: 'fp__fan-hub' }, fan);
+    }
     for (let x = 1; x < r.w; x++) el('line', { x1: x, y1: 0, x2: x, y2: r.l }, grid);
     for (let y = 1; y < r.l; y++) el('line', { x1: 0, y1: y, x2: r.w, y2: y }, grid);
 
@@ -569,7 +584,7 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
       const g = el('g', {
         class: `fp__item${bad ? ' is-bad' : ''}${i === selected ? ' is-on' : ''}`,
         tabindex: 0, role: 'button', 'data-i': i,
-        'aria-label': `${describe(i)}${t.outside ? ' Crosses a wall.' : ''}${t.overlaps ? ' Overlaps another piece.' : ''}${t.door ? ' Blocks the door.' : ''}${t.low ? ` Needs a ceiling of at least ${fmt(Fit.ceilingFor(a.name))} ft.` : ''}${a.out ? ' Trundle pulled out.' : ''} Arrow keys move it, R turns it, Delete removes it.`,
+        'aria-label': `${describe(i)}${t.outside ? ' Crosses a wall.' : ''}${t.overlaps ? ' Overlaps another piece.' : ''}${t.door ? ' Blocks the door.' : ''}${t.low ? ` Needs a ceiling of at least ${fmt(Fit.ceilingFor(a.name))} ft.` : ''}${t.fan ? ' Too close to the ceiling fan.' : ''}${a.out ? ' Trundle pulled out.' : ''} Arrow keys move it, R turns it, Delete removes it.`,
       }, svg);
       el('rect', { x: a.x, y: a.y, width: a.w, height: a.d }, g);
       if (a.out) { const o = Fit.pulledOut(a); el('rect', { x: o.x, y: o.y, width: o.w, height: o.d, class: 'fp__out' }, g); }
@@ -801,6 +816,19 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
     wall(dx, r.l, dx + door.w, r.l + T, 0, 1, 7, H);
     // The door, standing open into the room along its swing.
     box(dx, 0, r.l - door.w, dx + 0.14, 6.95, r.l, M.door, { round: 0.03 });
+    if (r.fan) {
+      // The ceiling fan: a downrod, a motor and three blades a foot below the ceiling.
+      const f = Fit.fanAt(r), y = H - 1;
+      box(f.x - 0.06, y, f.y - 0.06, f.x + 0.06, H, f.y + 0.06, M.metal);
+      box(f.x - 0.35, y - 0.25, f.y - 0.35, f.x + 0.35, y, f.y + 0.35, M.fan, { round: 0.12 });
+      for (let k = 0; k < 3; k++) {
+        const arm = new p3.THREE.Group();
+        arm.position.set(f.x, y - 0.15, f.y);
+        arm.rotation.y = (k * 2 * Math.PI) / 3;
+        g3.add(arm);
+        p3.box(0.3, -0.02, -0.22, Fit.FAN.r, 0.02, 0.22, M.fan, { parent: arm, round: 0.02 });
+      }
+    }
 
     const T3 = p3.THREE;
     items.forEach((a, i) => {
@@ -829,6 +857,7 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
         M = {
           wall: api.mat.plaster('#efe9df'),
           frame: api.mat.wood(1, 1, '#b48f6c'),
+          fan: api.mat.plain('#ece8e1', 0.6),
           head: api.mat.fabric('#b9a58b', 1.5),
           mattress: api.mat.fabric('#f3eee6', 1.5),
           sofa: api.mat.fabric('#5f7c6d', 1.4),
@@ -929,11 +958,15 @@ if (typeof module === 'object' && module.exports) module.exports = Fit;
   $('fp-suggest').addEventListener('click', () => {
     const r = room(), d = door(), dr = { x: Math.min(d.x, r.w - d.w), w: d.w };
     const kind = Fit.TYPES.find((t) => t.id === type.value);
-    const key = `${kind.id} ${r.w} ${r.l} ${r.h} ${dr.x} ${dr.w}`;
+    const key = `${kind.id} ${r.w} ${r.l} ${r.h} ${r.fan} ${dr.x} ${dr.w}`;
     if (key !== ideaFor) { ideas = Fit.suggest(kind.id, r, dr); idea = -1; ideaFor = key; }
     const bed = { 'kids-bunk': 'Bunk bed', 'kids-loft': 'Loft bed', 'kids-loft-robe': 'Loft bed' }[kind.id];
     if (bed && r.h < Fit.ceilingFor(bed)) {
       say(`A ${bed.toLowerCase()} needs a ceiling of at least ${fmt(Fit.ceilingFor(bed))} ft, for 3 ft of sitting headroom above the top mattress. This room's is ${fmt(r.h)} ft.`);
+      return;
+    }
+    if (bed && !ideas.length && r.fan && Fit.suggest(kind.id, { ...r, fan: false }, dr).length) {
+      say(`Every place a ${bed.toLowerCase()} fits in this room is within a foot of the ceiling fan's blades, which a child on the top bed could reach. Choose a single or trundle bed, or, if the fan point in your room can be moved off the middle, untick the fan and plan the bed where the new point will be clear of it.`);
       return;
     }
     if (!ideas.length) {

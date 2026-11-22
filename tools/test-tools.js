@@ -171,6 +171,19 @@ assert.equal(Fit.suggest('kids-bunk', { w: 10, l: 11, h: 7 }, door).length, 0, '
 assert.equal(Fit.suggest('kids-loft-robe', { w: 10, l: 11, h: 8 }, door).length, 0, 'no loft layouts under an 8 ft ceiling');
 assert.ok(Fit.suggest('kids-loft', { w: 10, l: 11, h: 10 }, door).length >= 2, 'a 10 ft ceiling takes a loft bed');
 assert.ok(Fit.suggest('bedroom', { w: 12, l: 14, h: 7 }, door).length >= 2, 'a low ceiling does not stop an ordinary bedroom');
+// The ceiling fan: a raised bed keeps 1 ft clear of a 2 ft sweep at the room's centre.
+const fanRoom = { w: 12, l: 12, fan: true }; // fan at (6, 6): clear of it means 3 ft from the centre
+assert.ok(Fit.problems([{ ...bunk, x: 4.5, y: 0 }], fanRoom, door)[0].fan, 'a bunk under the fan is flagged');
+assert.ok(Fit.problems([{ ...bunk, x: 0, y: 0.5, w: 6.5, d: 3 }], fanRoom, door)[0].fan, 'a bunk 2.5 ft from the fan, inside the 1 ft margin, is flagged');
+assert.ok(!Fit.problems([{ ...bunk, x: 0, y: 0, w: 6.5, d: 3 }], fanRoom, door)[0].fan, 'a bunk 3 ft from the fan, along the far wall, is not');
+assert.ok(!Fit.problems([{ ...bunk, x: 4.5, y: 0 }], { w: 12, l: 12 }, door)[0].fan, 'no fan, no check');
+assert.ok(!Fit.problems([{ name: 'Single bed', w: 3, d: 6.5, x: 4.5, y: 3 }], fanRoom, door)[0].fan, 'a floor-level bed may sit under the fan');
+for (const id of ['kids-bunk', 'kids-loft', 'kids-loft-robe']) {
+  const L = Fit.suggest(id, { ...fanRoom, h: 10 }, door);
+  assert.ok(L.length >= 1, `${id}: a 12 by 12 room with a fan still gets a layout`);
+  assert.ok(L.every((x) => Fit.valid(x, { ...fanRoom, h: 10 }, door)), `${id}: every layout keeps clear of the fan`);
+}
+assert.equal(Fit.suggest('kids-bunk', { w: 9, l: 10, fan: true }, door).length, 0, 'a 9 by 10 room has nowhere for a bunk clear of a centre fan');
 assert.ok(Fit.suggest('kids-loft', { w: 9, l: 10 }, door).length >= 2, 'a 9 by 10 room takes a loft bed');
 assert.ok(Fit.suggest('kids-twin', { w: 10, l: 11 }, door).length >= 2, 'a 10 by 11 room takes twin beds two ways');
 assert.ok(Fit.suggest('kids-bunk', { w: 9, l: 10 }, door).length >= 1, 'a 9 by 10 room takes a bunk bed');
