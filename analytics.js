@@ -36,8 +36,9 @@
   // Cloudflare Web Analytics: a plain visit count with no cookie, no browser
   // storage and no identifier, so it needs no consent and runs for everyone
   // except the studio's own devices. Classic script, not a module: the beacon
-  // finds its token through document.currentScript.
-  if (!internal) {
+  // finds its token through document.currentScript. Live host only: anywhere
+  // else (local, CI) Cloudflare rejects the report and logs a console error.
+  if (!internal && location.hostname === 'envoiddesign.in') {
     const cf = document.createElement('script');
     cf.src = 'https://static.cloudflareinsights.com/beacon.min.js';
     cf.dataset.cfBeacon = '{"token": "e48710685f964756a7954895aee966d8"}';
