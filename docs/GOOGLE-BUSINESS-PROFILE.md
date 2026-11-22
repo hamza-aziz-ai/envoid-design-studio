@@ -133,7 +133,7 @@ Opening hours and the opening date turned out to be on the profile already, ente
 Each of these is a real ranking or display signal and each is absent from the website for the same reason — nobody has confirmed it, and this project does not invent facts.
 
 - **Council of Architecture registration number**, if the practice or its principal holds one. On a profile competing with unregistered "designers", this is worth saying out loud.
-- **Instagram and Facebook handles.** For an architecture practice in India, Instagram is usually the strongest second profile. Once they exist, they go in the profile, in the site footer, and in the website's `sameAs` structured data.
+- **Instagram and Facebook handles.** For an architecture practice in India, Instagram is usually the strongest second profile. Once they exist, they go in the profile, in the site footer, and in the website's `sameAs` structured data. **`@studioinvoid` ("Studio inVoid") is not the studio's** (confirmed by the studio, 2026-11-22), though it shows up in a search for the studio's name: never link it, and pick a handle that cannot be confused with it.
 - **Price range**, as a band rather than a number.
 - **Experience.** The old profile description claimed 16 years; the opening date says 2020. Both can be true — the principal's career against the practice's — but the site should say which, if it says either.
 
