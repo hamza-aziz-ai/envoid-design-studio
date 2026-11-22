@@ -80,7 +80,7 @@ All smoke checks passed.
 
 It probes twelve things: the three indexable pages and their canonicals, `styles.css` containing `.gal__grid`, the three scripts and a representative image, two cache-busted 404 paths that must answer `404` and contain "never built", `/thanks/` still carrying `noindex`, and `robots.txt` and `sitemap.xml`.
 
-The 404 probes are cache-busted with `?ci=<run id>` on purpose: Cloudflare would otherwise serve a previously cached response and the check would pass against a stale answer.
+The 404 probes are cache-busted with `?ci=<run id>` on purpose: Fastly, GitHub Pages' CDN, would otherwise serve a previously cached response and the check would pass against a stale answer.
 
 ## What is not tested
 

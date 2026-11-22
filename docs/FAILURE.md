@@ -18,7 +18,7 @@ Two things take its place, and both are quiet by nature.
 
 | Dependency | If it is down | If it is slow | If it is wrong or empty | Blast radius |
 | --- | --- | --- | --- | --- |
-| **GitHub Pages / Cloudflare** | Site unreachable | Slow first byte | — | Total. No fallback origin exists |
+| **GitHub Pages / Fastly** | Site unreachable | Slow first byte | — | Total. No fallback origin exists |
 | **EmailJS API** | `emailjs.send` rejects; the visitor sees "service error" and is told to call or WhatsApp | Visitor waits on "Sending…" with no timeout of ours | Wrong template id resolves as a rejection, same path | Enquiries only; the rest of the site is unaffected |
 | **EmailJS quota** | Sends reject once exhausted | — | Roughly 200 emails/month, two per enquiry | About 100 enquiries per month before silence |
 | **FormSubmit** | Fallback POST fails, visitor sees a browser error page | — | **Unactivated: accepts and discards** | Enquiries only, and only if an `EMAILJS` identifier is emptied |
@@ -35,7 +35,7 @@ Two things take its place, and both are quiet by nature.
 | --- | --- | --- |
 | EmailJS free tier | ~200 emails/month, 2 per enquiry | Silence after roughly 100 enquiries in a month |
 | Published site size | 14 MB of assets today | Comfortable. GitHub publishes soft limits on site size, monthly bandwidth and builds per hour — check the current figures before a large asset addition |
-| Cloudflare asset cache | 4 hours | A CSS or JS change is invisible to a returning visitor until the `?v=` token changes, which every deploy does |
+| Fastly and browser asset cache | 10 minutes (`max-age=600`) | A CSS or JS change is invisible to a returning visitor until the `?v=` token changes, which every deploy does |
 | Lighthouse `uses-responsive-images` | warns below 0.9 | A new photograph without `-600`/`-1200` variants warns rather than fails |
 | Concurrency | One deployment at a time, `cancel-in-progress: false` | Two quick pushes queue rather than race; the second waits |
 

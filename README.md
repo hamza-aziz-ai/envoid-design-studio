@@ -45,7 +45,7 @@ That constraint is deliberate. The site is content that changes a few times a ye
 ## Architecture
 
 ```
-Browser ──► Cloudflare (GitHub Pages edge) ──► Static site
+Browser ──► Fastly CDN (GitHub Pages edge) ──► Static site
                                                    │
                                                    ├── EmailJS SDK  ──► enquiry + auto-reply
                                                    └── Google Fonts
@@ -167,7 +167,7 @@ flowchart LR
 
 Pages is configured with **GitHub Actions** as its source rather than a branch build. Both were briefly active at once, which meant a failing build still published; the workflow source is now authoritative.
 
-`tools/stage.sh` assembles the published directory. It uses `git archive HEAD`, so only committed content ships and an uncommitted local edit cannot reach production, and it appends `?v=<commit sha>` to the stylesheet and scripts. Cloudflare caches those assets for four hours in front of Pages, and without a changing query string a returning visitor would run the previous CSS against new markup.
+`tools/stage.sh` assembles the published directory. It uses `git archive HEAD`, so only committed content ships and an uncommitted local edit cannot reach production, and it appends `?v=<commit sha>` to the stylesheet and scripts. GitHub Pages serves those assets with `max-age=600`, so Fastly and the browser hold them for ten minutes, and without a changing query string a returning visitor would run the previous CSS against new markup.
 
 ## Branching and merge policy
 
@@ -237,7 +237,7 @@ Every photograph has `-600`, `-1200` and native-width WebP variants with narrowe
 | **Roll back** | Revert the offending commit on `main`; the pipeline redeploys and re-releases automatically |
 | **Verify production** | `bash tools/smoke.sh https://envoiddesign.in/` |
 | **Inspect a deployed version** | Each GitHub Release attaches the exact published directory as a zip |
-| **Diagnose a stale asset** | Confirm the `?v=` token on `styles.css` matches the deployed commit; Cloudflare holds assets for four hours |
+| **Diagnose a stale asset** | Confirm the `?v=` token on `styles.css` matches the deployed commit; Fastly and the browser hold assets for ten minutes |
 
 ## Security considerations
 

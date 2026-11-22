@@ -100,7 +100,7 @@ jobs:
 
       # Ship the site, not the toolchain that checks it. The commit sha is the
       # cache-busting token, so each deploy invalidates the CSS and JS that
-      # Cloudflare holds for four hours in front of Pages.
+      # Fastly and the browser hold for ten minutes (max-age=600).
       - name: Assemble the published site
         run: bash tools/stage.sh _site "${GITHUB_SHA::8}"
 

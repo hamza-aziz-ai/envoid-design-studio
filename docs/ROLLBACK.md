@@ -33,7 +33,7 @@ gh workflow run "CI/CD" --ref main
 
 ### Expect a cache lag
 
-Cloudflare holds `styles.css`, `main.js` and `contact.js` for four hours in front of Pages. A revert changes the `?v=<sha>` token on every page, so a visitor loading HTML after the rollback gets the matching assets immediately. A visitor sitting on an already-loaded page does not; they need a reload.
+GitHub Pages serves `styles.css`, `main.js` and `contact.js` with `Cache-Control: max-age=600`, so Fastly (its CDN) and the browser can hold them for ten minutes. A revert changes the `?v=<sha>` token on every page, so a visitor loading HTML after the rollback gets the matching assets immediately. A visitor sitting on an already-loaded page does not; they need a reload.
 
 ## Rolling back the domain
 

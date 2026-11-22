@@ -34,7 +34,7 @@ Everything else — fonts, the map, the EmailJS SDK — is outbound. The site as
 ```
 Visitor
   │
-  ├─ HTTPS ─► Cloudflare ─► GitHub Pages ─► static files (HTML, CSS, JS, images)
+  ├─ HTTPS ─► Fastly CDN ─► GitHub Pages ─► static files (HTML, CSS, JS, images)
   │
   ├─ fonts.googleapis.com / fonts.gstatic.com   (stylesheet + font files)
   ├─ www.google.com/maps/embed                  (iframe, contact page only)
