@@ -20,7 +20,7 @@ So: as soon as billing is added, pause that draft, then build the campaign below
 | Name | `Search – Delhi NCR` | |
 | Location | Ghaziabad, Noida, East Delhi; or about 20 km around the Sector 5, Vaishali address | The studio's area, as the site says |
 | Location option | Presence: people in or regularly in your locations | Not "interest in", which shows ads to people elsewhere |
-| Schedule | Monday to Saturday, 10:00 to 17:00 | The studio's hours, as on the Business Profile and the site |
+| Schedule | Monday to Saturday, 10:00 am to 5:00 pm | The studio's hours, as on the Business Profile and the site |
 | Bidding | Maximise clicks, with a maximum CPC cap | Conversion bidding cannot work here: ad consent is never asked for, so Ads sees almost no conversions |
 | Budget | About ten times the expected CPC per day | Check the real CPC in Keyword Planner first; the Smart draft proposed about ₹463 a day |
 | Final URL suffix | `utm_source=google&utm_medium=cpc&utm_campaign=search_ncr` | Analytics credits enquiries to the campaign even without ad consent |

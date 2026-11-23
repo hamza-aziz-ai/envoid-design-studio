@@ -61,8 +61,8 @@ if (typeof module === 'object' && module.exports) module.exports = SunPath;
   };
 
   const clock = (m) => {
-    const t = Math.round(m);
-    return `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`;
+    const t = Math.round(m) % 1440, h = Math.floor(t / 60);
+    return `${h % 12 || 12}:${String(t % 60).padStart(2, '0')} ${h < 12 ? 'am' : 'pm'}`;
   };
   const compass = (az) => ['north', 'north-northeast', 'northeast', 'east-northeast', 'east', 'east-southeast', 'southeast', 'south-southeast', 'south', 'south-southwest', 'southwest', 'west-southwest', 'west', 'west-northwest', 'northwest', 'north-northwest'][Math.round(az / 22.5) % 16];
 

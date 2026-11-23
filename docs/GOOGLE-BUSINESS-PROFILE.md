@@ -19,7 +19,7 @@ Edited on 2026-11-21:
 
 Edits to the description, categories and service areas go through Google's review, usually within ten minutes; the PIN applied immediately and no re-verification was requested.
 
-Already correct on the profile and left alone: primary category `Architect`, both phone numbers, WhatsApp and SMS, opening hours (Monday to Saturday 10:00–17:00, Sunday closed), opening date 1 March 2020.
+Already correct on the profile and left alone: primary category `Architect`, both phone numbers, WhatsApp and SMS, opening hours (Monday to Saturday 10:00 am–5:00 pm, Sunday closed), opening date 1 March 2020.
 
 ### Still to do
 
@@ -46,7 +46,7 @@ These three are the "NAP", and they must match the website **character for chara
 | PIN | `201019` |
 | Country | `India` |
 | Primary phone | `+91 95607 69743` |
-| Secondary phone | `+91 63878 47728` |
+| Secondary phone | `+91 63878 47728`, on the profile only; taken off the website on 23 November 2026 at the owner's request |
 | Website | `https://envoiddesign.in/` |
 | Appointment link | `https://envoiddesign.in/contact/` |
 

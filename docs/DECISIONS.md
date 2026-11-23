@@ -178,7 +178,7 @@ Entries made during AI-assisted sessions record the model, because behaviour dif
 
 **Chosen:** 2. schema.org has no architect type, and Google's guidance is to use the most specific subtype that is true. `ProfessionalService` is true and specific; `HomeAndConstructionBusiness` would describe the design-and-build work but misdescribe the rest of the practice.
 
-**Also added:** `openingHoursSpecification`, Monday to Saturday 10:00–17:00, taken from the studio's own Business Profile. The same hours are now visible on the contact and home pages, because structured data that describes nothing on the page is the kind Google ignores.
+**Also added:** `openingHoursSpecification`, Monday to Saturday 10:00 am–5:00 pm, taken from the studio's own Business Profile. The same hours are now visible on the contact and home pages, because structured data that describes nothing on the page is the kind Google ignores.
 
 ---
 

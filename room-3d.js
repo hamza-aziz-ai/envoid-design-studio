@@ -89,7 +89,7 @@ if (typeof module === 'object' && module.exports) module.exports = Room3D;
     const [y, m, d] = dateIn.value.split('-').map(Number);
     return y && m && d ? dayOfYear(y, m, d) : dayOfYear(today.getFullYear(), today.getMonth() + 1, today.getDate());
   };
-  const clock = (m) => `${pad(Math.floor(Math.round(m) / 60))}:${pad(Math.round(m) % 60)}`;
+  const clock = (m) => { const t = Math.round(m) % 1440, h = Math.floor(t / 60); return `${h % 12 || 12}:${pad(t % 60)} ${h < 12 ? 'am' : 'pm'}`; };
   const compass = (az) => ['north', 'north-northeast', 'northeast', 'east-northeast', 'east', 'east-southeast', 'southeast', 'south-southeast', 'south', 'south-southwest', 'southwest', 'west-southwest', 'west', 'west-northwest', 'northwest', 'north-northwest'][Math.round(az / 22.5) % 16];
 
   const sunInRoom = (sun) => Room3D.sunInRoom(sun, +faceIn.value);
